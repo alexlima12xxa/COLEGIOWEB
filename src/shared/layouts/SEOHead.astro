@@ -1,0 +1,112 @@
+---
+import { siteConfig } from "../../site.config";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  path?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = siteConfig.seo.defaultTitle,
+  description = siteConfig.seo.defaultDescription,
+  image = siteConfig.seo.ogImage,
+  path = Astro.url.pathname,
+  noindex = false,
+} = Astro.props;
+
+const pageTitle =
+  title === siteConfig.seo.defaultTitle
+    ? title
+    : siteConfig.seo.titleTemplate.replace("%s", title);
+
+const canonicalUrl = new URL(path, siteConfig.seo.siteUrl).toString();
+const ogImageUrl = new URL(image, siteConfig.seo.siteUrl).toString();
+const logoUrl = new URL(siteConfig.branding.assets.logo, siteConfig.seo.siteUrl).toString();
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  name: siteConfig.identity.name,
+  description: siteConfig.identity.shortDescription || siteConfig.identity.description,
+  url: siteConfig.seo.siteUrl,
+  logo: logoUrl,
+  sameAs: Object.values(siteConfig.social).filter((url): url is string => typeof url === "string" && url.length > 0),
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: siteConfig.contact.address,
+    addressLocality: siteConfig.contact.city,
+  },
+  telephone: siteConfig.contact.phone,
+  email: siteConfig.contact.email,
+};
+
+const brandTokens = `
+:root {
+  --color-primary: ${siteConfig.branding.colors.primary};
+  --color-primary-hover: ${siteConfig.branding.colors.primaryHover};
+  --color-primary-active: ${siteConfig.branding.colors.primaryActive};
+  --color-primary-soft: ${siteConfig.branding.colors.primarySoft};
+  --color-accent: ${siteConfig.branding.colors.accent};
+  --color-accent-soft: ${siteConfig.branding.colors.accentSoft};
+  --color-surface: ${siteConfig.branding.colors.surface};
+  --color-surface-muted: ${siteConfig.branding.colors.surfaceMuted};
+  --color-surface-strong: ${siteConfig.branding.colors.surfaceStrong};
+  --color-surface-inverse: ${siteConfig.branding.colors.surfaceInverse};
+  --color-text: ${siteConfig.branding.colors.text};
+  --color-text-muted: ${siteConfig.branding.colors.textMuted};
+  --color-text-subtle: ${siteConfig.branding.colors.textSubtle};
+  --color-text-inverse: ${siteConfig.branding.colors.textInverse};
+  --color-border: ${siteConfig.branding.colors.border};
+  --color-border-strong: ${siteConfig.branding.colors.borderStrong};
+  --color-success: ${siteConfig.branding.colors.success};
+  --color-warning: ${siteConfig.branding.colors.warning};
+  --color-danger: ${siteConfig.branding.colors.danger};
+  --color-info: ${siteConfig.branding.colors.info};
+
+  --font-sans: ${siteConfig.branding.fonts.sans};
+  --font-display: ${siteConfig.branding.fonts.display};
+  --font-mono: ${siteConfig.branding.fonts.mono};
+
+  --radius-xs: ${siteConfig.branding.radius.xs};
+  --radius-sm: ${siteConfig.branding.radius.sm};
+  --radius-md: ${siteConfig.branding.radius.md};
+  --radius-lg: ${siteConfig.branding.radius.lg};
+  --radius-xl: ${siteConfig.branding.radius.xl};
+  --radius-full: ${siteConfig.branding.radius.full};
+}
+`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+<meta name="description" content={description} />
+<meta name="keywords" content={siteConfig.seo.keywords.join(", ")} />
+<meta name="author" content={siteConfig.seo.author} />
+<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+
+<link rel="canonical" href={canonicalUrl} />
+<link rel="icon" type="image/svg+xml" href={siteConfig.branding.assets.favicon || "/favicon.svg"} />
+
+<title>{pageTitle}</title>
+
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content={siteConfig.identity.name} />
+<meta property="og:locale" content="es_CO" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+{siteConfig.seo.twitterHandle && <meta name="twitter:site" content={siteConfig.seo.twitterHandle} />}
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+
+<style is:global set:html={brandTokens} />

@@ -36,7 +36,7 @@
 |---|------|--------|--------|------------|-------|
 | 1 | Crear `src/site.config.ts` con esquema Zod | [✓] Completado | `449bb62` | 🟡 MODERADO | 0 errores en `astro check`; parse OK |
 | 2 | Crear `src/shared/lib/validateConfig.ts` e integrar en build | [✓] Completado | `dad04f8` | 🟠 COMPLEJO | Build OK; fallo controlado con color #aaaaaa probado |
-| 3 | Mapear tokens CSS a Tailwind v4 vía `@theme inline` | ⏳ Pendiente | — | 🟡 MODERADO | Sin valores crudos, `!important` ni inline styles |
+| 3 | Mapear tokens CSS a Tailwind v4 vía `@theme inline` | [✓] Completado | `bc6980f` | 🟡 MODERADO | Media query cruda documentada como excepción técnica |
 | 4 | Crear `src/shared/layouts/SEOHead.astro` | ⏳ Pendiente | — | 🟡 MODERADO | Title, meta, OG, Twitter Cards, JSON-LD EducationalOrganization |
 
 ---
@@ -45,9 +45,10 @@
 
 - `449bb62` — feat(white-label): add site.config.ts with Zod schema and brand placeholders
 - `dad04f8` — feat(white-label): add build-time config validation
+- `bc6980f` — feat(styles): map design tokens to Tailwind v4 theme
 
 ---
 
 ## Incidentes y desvíos
 
-_(Vacío al inicio. Se registra cualquier problema encontrado durante la ejecución)_
+- **Paso 3 — breakpoint crudo en `_utilities.css`**: se intentó reemplazar `48rem` por `var(--bp-md)` en la media query, pero CSS no admite custom properties dentro de `@media`. Se mantuvo el valor crudo `48rem` en la media query como excepción técnica; el token `--bp-md` sigue documentado en `_tokens.css` y se usará cuando el proyecto migre a breakpoints nativos de Tailwind v4 (`--breakpoint-md`).
