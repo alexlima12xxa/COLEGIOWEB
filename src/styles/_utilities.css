@@ -3,7 +3,6 @@
     width: 100%;
     max-width: var(--container-xl);
     margin-inline: auto;
-    padding-inline: var(--space-md);
   }
 
   .uVisuallyHidden {
@@ -24,11 +23,5 @@
 
   .uTextPretty {
     text-wrap: pretty;
-  }
-
-  @media (min-width: 48rem) {
-    .uContainer {
-      padding-inline: var(--space-lg);
-    }
   }
 }

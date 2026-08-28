@@ -52,4 +52,4 @@
 
 ## Incidentes y desvíos
 
-- **Paso 3 — breakpoint crudo en `_utilities.css`**: se intentó reemplazar `48rem` por `var(--bp-md)` en la media query, pero CSS no admite custom properties dentro de `@media`. Se mantuvo el valor crudo `48rem` en la media query como excepción técnica; el token `--bp-md` sigue documentado en `_tokens.css` y se usará cuando el proyecto migre a breakpoints nativos de Tailwind v4 (`--breakpoint-md`).
+- **Paso 3 — breakpoint crudo en `_utilities.css`** (RESUELTO en refinamiento `2026-08-28_tailwind-breakpoints-nativos.md`): se intentó reemplazar `48rem` por `var(--bp-md)` en la media query, pero CSS no admite custom properties dentro de `@media`. Se resolvió migrando a breakpoints nativos de Tailwind v4 (`--breakpoint-*` en `@theme`) y eliminando la media query manual en favor de variantes responsive (`px-md md:px-lg`).

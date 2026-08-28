@@ -88,11 +88,6 @@
     --duration-slow: 400ms;
     --ease-standard: cubic-bezier(0.2, 0, 0, 1);
 
-    --bp-sm: 40rem;
-    --bp-md: 48rem;
-    --bp-lg: 64rem;
-    --bp-xl: 80rem;
-
     --container-sm: 40rem;
     --container-md: 48rem;
     --container-lg: 64rem;
@@ -145,4 +140,11 @@
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
   --radius-full: var(--radius-full);
+}
+
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
 }
