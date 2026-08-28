@@ -5,7 +5,7 @@
 > **Stack:** Astro 7.2.9 + Tailwind CSS v4 + TypeScript strict + pnpm
 > **Riesgo:** BAJO
 > **Modo de ejecución:** MANUAL
-> **Estado:** 🟡 EN PROGRESO
+> **Estado:** [✓] COMPLETADO
 
 ---
 
@@ -29,20 +29,21 @@ migrando a utility-first puro (`px-md md:px-lg`).
 
 | # | Paso | Estado | Commit | Dificultad | Notas |
 |---|------|--------|--------|------------|-------|
-| 1 | `_tokens.css` — breakpoints nativos | ⏳ Pendiente | — | 🟢 TRIVIAL | — |
-| 2 | `_utilities.css` — quitar media query + padding | ⏳ Pendiente | — | 🟢 TRIVIAL | — |
-| 3 | `index.astro` — utility-first | ⏳ Pendiente | — | 🟢 TRIVIAL | — |
-| 4 | Documentación (PROJECT.md + report) | ⏳ Pendiente | — | 🟢 TRIVIAL | — |
-| 5 | Verificación + commit | ⏳ Pendiente | — | 🟢 TRIVIAL | — |
+| 1 | `_tokens.css` — breakpoints nativos | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `--breakpoint-*` en `@theme` |
+| 2 | `_utilities.css` — quitar media query + padding | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `.uContainer` sin padding |
+| 3 | `index.astro` — utility-first | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `px-md md:px-lg` |
+| 4 | Documentación (PROJECT.md + report) | [✓] Completado | `09508a7` | 🟢 TRIVIAL | Convención registrada |
+| 5 | Verificación + commit | [✓] Completado | `09508a7` | 🟢 TRIVIAL | check 0 errores; build OK |
 
 ---
 
 ## Registro de commits
 
-_(Se llenará conforme avance la ejecución)_
+- `09508a7` — refactor(styles): migrate to native Tailwind v4 breakpoints
 
 ---
 
 ## Incidentes y desvíos
 
-_(Vacío al inicio)_
+- Ninguno. Verificación del CSS compilado: `@media (width>=48rem){.md\:px-lg{padding-inline:var(--space-lg)}}`
+  generado por Tailwind desde `--breakpoint-md: 48rem`; `48rem` crudo eliminado de `_utilities.css`.
