@@ -1,0 +1,34 @@
+@layer utilities {
+  .uContainer {
+    width: 100%;
+    max-width: var(--container-xl);
+    margin-inline: auto;
+    padding-inline: var(--space-md);
+  }
+
+  .uVisuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .uTextBalance {
+    text-wrap: balance;
+  }
+
+  .uTextPretty {
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 48rem) {
+    .uContainer {
+      padding-inline: var(--space-lg);
+    }
+  }
+}

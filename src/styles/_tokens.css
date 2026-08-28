@@ -1,0 +1,148 @@
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    --color-primary: oklch(45% 0.18 262);
+    --color-primary-hover: oklch(40% 0.17 262);
+    --color-primary-active: oklch(35% 0.16 262);
+    --color-primary-soft: oklch(95% 0.03 262);
+    --color-accent: oklch(72% 0.16 72);
+    --color-accent-soft: oklch(96% 0.04 72);
+
+    --color-surface: oklch(100% 0 0);
+    --color-surface-muted: oklch(97.5% 0.005 264);
+    --color-surface-strong: oklch(94% 0.01 264);
+    --color-surface-inverse: oklch(24% 0.03 262);
+
+    --color-text: oklch(20% 0.02 264);
+    --color-text-muted: oklch(45% 0.02 264);
+    --color-text-subtle: oklch(58% 0.02 264);
+    --color-text-inverse: oklch(100% 0 0);
+
+    --color-border: oklch(90% 0.01 264);
+    --color-border-strong: oklch(80% 0.02 264);
+
+    --color-success: oklch(52% 0.17 155);
+    --color-warning: oklch(72% 0.16 72);
+    --color-danger: oklch(54% 0.21 27);
+    --color-info: oklch(50% 0.2 262);
+
+    --color-focus: oklch(50% 0.2 262);
+
+    --focus-ring-width: 2px;
+    --focus-ring-offset: 2px;
+
+    --space-2xs: 0.125rem;
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    --space-4xl: 6rem;
+
+    --font-sans:
+      "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+      Arial, sans-serif;
+    --font-display: var(--font-sans);
+    --font-mono:
+      ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+
+    --text-2xs: 0.75rem;
+    --text-xs: 0.8125rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+
+    --leading-tight: 1.2;
+    --leading-snug: 1.4;
+    --leading-normal: 1.6;
+    --leading-relaxed: 1.75;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --radius-xs: 0.125rem;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+
+    --shadow-xs: 0 1px 2px oklch(0% 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.08);
+    --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.1);
+    --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.14);
+
+    --duration-fast: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+    --bp-sm: 40rem;
+    --bp-md: 48rem;
+    --bp-lg: 64rem;
+    --bp-xl: 80rem;
+
+    --container-sm: 40rem;
+    --container-md: 48rem;
+    --container-lg: 64rem;
+    --container-xl: 72rem;
+
+    --z-base: 0;
+    --z-nav: 40;
+    --z-overlay: 50;
+    --z-modal: 60;
+    --z-toast: 70;
+  }
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-accent: var(--color-accent);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-surface-strong: var(--color-surface-strong);
+  --color-surface-inverse: var(--color-surface-inverse);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-subtle: var(--color-text-subtle);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-info: var(--color-info);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  --spacing-2xs: var(--space-2xs);
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+  --spacing-3xl: var(--space-3xl);
+  --spacing-4xl: var(--space-4xl);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+}
