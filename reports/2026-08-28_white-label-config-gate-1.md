@@ -34,7 +34,7 @@
 
 | # | Paso | Estado | Commit | Dificultad | Notas |
 |---|------|--------|--------|------------|-------|
-| 1 | Crear `src/site.config.ts` con esquema Zod | ⏳ Pendiente | — | 🟡 MODERADO | — |
+| 1 | Crear `src/site.config.ts` con esquema Zod | [✓] Completado | `449bb62` | 🟡 MODERADO | 0 errores en `astro check`; parse OK |
 | 2 | Crear `src/shared/lib/validateConfig.ts` e integrar en build | ⏳ Pendiente | — | 🟠 COMPLEJO | Incluye contraste WCAG, WhatsApp, assets, longitudes |
 | 3 | Mapear tokens CSS a Tailwind v4 vía `@theme inline` | ⏳ Pendiente | — | 🟡 MODERADO | Sin valores crudos, `!important` ni inline styles |
 | 4 | Crear `src/shared/layouts/SEOHead.astro` | ⏳ Pendiente | — | 🟡 MODERADO | Title, meta, OG, Twitter Cards, JSON-LD EducationalOrganization |
@@ -43,7 +43,7 @@
 
 ## Registro de commits
 
-_(Se llenará conforme avance la ejecución)_
+- `449bb62` — feat(white-label): add site.config.ts with Zod schema and brand placeholders
 
 ---
 
