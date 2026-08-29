@@ -23,11 +23,17 @@
     --color-border-strong: oklch(80% 0.02 264);
 
     --color-success: oklch(52% 0.17 155);
+    --color-success-hover: oklch(45% 0.17 155);
+    --color-success-active: oklch(40% 0.16 155);
+    --color-success-soft: oklch(93% 0.06 155);
     --color-warning: oklch(72% 0.16 72);
+    --color-warning-soft: oklch(95% 0.05 72);
     --color-danger: oklch(54% 0.21 27);
+    --color-danger-soft: oklch(93% 0.05 27);
     --color-info: oklch(50% 0.2 262);
 
     --color-focus: oklch(50% 0.2 262);
+    --color-backdrop: oklch(0% 0 0 / 0.8);
 
     --focus-ring-width: 2px;
     --focus-ring-offset: 2px;
@@ -82,6 +88,7 @@
     --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.08);
     --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.1);
     --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.14);
+    --shadow-up: 0 -12px 32px oklch(0% 0 0 / 0.14);
 
     --duration-fast: 150ms;
     --duration-base: 250ms;
@@ -117,9 +124,15 @@
   --color-border: var(--color-border);
   --color-border-strong: var(--color-border-strong);
   --color-success: var(--color-success);
+  --color-success-hover: var(--color-success-hover);
+  --color-success-active: var(--color-success-active);
+  --color-success-soft: var(--color-success-soft);
   --color-warning: var(--color-warning);
+  --color-warning-soft: var(--color-warning-soft);
   --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
   --color-info: var(--color-info);
+  --color-backdrop: var(--color-backdrop);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
   --font-mono: var(--font-mono);
@@ -147,4 +160,10 @@
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
+
+  --container-sm: 40rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+  --container-xl: 72rem;
+  --container-2xl: 42rem;
 }
