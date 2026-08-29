@@ -34,12 +34,17 @@ const logoUrl = new URL(
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "EducationalOrganization",
+  "@type": "School",
   name: siteConfig.identity.name,
+  slogan: siteConfig.identity.slogan,
   description:
     siteConfig.identity.shortDescription || siteConfig.identity.description,
   url: siteConfig.seo.siteUrl,
   logo: logoUrl,
+  foundingDate:
+    siteConfig.identity.founded !== undefined
+      ? String(siteConfig.identity.founded)
+      : undefined,
   sameAs: Object.values(siteConfig.social).filter(
     (url): url is string => typeof url === "string" && url.length > 0,
   ),
@@ -50,6 +55,13 @@ const jsonLd = {
   },
   telephone: siteConfig.contact.phone,
   email: siteConfig.contact.email,
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "Admisiones",
+    telephone: siteConfig.contact.phone,
+    email: siteConfig.contact.email,
+    availableLanguage: "es",
+  },
 };
 
 const brandTokens = `
