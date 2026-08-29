@@ -1,0 +1,22 @@
+/*
+ * Fuentes self-hosted (variable) — cargadas localmente, sin CDN externo.
+ *
+ * Inter variable latín (Google Fonts, subset U+0000-00FF + suplementos)
+ * con font-display: swap para evitar CLS y FOUT invisible. El stack de
+ * fallback ya está declarado en site.config.ts (system-ui, ...).
+ */
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter/InterVariable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter/InterVariable-Italic.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
