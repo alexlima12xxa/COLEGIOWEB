@@ -1,0 +1,145 @@
+@layer components {
+  .admissionForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    width: 100%;
+    max-width: var(--container-md);
+    margin-inline: auto;
+  }
+
+  .admissionForm__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    text-align: center;
+  }
+
+  .admissionForm__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+  }
+
+  @media (min-width: 48rem) {
+    .admissionForm__title {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .admissionForm__lead {
+    color: var(--color-text-muted);
+  }
+
+  .admissionForm__globalError {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    background-color: var(--color-danger-soft);
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+  }
+
+  .admissionForm__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .admissionForm__fields {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .admissionForm__field--full {
+    grid-column: 1 / -1;
+  }
+
+  .admissionForm__honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .admissionForm__privacy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .admissionForm__checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .admissionForm__checkbox input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    min-width: 1.25rem;
+    min-height: 1.25rem;
+    margin-top: 0.125rem;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+  }
+
+  .admissionForm__checkbox a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .admissionForm__checkbox a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .admissionForm__checkboxError {
+    font-size: var(--text-sm);
+    color: var(--color-danger);
+  }
+
+  .admissionForm__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .admissionForm__submit {
+    width: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .admissionForm__submit {
+      width: auto;
+    }
+  }
+
+  .admissionForm__submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .admissionForm__help {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .admissionForm__help a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .admissionForm__help a:hover {
+    color: var(--color-primary-hover);
+  }
+}
