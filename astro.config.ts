@@ -9,7 +9,7 @@ validateConfig();
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://tuapp.com",
+  site: "https://colegioweb.vercel.app",
   output: "static",
   adapter: vercel(),
   build: {

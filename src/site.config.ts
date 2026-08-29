@@ -320,7 +320,7 @@ export const siteConfig = siteConfigSchema.parse({
       "Colegio Piloto: educación integral de calidad para preescolar, primaria, secundaria y media técnica.",
     keywords: ["colegio", "educación", "primaria", "secundaria", "Bogotá"],
     author: "Colegio Piloto",
-    siteUrl: "https://tuapp.com",
+    siteUrl: "https://colegioweb.vercel.app",
     ogImage: "/branding/og-image.svg",
     twitterHandle: "@colegiopiloto",
   },

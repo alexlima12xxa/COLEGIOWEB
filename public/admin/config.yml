@@ -11,9 +11,9 @@ backend:
 # a main (lo que dispara el rebuild automático de Vercel).
 publish_mode: editorial_workflow
 
-# Dominio público real. Temporal: Netlify (aún no hay Vercel).
-site_url: https://coegioweb.netlify.app
-display_url: https://coegioweb.netlify.app
+# Dominio público real (Vercel).
+site_url: https://colegioweb.vercel.app
+display_url: https://colegioweb.vercel.app
 logo_url: /branding/logo.svg
 
 # Carpeta GLOBAL de media (raíz del repo). Todos los archivos subidos desde el
@@ -140,7 +140,8 @@ collections:
             }
           - {
               label: "Contenido",
-              name: body, widget: markdown,
+              name: body,
+              widget: markdown,
               required: false,
             }
 
@@ -158,7 +159,8 @@ collections:
             }
           - {
               label: "Contenido",
-              name: body, widget: markdown,
+              name: body,
+              widget: markdown,
               required: false,
             }
 
@@ -176,7 +178,8 @@ collections:
             }
           - {
               label: "Contenido",
-              name: body, widget: markdown,
+              name: body,
+              widget: markdown,
               required: false,
             }
 
@@ -194,7 +197,8 @@ collections:
             }
           - {
               label: "Contenido",
-              name: body, widget: markdown,
+              name: body,
+              widget: markdown,
               required: false,
             }
 
@@ -212,7 +216,8 @@ collections:
             }
           - {
               label: "Contenido",
-              name: body, widget: markdown,
+              name: body,
+              widget: markdown,
               required: false,
             }
 
