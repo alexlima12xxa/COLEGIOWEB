@@ -1,0 +1,137 @@
+﻿{
+  "version": 1,
+  "items": [
+    {
+      "id": "10000000-0000-4000-8000-000000000001",
+      "slug": "admisiones-2026-inscripciones-abiertas",
+      "titulo": "Admisiones 2026: inscripciones abiertas",
+      "resumen": "Ya está abierto el proceso de admisión para preescolar, primaria, secundaria y media técnica. Conoce los requisitos y agenda una visita guiada.",
+      "contenido": "## Un nuevo año, nuevas oportunidades\n\nYa está abierto el proceso de admisión para el año lectivo 2026. Recibimos inscripciones para **preescolar, primaria, secundaria y media técnica** en las siguientes fechas:\n\n- Preescolar y primaria: del 1 de septiembre al 15 de noviembre.\n- Secundaria y media técnica: del 1 de septiembre al 30 de noviembre.\n\n### ¿Cómo inscribirse?\n\n1. Completar el formulario de inscripción en la página de [admisiones](/admisiones).\n2. Presentar la documentación requerida en la oficina de admisiones.\n3. Agendar la entrevista con coordinación académica.\n\n> Las familias que completen el proceso antes del 30 de octubre recibirán un 10% de descuento en la matrícula del primer año.\n\nPara más información, escríbenos a [contacto](mailto:contacto@colegiopiloto.edu.co) o visita nuestras instalaciones en una jornada de puertas abiertas.",
+      "imagenPath": "/branding/placeholders/gallery-1.jpg",
+      "imagenAlt": "Estudiantes del colegio en un aula durante la jornada de admisiones",
+      "autor": "Oficina de Admisiones",
+      "publicadoEn": "2026-08-18T09:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000002",
+      "slug": "resultados-pruebas-saber-2026",
+      "titulo": "Resultados pruebas Saber 11: avance histórico",
+      "resumen": "Nuestros estudiantes de media técnica obtuvieron el mejor promedio institucional de los últimos cinco años en las pruebas Saber 11.",
+      "contenido": "## Orgullo institucional\n\nLos resultados de las pruebas Saber 11 confirman el trabajo académico de nuestra comunidad: **el promedio institucional subió 12 puntos** respecto al año anterior, el mejor registro de los últimos cinco años.\n\n### Destacados\n\n- El 92% de nuestros estudiantes superó el promedio nacional.\n- Tres estudiantes se ubicaron entre los 100 mejores puntajes del departamento.\n- El área de matemáticas registró el mayor crecimiento.\n\nAgradecemos a docentes, familias y, por supuesto, a nuestros estudiantes, por su dedicación. Este resultado es de todos.",
+      "imagenPath": "/branding/placeholders/gallery-2.jpg",
+      "imagenAlt": "Estudiantes celebrando los resultados de las pruebas Saber 11",
+      "autor": "Coordinación Académica",
+      "publicadoEn": "2026-08-05T14:30:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000003",
+      "slug": "jornada-puertas-abiertas-2026",
+      "titulo": "Jornada de puertas abiertas: conoce nuestro colegio",
+      "resumen": "Te invitamos a recorrer nuestras instalaciones, conocer a los docentes y resolver todas tus dudas sobre el proceso de admisión.",
+      "contenido": "## Un día para conocernos\n\nEl próximo **sábado 29 de agosto** abriremos nuestras puertas a las familias interesadas en el colegio. Durante la jornada podrás:\n\n- Recorrer las instalaciones con estudiantes guías.\n- Conversar con docentes de cada nivel educativo.\n- Conocer nuestra propuesta de media técnica.\n- Resolver dudas sobre matrículas y financiación.\n\n### Agenda\n\n| Hora | Actividad |\n| --- | --- |\n| 8:00 a.m. | Recepción y bienvenida |\n| 8:30 a.m. | Recorrido guiado |\n| 10:00 a.m. | Charla de admisiones |\n| 11:30 a.m. | Sesión de preguntas |\n\nLa entrada es libre previa inscripción en [admisiones](/admisiones). ¡Los esperamos!",
+      "imagenPath": "/branding/placeholders/gallery-5.jpg",
+      "imagenAlt": "Familias recorriendo las instalaciones del colegio durante la jornada de puertas abiertas",
+      "autor": "Oficina de Admisiones",
+      "publicadoEn": "2026-07-22T11:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000004",
+      "slug": "campeonato-intercolegiado-futbol",
+      "titulo": "Nuestro equipo de fútbol, campeón intercolegiado",
+      "resumen": "La selección de fútbol de secundaria se coronó campeona del torneo intercolegiado de la ciudad tras una final emocionante.",
+      "contenido": "## ¡Campeones!\n\nLa selección de fútbol del colegio se coronó **campeona del torneo intercolegiado 2026** tras vencer 2-1 en la final, disputada en el estadio municipal.\n\nEl equipo, dirigido por el profesor Carlos Mendoza, completó un torneo impecable: **9 victorias, 2 empates y ninguna derrota**.\n\n### Reconocimientos\n\n- **Mejor jugador del torneo**: Samuel Rojas (grado 10).\n- **Mejor arquero**: Valentina Torres (grado 9).\n\nFelicitaciones a todo el equipo y a la barra estudiantil que nos acompañó. ¡Este título es de la comunidad!",
+      "imagenPath": "/branding/placeholders/gallery-3.jpg",
+      "imagenAlt": "Equipo de fútbol del colegio celebrando el título del torneo intercolegiado",
+      "autor": "Departamento de Deportes",
+      "publicadoEn": "2026-07-10T16:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000005",
+      "slug": "nueva-biblioteca-digital",
+      "titulo": "Estrenamos biblioteca digital para toda la comunidad",
+      "resumen": "Más de 8.000 títulos digitales, audiolibros y recursos académicos disponibles para estudiantes y familias desde cualquier dispositivo.",
+      "contenido": "## La lectura, sin fronteras\n\nCon el inicio del segundo semestre estrenamos nuestra **biblioteca digital**, un espacio virtual con más de **8.000 títulos**, audiolibros y recursos académicos para todos los niveles.\n\n### ¿Qué encontrarás?\n\n- Literatura infantil, juvenil y clásicos universales.\n- Textos de apoyo para cada asignatura.\n- Audiolibros en español e inglés.\n- Herramientas de investigación y citación.\n\nEl acceso es gratuito para estudiantes y familias: cada estudiante recibió sus credenciales por correo. Si no las encuentras, escribe a biblioteca@colegiopiloto.edu.co.",
+      "imagenPath": "/branding/placeholders/gallery-4.jpg",
+      "imagenAlt": "Estudiante usando la nueva biblioteca digital en la sala de lectura",
+      "autor": "Biblioteca",
+      "publicadoEn": "2026-06-28T10:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000006",
+      "slug": "festival-cultural-2026",
+      "titulo": "Festival cultural: arte, música y tradición",
+      "resumen": "Dos días de presentaciones artísticas, muestras gastronómicas y talleres abiertos a la comunidad en el festival cultural del colegio.",
+      "contenido": "## Una fiesta para la comunidad\n\nEl **Festival Cultural 2026** reunió a más de 2.000 personas entre estudiantes, familias y vecinos. Durante dos días, el colegio se convirtió en un escenario de arte, música y tradición.\n\n### Lo más destacado\n\n- Presentación de la orquesta estudiantil y el grupo de danzas.\n- Muestra gastronómica con platos típicos preparados por las familias.\n- Talleres de pintura, cerámica y teatro para los más pequeños.\n- Feria de emprendimiento de los estudiantes de media técnica.\n\nGracias a todos los que hicieron posible este encuentro. ¡Nos vemos en el festival de 2027!",
+      "imagenPath": "/branding/placeholders/gallery-6.jpg",
+      "imagenAlt": "Estudiantes de danzas durante la presentación en el festival cultural",
+      "autor": "Departamento de Cultura",
+      "publicadoEn": "2026-06-15T19:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000007",
+      "slug": "talleres-vacaciones-recreativas",
+      "titulo": "Talleres de vacaciones: una semana de aprendizaje y diversión",
+      "resumen": "Robótica, arte, deporte e inglés: nuestros talleres de vacaciones para preescolar y primaria ya tienen programación completa.",
+      "contenido": "## Vacaciones con propósito\n\nEste año preparamos una **semana de talleres** para estudiantes de preescolar y primaria, con actividades diseñadas para aprender jugando.\n\n### Oferta\n\n- **Robótica para niños**: introduce a los estudiantes en el pensamiento computacional.\n- **Taller de arte**: pintura, escultura y expresión creativa.\n- **Mini olimpiadas**: juegos deportivos y trabajo en equipo.\n- **Inglés divertido**: inmersión lúdica en el idioma.\n\nLas inscripciones están abiertas hasta el 10 de julio. Cupos limitados: escribe a bienestar@colegiopiloto.edu.co.",
+      "imagenPath": "/branding/placeholders/hero-photo.jpg",
+      "imagenAlt": "Niños participando en un taller de robótica durante las vacaciones",
+      "autor": "Bienestar Estudiantil",
+      "publicadoEn": "2026-05-30T09:30:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000008",
+      "slug": "simulacro-de-emergencia",
+      "titulo": "Simulacro de emergencia: todos evacuamos en 4 minutos",
+      "resumen": "La comunidad educativa completó el simulacro de evacuación con excelentes resultados de coordinación y tiempo de respuesta.",
+      "contenido": "## Preparados ante cualquier situación\n\nRealizamos el **simulacro anual de evacuación** con la participación de toda la comunidad educativa. El resultado: **tiempo total de evacuación de 4 minutos y 12 segundos**, por debajo de la meta institucional de 5 minutos.\n\n### Aspectos evaluados\n\n- Coordinación de las rutas de evacuación por nivel.\n- Atención a personas con movilidad reducida.\n- Comunicación entre brigadas de emergencia.\n\nLa brigada de primeros auxilios y el personal administrativo completaron sus protocolos sin novedades. Agradecemos la disciplina y colaboración de todos.",
+      "imagenPath": "/branding/placeholders/gallery-2.jpg",
+      "imagenAlt": "Estudiantes evacuando ordenadamente durante el simulacro de emergencia",
+      "autor": "Comité de Gestión del Riesgo",
+      "publicadoEn": "2026-05-18T13:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000009",
+      "slug": "convenio-universidades-media-tecnica",
+      "titulo": "Nuevo convenio con universidades para media técnica",
+      "resumen": "Los estudiantes de media técnica podrán homologar créditos y acceder a becas gracias al nuevo convenio con dos universidades aliadas.",
+      "contenido": "## Del colegio a la universidad\n\nFirmamos un **convenio de articulación** con dos universidades de la ciudad que beneficiará directamente a los estudiantes de media técnica.\n\n### Beneficios\n\n- Homologación de créditos académicos cursados en el colegio.\n- Beca del 15% para estudiantes destacados al ingresar a pregrado.\n- Acompañamiento en la orientación vocacional durante grado 11.\n\nLa orientadora vocacional estará compartiendo la información detallada con los estudiantes en las próximas semanas. Las familias pueden solicitar una cita para conocer los detalles del convenio.",
+      "imagenPath": "/branding/placeholders/about-campus.jpg",
+      "imagenAlt": "Campus del colegio visto desde el patio central",
+      "autor": "Rectoría",
+      "publicadoEn": "2026-05-02T15:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000010",
+      "slug": "semana-de-la-ciencia-2026",
+      "titulo": "Semana de la ciencia: experimentos, ferias y charlas",
+      "resumen": "Estudiantes de todos los niveles presentaron sus proyectos de ciencia en una semana dedicada a la exploración y el pensamiento crítico.",
+      "contenido": "## Pequeños científicos, grandes ideas\n\nLa **Semana de la Ciencia 2026** convirtió nuestros laboratorios y patios en espacios de exploración. Durante cinco días, los estudiantes presentaron proyectos de biología, física, química y robótica.\n\n### Proyectos premiados\n\n- **Primaria**: \"La huerta inteligente\", sistema de riego automatizado con sensores.\n- **Secundaria**: \"Energía del movimiento\", generador eléctrico con materiales reciclados.\n- **Media técnica**: \"App de rutas escolares\", aplicación de movilidad para la comunidad.\n\nFelicitamos a todos los participantes: la curiosidad es el primer paso del conocimiento.",
+      "imagenPath": "/branding/placeholders/gallery-2.jpg",
+      "imagenAlt": "Estudiantes mostrando sus proyectos en la feria de la semana de la ciencia",
+      "autor": "Departamento de Ciencias",
+      "publicadoEn": "2026-04-20T12:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000011",
+      "slug": "graduacion-media-tecnica-2025",
+      "titulo": "Graduación media técnica: 45 nuevos bachilleres",
+      "resumen": "La promoción 2025 recibió su título de bachiller técnico en una ceremonia emotiva con la participación de sus familias.",
+      "contenido": "## Una promoción para el recuerdo\n\nLa **promoción 2025** celebró su graduación en una ceremonia cargada de emoción y orgullo. 45 estudiantes recibieron su título de bachiller técnico, coronando años de esfuerzo.\n\n### Logros de la promoción\n\n- 8 estudiantes con mención de honor.\n- 5 estudiantes admitidos en programas de pregrado con becas.\n- 100% de los graduados con proyecto de vida definido.\n\nA las familias, nuestro agradecimiento por acompañar este camino. A los graduados, que el futuro los reciba con los brazos abiertos.",
+      "imagenPath": "/branding/placeholders/gallery-6.jpg",
+      "imagenAlt": "Graduandos de media técnica celebrando con sus familias",
+      "autor": "Rectoría",
+      "publicadoEn": "2026-04-05T20:00:00+00:00"
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000012",
+      "slug": "nuevo-laboratorio-de-robotica",
+      "titulo": "Inauguramos el laboratorio de robótica y programación",
+      "resumen": "Un espacio equipado con kits de robótica, impresoras 3D y computadores para los talleres de tecnología de todos los niveles.",
+      "contenido": "## La tecnología como aliada del aprendizaje\n\nInauguramos nuestro **laboratorio de robótica y programación**, un espacio de 120 m² equipado con:\n\n- 25 kits de robótica educativa.\n- 3 impresoras 3D.\n- 20 estaciones de trabajo con software de programación.\n\n### ¿Quiénes lo usan?\n\nEl laboratorio hace parte de la asignatura de tecnología desde preescolar y de los énfasis de media técnica. Además, abre sus puertas en la tarde para el club de robótica.\n\nInvitamos a las familias a conocerlo durante la próxima jornada de puertas abiertas.",
+      "imagenPath": "/branding/placeholders/gallery-1.jpg",
+      "imagenAlt": "Laboratorio de robótica con kits y computadores",
+      "autor": "Coordinación Académica",
+      "publicadoEn": "2026-03-22T10:00:00+00:00"
+    }
+  ]
+}

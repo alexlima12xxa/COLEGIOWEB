@@ -1,0 +1,33 @@
+---
+import "./Section.css";
+
+export interface Props {
+  as?: "section" | "div" | "article";
+  padding?: "sm" | "md" | "lg" | "xl";
+  bg?: "default" | "muted" | "inverse";
+  id?: string;
+  class?: string;
+}
+
+const {
+  as: Tag = "section",
+  padding = "lg",
+  bg = "default",
+  id,
+  class: className,
+} = Astro.props;
+---
+
+<Tag
+  id={id}
+  class:list={[
+    "section",
+    `section--padding-${padding}`,
+    `section--bg-${bg}`,
+    className,
+  ]}
+>
+  <div class="section__container uContainer">
+    <slot />
+  </div>
+</Tag>

@@ -1,0 +1,69 @@
+---
+import "./ResponsiveImage.css";
+
+export interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: "eager" | "lazy";
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+  sizes?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = "lazy",
+  fetchpriority = "auto",
+  class: className,
+  sizes = "100vw",
+} = Astro.props;
+
+/**
+ * Build a simple srcset for common widths when the source looks like a
+ * placeholder or static image path. For external URLs without known sizing
+ * support we fall back to the original src only.
+ */
+function supportsResizing(imageSrc: string): boolean {
+  return (
+    imageSrc.startsWith("/branding/") ||
+    imageSrc.startsWith("http://localhost") ||
+    imageSrc.startsWith("https://picsum.photos")
+  );
+}
+
+function buildSrcSet(imageSrc: string): string | undefined {
+  if (!supportsResizing(imageSrc)) return undefined;
+
+  if (imageSrc.includes("picsum.photos")) {
+    const widths = [400, 800, 1200];
+    return widths
+      .map((w) => {
+        const url = imageSrc.replace(/\/\d+\/\d+$/, `/${w}/0`);
+        return `${url} ${w}w`;
+      })
+      .join(", ");
+  }
+
+  return undefined;
+}
+
+const srcSet = buildSrcSet(src);
+---
+
+<img
+  src={src}
+  srcset={srcSet}
+  sizes={srcSet ? sizes : undefined}
+  alt={alt}
+  width={width}
+  height={height}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  decoding="async"
+  class:list={["responsiveImage", className]}
+/>

@@ -1,0 +1,67 @@
+{
+  "history": [
+    {
+      "title": "Fundación",
+      "date": "1985",
+      "description": "Nace el Colegio Piloto con la misión de ofrecer una educación de calidad centrada en el estudiante y en valores sólidos."
+    },
+    {
+      "title": "Primera promoción de bachilleres",
+      "date": "1995",
+      "description": "Diez años después de su apertura, egresa la primera promoción de estudiantes con resultados destacados en pruebas nacionales."
+    },
+    {
+      "title": "Expansión de sede",
+      "date": "2005",
+      "description": "Inauguramos nuevos espacios: laboratorios de ciencias, biblioteca moderna y zonas deportivas para toda la comunidad escolar."
+    },
+    {
+      "title": "Certificación de calidad",
+      "date": "2015",
+      "description": "Recibimos reconocimiento por nuestro modelo pedagógico y gestión institucional, consolidando años de mejora continua."
+    },
+    {
+      "title": "Educación híbrida y digital",
+      "date": "2023",
+      "description": "Integramos plataformas digitales, aula virtual y metodologías activas para preparar a los estudiantes ante los retos del futuro."
+    }
+  ],
+  "mission": "Formar personas íntegras, críticas y comprometidas con su entorno, a través de una educación de excelencia que integra saberes, valores y competencias para la vida.",
+  "vision": "Ser una institución educativa referente en la región, reconocida por la calidad académica, la innovación pedagógica y el impacto positivo en la comunidad.",
+  "philosophy": [
+    {
+      "title": "Aprendizaje significativo",
+      "description": "Conectamos los contenidos curriculares con la vida cotidiana de los estudiantes."
+    },
+    {
+      "title": "Comunidad activa",
+      "description": "Familias, docentes y estudiantes construyen juntos el proyecto educativo."
+    },
+    {
+      "title": "Excelencia con equidad",
+      "description": "Brindamos oportunidades de crecimiento a cada niño y joven según sus necesidades."
+    }
+  ],
+  "authorities": [
+    {
+      "name": "Dra. Carolina Mendoza",
+      "role": "Rectora",
+      "image": "/branding/placeholders/authority-1.jpg"
+    },
+    {
+      "name": "Dr. Andrés Velasco",
+      "role": "Vicerrector académico",
+      "image": "/branding/placeholders/authority-2.jpg"
+    },
+    {
+      "name": "Mg. Lucía Ríos",
+      "role": "Coordinadora de bienestar",
+      "image": "/branding/placeholders/authority-3.jpg"
+    },
+    {
+      "name": "Esp. Miguel Torres",
+      "role": "Director de admisiones",
+      "image": "/branding/placeholders/authority-4.jpg"
+    }
+  ]
+}

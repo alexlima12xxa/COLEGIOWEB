@@ -1,0 +1,120 @@
+---
+import { siteConfig } from "../../site.config";
+import { Menu, Lock } from "@lucide/astro";
+import MobileDrawer from "./MobileDrawer.astro";
+import Button from "../ui/Button/Button.astro";
+import "./Navbar.css";
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const navLinks = [
+  { label: "Inicio", href: "/" },
+  { label: "Nosotros", href: "/nosotros" },
+  { label: "Niveles", href: "/niveles" },
+  { label: "Admisiones", href: "/admisiones" },
+  { label: "Noticias", href: "/noticias" },
+  { label: "Circulares", href: "/circulares" },
+  { label: "Contacto", href: "/contacto" },
+];
+---
+
+<header
+  class:list={[
+    "navbar",
+    "sticky",
+    "top-0",
+    "z-[var(--z-nav)]",
+    "w-full",
+    "border-b",
+    "border-border",
+    "bg-surface",
+    "supports-[backdrop-filter]:bg-surface/80",
+    "supports-[backdrop-filter]:backdrop-blur-md",
+    className,
+  ]}
+>
+  <div class="navbar__container uContainer">
+    <a
+      href="/"
+      class="navbar__brand"
+      aria-label={`Inicio - ${siteConfig.identity.name}`}
+      transition:name="navbar-logo"
+    >
+      <img
+        src={siteConfig.branding.assets.logo}
+        alt={siteConfig.identity.name}
+        class="navbar__logo"
+        width="160"
+        height="40"
+        decoding="async"
+      />
+    </a>
+
+    <nav class="navbar__nav" aria-label="Principal">
+      <ul class="navbar__list">
+        {
+          navLinks.map((link) => (
+            <li class="navbar__item">
+              <a href={link.href} class="navbar__link">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="navbar__actions">
+      <Button
+        href="/intranet"
+        variant="primary"
+        size="sm"
+        class="navbar__intranet"
+      >
+        <Lock aria-hidden="true" size={16} />
+        <span>Intranet</span>
+      </Button>
+
+      <button
+        type="button"
+        class="navbar__menuBtn"
+        aria-controls="mobile-drawer"
+        aria-expanded="false"
+        aria-label="Abrir menú"
+      >
+        <Menu aria-hidden="true" size={24} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<MobileDrawer id="mobile-drawer" links={navLinks} />
+
+<script>
+  function initNavbar() {
+    const header = document.querySelector(".navbar");
+    if (!header || header.hasAttribute("data-initialized")) return;
+    header.setAttribute("data-initialized", "");
+
+    const menuBtn = header.querySelector(".navbar__menuBtn");
+    const drawer = document.getElementById("mobile-drawer");
+
+    function updateAria(expanded: boolean) {
+      menuBtn?.setAttribute("aria-expanded", String(expanded));
+    }
+
+    menuBtn?.addEventListener("click", () => {
+      drawer?.dispatchEvent(new CustomEvent("drawer:open"));
+    });
+
+    drawer?.addEventListener("drawer:opened", () => updateAria(true));
+    drawer?.addEventListener("drawer:closed", () => updateAria(false));
+  }
+
+  document.addEventListener("astro:page-load", initNavbar);
+  if (document.readyState !== "loading") initNavbar();
+</script>

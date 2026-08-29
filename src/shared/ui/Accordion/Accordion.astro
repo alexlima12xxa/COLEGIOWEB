@@ -1,0 +1,82 @@
+---
+import { ChevronDown } from "@lucide/astro";
+import "./Accordion.css";
+
+export interface AccordionItem {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export interface Props {
+  items: AccordionItem[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+---
+
+<div class:list={["accordion", className]} data-accordion>
+  {
+    items.map((item) => (
+      <div class="accordion__item">
+        <h3 class="accordion__heading">
+          <button
+            type="button"
+            class="accordion__trigger"
+            aria-expanded="false"
+            aria-controls={`accordion-panel-${item.id}`}
+            id={`accordion-header-${item.id}`}
+            data-accordion-trigger
+          >
+            <span class="accordion__title">{item.title}</span>
+            <span class="accordion__icon" aria-hidden="true">
+              <ChevronDown size={20} />
+            </span>
+          </button>
+        </h3>
+        <div
+          id={`accordion-panel-${item.id}`}
+          class="accordion__panel"
+          role="region"
+          aria-labelledby={`accordion-header-${item.id}`}
+          hidden
+          data-accordion-panel
+        >
+          <div class="accordion__content">
+            <p class="accordion__text">{item.content}</p>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  function initAccordion() {
+    const accordions = document.querySelectorAll("[data-accordion]");
+
+    accordions.forEach((accordion) => {
+      if (accordion.hasAttribute("data-initialized")) return;
+      accordion.setAttribute("data-initialized", "");
+
+      const triggers = accordion.querySelectorAll("[data-accordion-trigger]");
+
+      triggers.forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const expanded = trigger.getAttribute("aria-expanded") === "true";
+          const panelId = trigger.getAttribute("aria-controls");
+          const panel = panelId ? document.getElementById(panelId) : null;
+
+          if (!panel) return;
+
+          trigger.setAttribute("aria-expanded", String(!expanded));
+          panel.hidden = expanded;
+        });
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initAccordion);
+  if (document.readyState !== "loading") initAccordion();
+</script>

@@ -23,17 +23,61 @@ interface ContrastPair {
 }
 
 const REQUIRED_CONTRAST_PAIRS: ContrastPair[] = [
-  { label: "Texto principal sobre superficie", foreground: "text", background: "surface" },
-  { label: "Texto secundario sobre superficie", foreground: "textMuted", background: "surface" },
-  { label: "Texto sutil sobre superficie", foreground: "textSubtle", background: "surface" },
-  { label: "Texto inverso sobre superficie inversa", foreground: "textInverse", background: "surfaceInverse" },
-  { label: "Color primario sobre superficie", foreground: "primary", background: "surface" },
-  { label: "Color primario sobre versión suave", foreground: "primary", background: "primarySoft" },
-  { label: "Acento sobre superficie", foreground: "accent", background: "surface" },
-  { label: "Éxito sobre superficie", foreground: "success", background: "surface" },
-  { label: "Advertencia sobre superficie", foreground: "warning", background: "surface" },
-  { label: "Peligro sobre superficie", foreground: "danger", background: "surface" },
-  { label: "Información sobre superficie", foreground: "info", background: "surface" },
+  {
+    label: "Texto principal sobre superficie",
+    foreground: "text",
+    background: "surface",
+  },
+  {
+    label: "Texto secundario sobre superficie",
+    foreground: "textMuted",
+    background: "surface",
+  },
+  {
+    label: "Texto sutil sobre superficie",
+    foreground: "textSubtle",
+    background: "surface",
+  },
+  {
+    label: "Texto inverso sobre superficie inversa",
+    foreground: "textInverse",
+    background: "surfaceInverse",
+  },
+  {
+    label: "Color primario sobre superficie",
+    foreground: "primary",
+    background: "surface",
+  },
+  {
+    label: "Color primario sobre versión suave",
+    foreground: "primary",
+    background: "primarySoft",
+  },
+  {
+    label: "Acento sobre superficie",
+    foreground: "accent",
+    background: "surface",
+  },
+  {
+    label: "Éxito sobre superficie",
+    foreground: "success",
+    background: "surface",
+  },
+  {
+    label: "Advertencia sobre superficie",
+    foreground: "warning",
+    background: "surface",
+  },
+  {
+    label: "Peligro sobre superficie",
+    foreground: "danger",
+    background: "surface",
+  },
+  {
+    label: "Información sobre superficie",
+    foreground: "info",
+    background: "surface",
+  },
 ];
 
 function hexToSrgbChannels(hex: HexColor): [number, number, number] {
@@ -52,7 +96,9 @@ function hexToSrgbChannels(hex: HexColor): [number, number, number] {
 }
 
 function channelToLinear(channel: number): number {
-  return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+  return channel <= 0.03928
+    ? channel / 12.92
+    : Math.pow((channel + 0.055) / 1.055, 2.4);
 }
 
 function relativeLuminance(hex: HexColor): number {
@@ -72,13 +118,13 @@ function validateTextLengths(errors: string[]): void {
 
   if (nameLength > 40) {
     errors.push(
-      `identity.name excede los 40 caracteres permitidos (${nameLength} caracteres): "${siteConfig.identity.name}"`
+      `identity.name excede los 40 caracteres permitidos (${nameLength} caracteres): "${siteConfig.identity.name}"`,
     );
   }
 
   if (sloganLength > 80) {
     errors.push(
-      `identity.slogan excede los 80 caracteres permitidos (${sloganLength} caracteres): "${siteConfig.identity.slogan}"`
+      `identity.slogan excede los 80 caracteres permitidos (${sloganLength} caracteres): "${siteConfig.identity.slogan}"`,
     );
   }
 }
@@ -89,7 +135,7 @@ function validateWhatsApp(errors: string[]): void {
   if (!WHATSAPP_REGEX.test(whatsapp)) {
     errors.push(
       `contact.whatsapp no cumple el formato internacional E.164: "${whatsapp}". ` +
-        `Debe comenzar con "+" seguido de 7 a 15 dígitos (sin espacios ni guiones).`
+        `Debe comenzar con "+" seguido de 7 a 15 dígitos (sin espacios ni guiones).`,
     );
   }
 }
@@ -102,21 +148,28 @@ function validateAssets(errors: string[]): void {
     siteConfig.branding.assets.ogImage,
     siteConfig.branding.assets.tourVideoPoster,
     siteConfig.seo.ogImage,
-  ].filter((path): path is string => typeof path === "string" && path.length > 0);
+  ].filter(
+    (path): path is string => typeof path === "string" && path.length > 0,
+  );
 
   const uniqueAssetPaths = Array.from(new Set(assetPaths));
 
   for (const assetPath of uniqueAssetPaths) {
-
     if (!assetPath.startsWith("/branding/")) {
       errors.push(`El asset "${assetPath}" debe estar bajo /branding/.`);
       continue;
     }
 
-    const filePath = resolve(process.cwd(), "public", assetPath.replace(/^\//, ""));
+    const filePath = resolve(
+      process.cwd(),
+      "public",
+      assetPath.replace(/^\//, ""),
+    );
 
     if (!existsSync(filePath)) {
-      errors.push(`Asset de marca no encontrado: ${assetPath} (se buscó en ${filePath}).`);
+      errors.push(
+        `Asset de marca no encontrado: ${assetPath} (se buscó en ${filePath}).`,
+      );
     }
   }
 }
@@ -131,7 +184,7 @@ function validateContrast(errors: string[]): void {
       errors.push(
         `Contraste insuficiente para "${pair.label}". ` +
           `Ratio calculado: ${ratio.toFixed(2)}:1 (mínimo ${MIN_CONTRAST_RATIO}:1). ` +
-          `${pair.foreground}=${foreground}, ${pair.background}=${background}.`
+          `${pair.foreground}=${foreground}, ${pair.background}=${background}.`,
       );
     }
   }
@@ -150,9 +203,13 @@ export function validateConfig(): void {
     for (const error of errors) {
       console.error(`  • ${error}`);
     }
-    console.error("\nCorrige los errores en src/site.config.ts antes de continuar el build.\n");
+    console.error(
+      "\nCorrige los errores en src/site.config.ts antes de continuar el build.\n",
+    );
     process.exit(1);
   }
 
-  console.log("✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos).");
+  console.log(
+    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos).",
+  );
 }

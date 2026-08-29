@@ -1,0 +1,70 @@
+{
+  "metrics": [
+    {
+      "value": "40+",
+      "label": "Años de trayectoria"
+    },
+    {
+      "value": "1.200",
+      "label": "Estudiantes activos"
+    },
+    {
+      "value": "1:18",
+      "label": "Ratio profesor-estudiante"
+    },
+    {
+      "value": "98%",
+      "label": "Aprobación en pruebas estatales"
+    }
+  ],
+  "differentiators": [
+    {
+      "title": "Formación integral",
+      "description": "Desarrollamos competencias académicas, artísticas, deportivas y socioemocionales en cada etapa escolar."
+    },
+    {
+      "title": "Tecnología educativa",
+      "description": "Aulas equipadas con recursos digitales, plataforma de aprendizaje y conectividad de alta velocidad."
+    },
+    {
+      "title": "Valores con propósito",
+      "description": "Educamos en respeto, responsabilidad, solidaridad y liderazgo para transformar la sociedad."
+    },
+    {
+      "title": "Acompañamiento cercano",
+      "description": "Equipo de orientación y bienestar que acompaña a cada estudiante y su familia durante su proceso."
+    }
+  ],
+  "bentoGallery": [
+    {
+      "src": "/branding/placeholders/gallery-1.jpg",
+      "alt": "Estudiantes en clase de arte",
+      "variant": "large"
+    },
+    {
+      "src": "/branding/placeholders/gallery-2.jpg",
+      "alt": "Laboratorio de ciencias",
+      "variant": "default"
+    },
+    {
+      "src": "/branding/placeholders/gallery-3.jpg",
+      "alt": "Actividad deportiva",
+      "variant": "tall"
+    },
+    {
+      "src": "/branding/placeholders/gallery-4.jpg",
+      "alt": "Biblioteca del colegio",
+      "variant": "default"
+    },
+    {
+      "src": "/branding/placeholders/gallery-5.jpg",
+      "alt": "Evento cultural",
+      "variant": "wide"
+    },
+    {
+      "src": "/branding/placeholders/gallery-6.jpg",
+      "alt": "Graduación",
+      "variant": "default"
+    }
+  ]
+}

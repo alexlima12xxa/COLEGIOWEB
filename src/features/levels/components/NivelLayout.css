@@ -1,0 +1,232 @@
+@layer features {
+  .levelLayout__hero {
+    padding-top: var(--space-xl);
+  }
+
+  .levelLayout__grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .levelLayout__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .levelLayout__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  .levelLayout__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-tight);
+  }
+
+  @media (min-width: 48rem) {
+    .levelLayout__title {
+      font-size: var(--text-4xl);
+    }
+  }
+
+  .levelLayout__description {
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+
+  .levelLayout__age {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .levelLayout__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+
+  .levelLayout__media {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .levelLayout__image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .levelLayout__sectionHeader {
+    max-width: 55ch;
+    margin-bottom: var(--space-xl);
+  }
+
+  .levelLayout__sectionTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-sm);
+  }
+
+  @media (min-width: 48rem) {
+    .levelLayout__sectionTitle {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .levelLayout__sectionText {
+    color: var(--color-text-muted);
+  }
+
+  .levelLayout__program {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .levelLayout__program {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .levelLayout__programItem {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    min-width: 0;
+  }
+
+  .levelLayout__check {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-success-soft);
+    color: var(--color-success);
+  }
+
+  .levelLayout__programText {
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-words;
+  }
+
+  .levelLayout__methodology {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .levelLayout__methodology {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .levelLayout__methodologyContent {
+    min-width: 0;
+  }
+
+  .levelLayout__methodologyText {
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+
+  .levelLayout__scheduleCard {
+    min-width: 0;
+  }
+
+  .levelLayout__scheduleTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-md);
+  }
+
+  .levelLayout__scheduleList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .levelLayout__scheduleRow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .levelLayout__scheduleRow dt {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
+  }
+
+  .levelLayout__scheduleRow dd {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+  }
+
+  .levelLayout__cta {
+    padding-block: var(--space-3xl);
+  }
+
+  .levelLayout__ctaContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-md);
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  .levelLayout__ctaTitle {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+  }
+
+  @media (min-width: 48rem) {
+    .levelLayout__ctaTitle {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .levelLayout__ctaText {
+    color: var(--color-text-inverse);
+    opacity: 0.85;
+  }
+}

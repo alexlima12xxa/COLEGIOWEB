@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../shared/layouts/BaseLayout.astro";
+import NivelLayout from "../../features/levels/components/NivelLayout.astro";
+import { siteConfig } from "../../site.config";
+import levelsData from "../../data/fallback/levels.json";
+
+export function getStaticPaths() {
+  const slugs = ["preescolar", "primaria", "secundaria", "media-tecnica"];
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const levelConfig = siteConfig.levels.find((l) => l.slug === slug);
+const levelContent = levelsData[slug as keyof typeof levelsData];
+
+if (!levelConfig || !levelContent) {
+  throw new Error(`Nivel no encontrado: ${slug}`);
+}
+---
+
+<BaseLayout
+  title={levelConfig.name}
+  description={levelConfig.description}
+>
+  <NivelLayout
+    name={levelConfig.name}
+    shortName={levelConfig.shortName}
+    ageRange={levelConfig.ageRange}
+    headline={levelContent.headline}
+    description={levelContent.description}
+    image={levelContent.image}
+    program={levelContent.program}
+    methodology={levelContent.methodology}
+    schedule={levelContent.schedule}
+    cta={levelContent.cta}
+  />
+</BaseLayout>

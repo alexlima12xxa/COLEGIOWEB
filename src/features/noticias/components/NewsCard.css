@@ -1,0 +1,87 @@
+@layer components {
+  .newsCard {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .newsCard__media {
+    display: block;
+    overflow: hidden;
+    background-color: var(--color-surface-strong);
+  }
+
+  .newsCard__image {
+    aspect-ratio: 16 / 9;
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  .newsCard__media:hover .newsCard__image {
+    transform: scale(1.03);
+  }
+
+  .newsCard__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    flex: 1;
+  }
+
+  .newsCard__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--color-text-subtle);
+  }
+
+  .newsCard__date {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .newsCard__author {
+    color: var(--color-text-subtle);
+  }
+
+  .newsCard__title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-snug);
+    word-break: break-words;
+  }
+
+  .newsCard__link {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .newsCard__link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .newsCard__resumen {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    word-break: break-words;
+    flex: 1;
+  }
+
+  .newsCard__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .newsCard__more:hover {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,76 @@
+---
+import { ChevronLeft, ChevronRight } from "@lucide/astro";
+import "./NewsPagination.css";
+
+export interface Props {
+  page: number;
+  totalPages: number;
+}
+
+const { page, totalPages } = Astro.props;
+
+function hrefFor(target: number): string {
+  return target === 1 ? "/noticias" : `/noticias/pagina/${target}`;
+}
+---
+
+{
+  totalPages > 1 && (
+    <nav class="newsPagination" aria-label="Paginación de noticias">
+      {page > 1 ? (
+        <a
+          href={hrefFor(page - 1)}
+          rel="prev"
+          class="newsPagination__nav newsPagination__nav--prev"
+          aria-label="Página anterior"
+        >
+          <ChevronLeft aria-hidden="true" size={20} />
+          <span class="newsPagination__navText">Anterior</span>
+        </a>
+      ) : (
+        <span aria-hidden="true" />
+      )}
+
+      <ul class="newsPagination__list">
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+          (target) =>
+            target === page ? (
+              <li>
+                <span
+                  class="newsPagination__current"
+                  aria-current="page"
+                  aria-label={`Página actual ${target}`}
+                >
+                  {target}
+                </span>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={hrefFor(target)}
+                  class="newsPagination__link"
+                  aria-label={`Ir a la página ${target}`}
+                >
+                  {target}
+                </a>
+              </li>
+            ),
+        )}
+      </ul>
+
+      {page < totalPages ? (
+        <a
+          href={hrefFor(page + 1)}
+          rel="next"
+          class="newsPagination__nav newsPagination__nav--next"
+          aria-label="Página siguiente"
+        >
+          <span class="newsPagination__navText">Siguiente</span>
+          <ChevronRight aria-hidden="true" size={20} />
+        </a>
+      ) : (
+        <span aria-hidden="true" />
+      )}
+    </nav>
+  )
+}

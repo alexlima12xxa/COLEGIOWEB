@@ -1,0 +1,128 @@
+---
+import { CalendarDays, FileDown, Tag } from "@lucide/astro";
+import Badge from "../../../shared/ui/Badge/Badge.astro";
+import Button from "../../../shared/ui/Button/Button.astro";
+import { resolveAssetUrl } from "../../../shared/db/storage";
+import { formatLongDate } from "../../../shared/lib/formatDate";
+import type { Circular } from "../../../shared/db/schema";
+import "./CircularesList.css";
+
+export interface Props {
+  circulares: Circular[];
+}
+
+const { circulares } = Astro.props;
+---
+
+{
+  circulares.length > 0 ? (
+    <>
+      <div class="circularesTableWrap">
+        <table class="circularesTable">
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Título</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Descripción</th>
+              <th scope="col">
+                <span class="uVisuallyHidden">Documento</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {circulares.map((circular) => {
+              const fileUrl = resolveAssetUrl(circular.archivoPath);
+              return (
+                <tr>
+                  <td data-label="Fecha">
+                    <time datetime={circular.fecha}>
+                      {formatLongDate(circular.fecha)}
+                    </time>
+                  </td>
+                  <td data-label="Título" class="circularesTable__titulo">
+                    {circular.titulo}
+                  </td>
+                  <td data-label="Categoría">
+                    {circular.categoria ?? "General"}
+                  </td>
+                  <td
+                    data-label="Descripción"
+                    class="circularesTable__descripcion"
+                  >
+                    {circular.descripcion ?? "—"}
+                  </td>
+                  <td>
+                    {fileUrl ? (
+                      <a
+                        href={fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="circularesTable__download"
+                      >
+                        <FileDown aria-hidden="true" size={16} />
+                        Descargar
+                      </a>
+                    ) : (
+                      <span class="circularesTable__noFile">—</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="circularesMobile">
+        {circulares.map((circular) => {
+          const fileUrl = resolveAssetUrl(circular.archivoPath);
+          return (
+            <li class="circularesMobile__item">
+              <article class="circularesCard">
+                <div class="circularesCard__meta">
+                  <time datetime={circular.fecha} class="circularesCard__date">
+                    <CalendarDays aria-hidden="true" size={16} />
+                    {formatLongDate(circular.fecha)}
+                  </time>
+                  {circular.categoria && (
+                    <Badge variant="primary" size="sm">
+                      <Tag aria-hidden="true" size={12} />
+                      {circular.categoria}
+                    </Badge>
+                  )}
+                </div>
+                <h2 class="circularesCard__title">{circular.titulo}</h2>
+                {circular.descripcion && (
+                  <p class="circularesCard__descripcion">
+                    {circular.descripcion}
+                  </p>
+                )}
+                {fileUrl && (
+                  <Button
+                    href={fileUrl}
+                    variant="secondary"
+                    size="sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="circularesCard__download"
+                  >
+                    <FileDown aria-hidden="true" size={16} />
+                    Descargar documento
+                  </Button>
+                )}
+              </article>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  ) : (
+    <div class="circularesEmpty">
+      <h2 class="circularesEmpty__title">No hay circulares publicadas</h2>
+      <p class="circularesEmpty__text">
+        Cuando la institución publique comunicados oficiales aparecerán aquí.
+      </p>
+    </div>
+  )
+}

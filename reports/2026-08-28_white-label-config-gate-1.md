@@ -32,12 +32,12 @@
 
 ## Estado de ejecución
 
-| # | Paso | Estado | Commit | Dificultad | Notas |
-|---|------|--------|--------|------------|-------|
-| 1 | Crear `src/site.config.ts` con esquema Zod | [✓] Completado | `449bb62` | 🟡 MODERADO | 0 errores en `astro check`; parse OK |
-| 2 | Crear `src/shared/lib/validateConfig.ts` e integrar en build | [✓] Completado | `dad04f8` | 🟠 COMPLEJO | Build OK; fallo controlado con color #aaaaaa probado |
-| 3 | Mapear tokens CSS a Tailwind v4 vía `@theme inline` | [✓] Completado | `bc6980f` | 🟡 MODERADO | Media query cruda documentada como excepción técnica |
-| 4 | Crear `src/shared/layouts/SEOHead.astro` | [✓] Completado | `2bbfc4c` | 🟡 MODERADO | Criterio de aceptación del color verificado |
+| #   | Paso                                                         | Estado         | Commit    | Dificultad  | Notas                                                |
+| --- | ------------------------------------------------------------ | -------------- | --------- | ----------- | ---------------------------------------------------- |
+| 1   | Crear `src/site.config.ts` con esquema Zod                   | [✓] Completado | `449bb62` | 🟡 MODERADO | 0 errores en `astro check`; parse OK                 |
+| 2   | Crear `src/shared/lib/validateConfig.ts` e integrar en build | [✓] Completado | `dad04f8` | 🟠 COMPLEJO | Build OK; fallo controlado con color #aaaaaa probado |
+| 3   | Mapear tokens CSS a Tailwind v4 vía `@theme inline`          | [✓] Completado | `bc6980f` | 🟡 MODERADO | Media query cruda documentada como excepción técnica |
+| 4   | Crear `src/shared/layouts/SEOHead.astro`                     | [✓] Completado | `2bbfc4c` | 🟡 MODERADO | Criterio de aceptación del color verificado          |
 
 ---
 

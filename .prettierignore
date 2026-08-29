@@ -1,0 +1,6 @@
+dist/
+.astro/
+.vercel/
+.agents/
+node_modules/
+pnpm-lock.yaml

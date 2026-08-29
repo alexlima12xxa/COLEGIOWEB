@@ -1,0 +1,53 @@
+﻿{
+  "version": 1,
+  "items": [
+    {
+      "id": "20000000-0000-4000-8000-000000000001",
+      "titulo": "Calendario de evaluaciones finales – segundo semestre",
+      "descripcion": "Publicación del calendario oficial de evaluaciones finales por nivel, con fechas, horarios y criterios de calificación.",
+      "categoria": "Académico",
+      "fecha": "2026-08-20",
+      "publicadoEn": "2026-08-20T08:00:00+00:00"
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000002",
+      "titulo": "Reunión de padres de familia – Preescolar y Primaria",
+      "descripcion": "Invitación a la reunión de padres de los niveles de preescolar y primaria para revisar avances del segundo semestre.",
+      "categoria": "Convocatoria",
+      "fecha": "2026-08-12",
+      "publicadoEn": "2026-08-12T09:30:00+00:00"
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000003",
+      "titulo": "Inicio de clases – segundo semestre",
+      "descripcion": "Información sobre horarios, rutas escolares y protocolos de ingreso para el reinicio de actividades académicas.",
+      "categoria": "Calendario",
+      "fecha": "2026-08-08",
+      "publicadoEn": "2026-08-08T07:00:00+00:00"
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000004",
+      "titulo": "Protocolo de atención en días de lluvia",
+      "descripcion": "Medidas de ingreso, salida y uso de espacios cubiertos durante la temporada de lluvias.",
+      "categoria": "Bienestar",
+      "fecha": "2026-07-25",
+      "publicadoEn": "2026-07-25T14:00:00+00:00"
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000005",
+      "titulo": "Cierre de matrículas – Media Técnica",
+      "descripcion": "Última fecha para formalizar matrículas del grado 10 y 11 en la jornada de la tarde.",
+      "categoria": "Admisiones",
+      "fecha": "2026-07-15",
+      "publicadoEn": "2026-07-15T11:00:00+00:00"
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000006",
+      "titulo": "Día de la familia: programación y logística",
+      "descripcion": "Programación completa del Día de la Familia: actividades por nivel, puntos de encuentro y recomendaciones.",
+      "categoria": "Evento",
+      "fecha": "2026-07-01",
+      "publicadoEn": "2026-07-01T10:00:00+00:00"
+    }
+  ]
+}

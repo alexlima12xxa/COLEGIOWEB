@@ -1,0 +1,74 @@
+{
+  "preescolar": {
+    "headline": "Primera experiencia escolar con alegría",
+    "description": "En preescolar acompañamos a los niños en su primer contacto con la escuela mediante juegos, exploración sensorial, arte y rutinas que fortalecen su autonomía y creatividad.",
+    "image": "/branding/placeholders/level-preescolar.jpg",
+    "program": [
+      "Desarrollo del lenguaje oral y comunicativo",
+      "Pensamiento lógico-matemático vivencial",
+      "Exploración del entorno natural y social",
+      "Expresión artística, música y movimiento",
+      "Hábitos de autonomía y convivencia"
+    ],
+    "methodology": "Implementamos una pedagogía lúdica y afectiva donde el juego estructurado es el eje central del aprendizaje. Los docentes observan, acompañan y documentan el desarrollo integral de cada niño.",
+    "schedule": {
+      "mondayFriday": "7:30 a.m. – 12:30 p.m.",
+      "saturday": "Actividades familiares programadas"
+    },
+    "cta": "Conoce el proceso de admisión para preescolar"
+  },
+  "primaria": {
+    "headline": "Bases sólidas para aprender a aprender",
+    "description": "La primaria fortalece la lectoescritura, el pensamiento matemático, la indagación científica y la formación en valores, preparando a los estudiantes para continuar su trayectoria académica.",
+    "image": "/branding/placeholders/level-primaria.jpg",
+    "program": [
+      "Lenguaje, lectura y escritura creativa",
+      "Matemáticas y resolución de problemas",
+      "Ciencias naturales y educación ambiental",
+      "Ciencias sociales y cultura ciudadana",
+      "Educación artística, tecnología y deportes"
+    ],
+    "methodology": "Combinamos clases activas, proyectos interdisciplinarios y el uso pedagógico de la tecnología. Fomentamos la curiosidad, el trabajo en equipo y la responsabilidad personal.",
+    "schedule": {
+      "mondayFriday": "7:00 a.m. – 2:00 p.m.",
+      "saturday": "Actividades extracurriculares opcionales"
+    },
+    "cta": "Solicita información sobre primaria"
+  },
+  "secundaria": {
+    "headline": "Pensamiento crítico y preparación para la media",
+    "description": "En secundaria profundizamos en áreas disciplinares, desarrollamos habilidades de pensamiento crítico y orientamos a los estudiantes en su proyecto de vida.",
+    "image": "/branding/placeholders/level-secundaria.jpg",
+    "program": [
+      "Lengua castellana, inglés y comunicación",
+      "Matemáticas, estadística y geometría",
+      "Ciencias naturales: física, química y biología",
+      "Ciencias sociales: historia, geografía y política",
+      "Tecnología, emprendimiento y educación artística"
+    ],
+    "methodology": "Trabajamos por competencias a través de la indagación, el debate, la experimentación en laboratorios y proyectos que conectan el aula con el mundo real.",
+    "schedule": {
+      "mondayFriday": "7:00 a.m. – 2:30 p.m.",
+      "saturday": "Clubes académicos y deportivos"
+    },
+    "cta": "Descubre nuestra secundaria"
+  },
+  "media-tecnica": {
+    "headline": "Bachillerato con énfasis técnico",
+    "description": "La media técnica combina la formación de bachiller con competencias técnicas y proyectos de emprendimiento que preparan a los jóvenes para la educación superior y el mundo laboral.",
+    "image": "/branding/placeholders/level-secundaria.jpg",
+    "program": [
+      "Bachillerato académico completo",
+      "Énfasis técnico según oferta institucional",
+      "Emprendimiento y desarrollo de proyectos",
+      "Orientación vocacional y profesional",
+      "Prácticas empresariales y articulación con la zona"
+    ],
+    "methodology": "Aprendizaje basado en proyectos, rotaciones técnicas y alianzas con empresas e instituciones de educación superior para una formación con sentido de realidad.",
+    "schedule": {
+      "mondayFriday": "7:00 a.m. – 3:00 p.m.",
+      "saturday": "Prácticas técnicas y proyectos"
+    },
+    "cta": "Conoce la media técnica"
+  }
+}

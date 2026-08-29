@@ -1,0 +1,41 @@
+@layer components {
+  .section {
+    width: 100%;
+  }
+
+  .section--padding-sm {
+    padding-block: var(--space-lg);
+  }
+
+  .section--padding-md {
+    padding-block: var(--space-xl);
+  }
+
+  .section--padding-lg {
+    padding-block: var(--space-2xl);
+  }
+
+  .section--padding-xl {
+    padding-block: var(--space-3xl);
+  }
+
+  .section--bg-muted {
+    background-color: var(--color-surface-muted);
+  }
+
+  .section--bg-inverse {
+    background-color: var(--color-surface-inverse);
+    color: var(--color-text-inverse);
+  }
+
+  .section__container {
+    width: 100%;
+    padding-inline: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .section__container {
+      padding-inline: var(--space-xl);
+    }
+  }
+}

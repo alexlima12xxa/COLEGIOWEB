@@ -1,0 +1,15 @@
+---
+import "./Badge.css";
+
+export interface Props {
+  variant?: "default" | "primary" | "accent" | "success" | "warning" | "danger";
+  size?: "sm" | "md";
+  class?: string;
+}
+
+const { variant = "default", size = "md", class: className } = Astro.props;
+---
+
+<span class:list={["badge", `badge--${variant}`, `badge--${size}`, className]}>
+  <slot />
+</span>

@@ -17,6 +17,26 @@
     border: 0;
   }
 
+  .uSkipLink {
+    position: absolute;
+    top: -100%;
+    left: var(--space-md);
+    z-index: calc(var(--z-modal) + 10);
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-surface-inverse);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: top var(--duration-fast) var(--ease-standard);
+  }
+
+  .uSkipLink:focus-visible {
+    top: var(--space-md);
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
   .uTextBalance {
     text-wrap: balance;
   }

@@ -1,0 +1,147 @@
+@layer components {
+  /* ── Tabla desktop ─────────────────────────────────────────────── */
+  .circularesTableWrap {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .circularesTableWrap {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+
+  .circularesTable {
+    width: 100%;
+    min-width: 46rem;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  .circularesTable th {
+    padding: var(--space-md) var(--space-sm);
+    text-align: left;
+    white-space: nowrap;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-muted);
+    border-bottom: 2px solid var(--color-border-strong);
+  }
+
+  .circularesTable td {
+    padding: var(--space-md) var(--space-sm);
+    vertical-align: top;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+
+  .circularesTable tbody tr:hover {
+    background-color: var(--color-surface-muted);
+  }
+
+  .circularesTable__titulo {
+    color: var(--color-text);
+    font-weight: var(--font-weight-medium);
+    word-break: break-words;
+  }
+
+  .circularesTable__descripcion {
+    max-width: 24rem;
+    word-break: break-words;
+  }
+
+  .circularesTable__download {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    white-space: nowrap;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .circularesTable__download:hover {
+    text-decoration: underline;
+  }
+
+  .circularesTable__noFile {
+    color: var(--color-text-subtle);
+  }
+
+  /* ── Tarjetas móvil ────────────────────────────────────────────── */
+  .circularesMobile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .circularesMobile {
+      display: none;
+    }
+  }
+
+  .circularesCard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+  }
+
+  .circularesCard__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .circularesCard__date {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+  }
+
+  .circularesCard__title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-snug);
+    word-break: break-words;
+  }
+
+  .circularesCard__descripcion {
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+
+  .circularesCard__download {
+    align-self: flex-start;
+  }
+
+  .circularesEmpty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-muted);
+  }
+
+  .circularesEmpty__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .circularesEmpty__text {
+    color: var(--color-text-muted);
+  }
+}
