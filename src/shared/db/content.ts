@@ -43,10 +43,20 @@ function fallbackCirculares(): Circular[] {
   return circularesFallbackSchema.parse(circularesFallbackData).items;
 }
 
+function fileSlug(id: string): string {
+  return (
+    id
+      .replace(/\.mdx?$/, "")
+      .split(/[\\/]/)
+      .pop() ?? id
+  );
+}
+
 function toNoticia(entry: CollectionEntry<"noticias">): Noticia {
+  const slug = fileSlug(entry.id);
   return noticiaSchema.parse({
-    id: uuidv5(entry.data.slug),
-    slug: entry.data.slug,
+    id: uuidv5(slug),
+    slug,
     titulo: entry.data.titulo,
     resumen: entry.data.resumen,
     contenido: entry.body,
@@ -55,15 +65,6 @@ function toNoticia(entry: CollectionEntry<"noticias">): Noticia {
     autor: entry.data.autor,
     publicadoEn: entry.data.publicadoEn,
   });
-}
-
-function fileSlug(id: string): string {
-  return (
-    id
-      .replace(/\.mdx?$/, "")
-      .split(/[\\/]/)
-      .pop() ?? id
-  );
 }
 
 function toCircular(entry: CollectionEntry<"circulares">): Circular {
