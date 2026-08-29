@@ -5,7 +5,7 @@
 > **Stack:** Astro 7.2.9 (SSG) · TypeScript strict · Tailwind v4 · Supabase
 > **Riesgo:** MEDIO
 > **Modo de ejecución:** MANUAL
-> **Estado:** 🟡 EN PROGRESO
+> **Estado:** [✓] COMPLETADO
 
 ---
 
@@ -31,21 +31,23 @@ Tareas solicitadas por el usuario (GATE 5):
 
 | # | Paso | Estado | Commit | Dificultad | Notas |
 |---|------|--------|--------|------------|-------|
-| 1 | Migración Supabase: RLS INSERT-only para anon en leads | [✓] Completado | — | 🟡 | Grants y políticas actualizados |
-| 2 | Tokens CSS: variantes success (verde WhatsApp) | [✓] Completado | — | 🟢 | `--color-success-hover/active` |
-| 3 | Button: variante `success` + props `id`/`disabled` | [✓] Completado | — | 🟢 | Extensión del componente existente |
-| 4 | Utilidades: rateLimit.ts, whatsapp.ts, browserClient.ts | [✓] Completado | — | 🔵 | localStorage, encodeURIComponent, anon key |
-| 5 | Componente Input reutilizable (text/email/tel/textarea/select) | [✓] Completado | — | 🔵 | BEM + tokens + a11y |
-| 6 | Componente AdmissionForm (honeypot, checkbox, validación, doble vía) | [✓] Completado | — | 🟠 | Script con patrón astro:page-load |
-| 7 | Página /admisiones: integrar AdmissionForm | [✓] Completado | — | 🔵 | Sección nueva tras el hero |
-| 8 | .env.example: añadir PUBLIC_SUPABASE_ANON_KEY | [✓] Completado | — | 🟢 | Documentación |
-| 9 | Verificación: astro check + build + bundle + mensaje WhatsApp | [✓] Completado | — | 🔵 | 0 errores, build OK |
+| 1 | Migración Supabase: RLS INSERT-only para anon en leads | [✓] Completado | 6eddf1e | 🟡 | Grants y políticas actualizados |
+| 2 | Tokens CSS: variantes success (verde WhatsApp) | [✓] Completado | 6eddf1e | 🟢 | `--color-success-hover/active` |
+| 3 | Button: variante `success` + props `id`/`disabled` | [✓] Completado | 6eddf1e | 🟢 | Extensión del componente existente |
+| 4 | Utilidades: rateLimit.ts, whatsapp.ts, browserClient.ts | [✓] Completado | 6eddf1e | 🔵 | localStorage, encodeURIComponent, anon key |
+| 5 | Componente Input reutilizable (text/email/tel/textarea/select) | [✓] Completado | 6eddf1e | 🔵 | BEM + tokens + a11y |
+| 6 | Componente AdmissionForm (honeypot, checkbox, validación, doble vía) | [✓] Completado | 6eddf1e | 🟠 | Script con patrón astro:page-load |
+| 7 | Página /admisiones: integrar AdmissionForm | [✓] Completado | 6eddf1e | 🔵 | Sección nueva tras el hero |
+| 8 | .env.example: añadir PUBLIC_SUPABASE_ANON_KEY | [✓] Completado | 6eddf1e | 🟢 | Documentación |
+| 9 | Verificación: astro check + build + bundle + mensaje WhatsApp | [✓] Completado | 6eddf1e | 🔵 | 0 errores, build OK |
 
 ---
 
 ## Registro de commits
 
-_(Pendiente — se propone commit al finalizar)_
+| Hash | Descripción | Fecha |
+|------|-------------|-------|
+| `6eddf1e` | feat(admissions): formulario de admisiones con doble vía Supabase + WhatsApp | 2026-08-28 |
 
 ---
 
