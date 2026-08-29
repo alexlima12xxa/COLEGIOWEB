@@ -22,7 +22,10 @@ const pageTitle =
     ? title
     : siteConfig.seo.titleTemplate.replace("%s", title);
 
-const canonicalUrl = new URL(path, siteConfig.seo.siteUrl).toString();
+const canonicalUrl = new URL(
+  path === "/" || path === "" ? "/" : path.endsWith("/") ? path : `${path}/`,
+  siteConfig.seo.siteUrl,
+).toString();
 const ogImageUrl = new URL(image, siteConfig.seo.siteUrl).toString();
 const logoUrl = new URL(
   siteConfig.branding.assets.logo,
