@@ -9,18 +9,16 @@
   <body>
     <!--
       Netlify Identity se usa únicamente para autenticar el CMS (Git Gateway).
-      El sitio público puede estar en Vercel; solo hace falta un sitio Netlify
-      gratuito conectado al mismo repositorio de GitHub con Identity y
-      Git Gateway habilitados.
-
-      TU_SITIO_NETLIFY aquí DEBE coincidir con identity_url/gateway_url de
-      public/admin/config.yml. Reemplazar por el dominio *.netlify.app real.
+      El sitio público puede estar en Vercel; solo hace falta el sitio Netlify
+      coegioweb (Identity + Git Gateway) conectado al repo de GitHub.
+      APIUrl apunta a coegioweb.netlify.app/.netlify/identity (igual que
+      identity_url de public/admin/config.yml).
     -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script>
       if (window.netlifyIdentity) {
         window.netlifyIdentity.init({
-          APIUrl: "https://TU_SITIO_NETLIFY.netlify.app/.netlify/identity",
+          APIUrl: "https://coegioweb.netlify.app/.netlify/identity",
         });
       }
     </script>
