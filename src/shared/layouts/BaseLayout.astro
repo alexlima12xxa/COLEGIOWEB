@@ -42,5 +42,30 @@ const { title, description, image, path, noindex } = Astro.props;
     </main>
 
     <Footer />
+
+    <script>
+      // Netlify Identity envía los enlaces de invitación/recuperación a la raíz
+      // del sitio con el token en el hash (#invite_token=...). El widget vive
+      // en /admin, así que aquí solo se carga si la URL trae un token: así se
+      // intercepta el flujo en cualquier página y se redirige a /admin.
+      const identityToken = /(?:invite_token|recovery_token|confirmation_token)=/.test(
+        window.location.hash,
+      );
+
+      if (identityToken) {
+        const script = document.createElement("script");
+        script.src =
+          "https://identity.netlify.com/v1/netlify-identity-widget.js";
+        script.onload = () => {
+          window.netlifyIdentity.init({
+            APIUrl: "https://coegioweb.netlify.app/.netlify/identity",
+          });
+          window.netlifyIdentity.on("login", () => {
+            window.location.href = "/admin";
+          });
+        };
+        document.head.appendChild(script);
+      }
+    </script>
   </body>
 </html>
