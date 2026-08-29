@@ -12,6 +12,25 @@ import homeData from "../data/fallback/home.json";
 const enabledLevels = siteConfig.levels.filter((level) => level.enabled).slice(0, 3);
 const tourPoster = siteConfig.branding.assets.tourVideoPoster || "/branding/og-image.svg";
 const heroPhoto = siteConfig.branding.assets.heroPhoto || "/branding/placeholders/hero-photo.jpg";
+
+const absoluteUrl = (path: string) =>
+  new URL(path, siteConfig.seo.siteUrl).toString();
+
+const videoJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  name: `Tour virtual por ${siteConfig.identity.name}`,
+  description: `Recorrido virtual por las instalaciones de ${siteConfig.identity.name}: aulas, laboratorios, zonas deportivas y espacios comunes.`,
+  thumbnailUrl: absoluteUrl(tourPoster),
+  uploadDate: new Date().toISOString(),
+  contentUrl: absoluteUrl("/branding/tour.mp4"),
+  embedUrl: absoluteUrl("/"),
+  publisher: {
+    "@type": "School",
+    name: siteConfig.identity.name,
+    logo: absoluteUrl(siteConfig.branding.assets.logo),
+  },
+};
 ---
 
 <BaseLayout
@@ -24,6 +43,13 @@ const heroPhoto = siteConfig.branding.assets.heroPhoto || "/branding/placeholder
     as="image"
     href={heroPhoto}
     fetchpriority="high"
+  />
+
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(videoJsonLd)}
+    is:inline
   />
 
   <Section padding="xl" class="homeHero">
