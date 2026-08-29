@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <title>Administrador de contenido</title>
+    <!--
+      Ruta absoluta del config del CMS (mecanismo oficial de Decap CMS).
+      Evita el 404 cuando se accede a /admin sin barra final: el navegador
+      resolvería "config.yml" contra la raíz del dominio.
+    -->
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
     <!--
