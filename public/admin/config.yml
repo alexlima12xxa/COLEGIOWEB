@@ -2,19 +2,18 @@ backend:
   name: git-gateway
   branch: main
   squash_merges: true
-  # El sitio público vive en Vercel, NO en Netlify. Por eso hay que apuntar
-  # de forma explícita al sitio Netlify (vacío) que actúa como proveedor de
-  # Identity + Git Gateway. Reemplazar TU_SITIO_NETLIFY por el dominio real.
-  identity_url: https://TU_SITIO_NETLIFY.netlify.app/.netlify/identity
-  gateway_url: https://TU_SITIO_NETLIFY.netlify.app/.netlify/git
+  # El sitio público vivirá en Vercel; el login del CMS (Identity + Git
+  # Gateway) se sirve desde el sitio Netlify coegioweb.
+  identity_url: https://coegioweb.netlify.app/.netlify/identity
+  gateway_url: https://coegioweb.netlify.app/.netlify/git
 
 # Workflow editorial: los borradores viven en una rama y "Publicar" hace merge
 # a main (lo que dispara el rebuild automático de Vercel).
 publish_mode: editorial_workflow
 
-# Reemplazar por el dominio público real del sitio (Vercel).
-site_url: https://tuapp.com
-display_url: https://tuapp.com
+# Dominio público real. Temporal: Netlify (aún no hay Vercel).
+site_url: https://coegioweb.netlify.app
+display_url: https://coegioweb.netlify.app
 logo_url: /branding/logo.svg
 
 # Carpeta donde Decap CMS guarda los archivos multimedia que se suban desde
