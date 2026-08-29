@@ -16,8 +16,10 @@ site_url: https://coegioweb.netlify.app
 display_url: https://coegioweb.netlify.app
 logo_url: /branding/logo.svg
 
-# Carpeta donde Decap CMS guarda los archivos multimedia que se suban desde
-# el editor. Se sirven como rutas públicas en /media/... .
+# Carpeta GLOBAL de media (raíz del repo). Todos los archivos subidos desde el
+# editor van aquí y se sirven como rutas públicas /media/uploads/... .
+# NOTA: no definir media_folder/public_folder a nivel de colección ni de campo,
+# porque en Decap esos se resuelven relativos a la carpeta de la colección.
 media_folder: public/media/uploads
 public_folder: /media/uploads
 
@@ -31,25 +33,16 @@ collections:
     label_singular: Noticia
     folder: src/content/noticias
     create: true
+    # El slug se genera automáticamente del título (slugificado: tildes y
+    # espacios se normalizan). No hay campo "slug" manual para evitar colisión
+    # con la variable reservada {{slug}} de Decap.
+    identifier_field: titulo
     slug: "{{slug}}"
     extension: md
     format: frontmatter
-    media_folder: public/media/noticias
-    public_folder: /media/noticias
     editor:
       preview: false
     fields:
-      - {
-          label: "Slug (URL)",
-          name: slug,
-          widget: string,
-          pattern:
-            [
-              "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-              "Solo minúsculas, números y guiones. Sin espacios ni tildes.",
-            ],
-          required: true,
-        }
       - { label: "Título", name: titulo, widget: string, required: true }
       - { label: "Resumen", name: resumen, widget: text, required: false }
       - {
@@ -57,8 +50,6 @@ collections:
           name: imagenPath,
           widget: image,
           required: false,
-          media_folder: public/media/noticias,
-          public_folder: /media/noticias,
           choose_url: true,
         }
       - {
@@ -75,7 +66,7 @@ collections:
           date_format: "YYYY-MM-DD",
           time_format: "HH:mm",
           format: "YYYY-MM-DDTHH:mm:ssZ",
-          picker_utc: true,
+          picker_utc: false,
           required: true,
         }
       - { label: "Contenido", name: body, widget: markdown, required: true }
@@ -85,11 +76,10 @@ collections:
     label_singular: Circular
     folder: src/content/circulares
     create: true
-    slug: "{{titulo}}"
+    identifier_field: titulo
+    slug: "{{slug}}"
     extension: md
     format: frontmatter
-    media_folder: public/media/circulares
-    public_folder: /media/circulares
     editor:
       preview: false
     fields:
@@ -113,8 +103,6 @@ collections:
           name: archivoPath,
           widget: file,
           required: false,
-          media_folder: public/media/circulares,
-          public_folder: /media/circulares,
           choose_url: true,
         }
       - {
@@ -130,7 +118,7 @@ collections:
           date_format: "YYYY-MM-DD",
           time_format: "HH:mm",
           format: "YYYY-MM-DDTHH:mm:ssZ",
-          picker_utc: true,
+          picker_utc: false,
           required: true,
         }
 
@@ -238,24 +226,20 @@ collections:
     label_singular: Imagen
     folder: src/content/galeria
     create: true
+    identifier_field: titulo
     slug: "{{slug}}"
     extension: md
     format: frontmatter
-    media_folder: public/media/galeria
-    public_folder: /media/galeria
     editor:
       preview: false
     fields:
-      - { label: "Slug (URL)", name: slug, widget: string, required: true }
-      - { label: "Título", name: titulo, widget: string, required: false }
+      - { label: "Título", name: titulo, widget: string, required: true }
       - { label: "Categoría", name: categoria, widget: string, required: false }
       - {
           label: "Imagen",
           name: imagenPath,
           widget: image,
           required: true,
-          media_folder: public/media/galeria,
-          public_folder: /media/galeria,
           choose_url: true,
         }
       - {
@@ -279,6 +263,6 @@ collections:
           date_format: "YYYY-MM-DD",
           time_format: "HH:mm",
           format: "YYYY-MM-DDTHH:mm:ssZ",
-          picker_utc: true,
+          picker_utc: false,
           required: false,
         }

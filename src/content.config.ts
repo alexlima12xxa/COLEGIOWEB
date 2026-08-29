@@ -17,11 +17,21 @@ const slugSchema = z
     "Slug inválido: solo minúsculas, números y guiones",
   );
 
-const isoDatetimeSchema = z
-  .string()
-  .regex(
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/,
-    "Fecha ISO 8601 con zona horaria inválida",
+/**
+ * Timestamp ISO 8601 con zona horaria. Decap CMS escribe el datetime SIN
+ * comillas (ej. `publicadoEn: 2026-08-29T11:39:00Z`), y el parser YAML lo
+ * entrega como `Date`. Este schema acepta string o Date y normaliza a string
+ * ISO (con zona horaria), que es lo que espera el contrato compartido.
+ */
+const isoTimestamp = z
+  .union([z.string(), z.date()])
+  .transform((value) => (value instanceof Date ? value.toISOString() : value));
+
+/** Fecha solo-día (YYYY-MM-DD), también tolerante a Date del parser YAML. */
+const dateOnly = z
+  .union([z.string(), z.date()])
+  .transform((value) =>
+    value instanceof Date ? value.toISOString().slice(0, 10) : value,
   );
 
 const nullableString = z
@@ -36,13 +46,12 @@ export const collections = {
       base: "./src/content/noticias",
     }),
     schema: z.object({
-      slug: slugSchema,
       titulo: z.string().min(1).max(200),
       resumen: nullableString,
       imagenPath: nullableString,
       imagenAlt: z.string().default(""),
       autor: nullableString,
-      publicadoEn: isoDatetimeSchema,
+      publicadoEn: isoTimestamp,
     }),
   }),
 
@@ -55,12 +64,10 @@ export const collections = {
       titulo: z.string().min(1).max(200),
       descripcion: nullableString,
       categoria: nullableString,
-      fecha: z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha YYYY-MM-DD inválida"),
+      fecha: dateOnly,
       archivoPath: nullableString,
       archivoNombre: nullableString,
-      publicadoEn: isoDatetimeSchema,
+      publicadoEn: isoTimestamp,
     }),
   }),
 
@@ -83,13 +90,12 @@ export const collections = {
       base: "./src/content/galeria",
     }),
     schema: z.object({
-      slug: slugSchema,
       titulo: nullableString,
       categoria: nullableString,
       imagenPath: z.string().min(1),
       imagenAlt: z.string().default(""),
       orden: z.number().int().default(0),
-      publicadoEn: isoDatetimeSchema.optional(),
+      publicadoEn: isoTimestamp.optional(),
     }),
   }),
 };
