@@ -1,0 +1,87 @@
+---
+import BaseLayout from "../shared/layouts/BaseLayout.astro";
+import Section from "../shared/ui/Section/Section.astro";
+import { siteConfig } from "../site.config";
+
+const title = "Aviso de privacidad";
+const description = `Política de privacidad y tratamiento de datos personales de ${siteConfig.identity.name}.`;
+---
+
+<BaseLayout title={title} description={description}>
+  <Section padding="xl">
+    <div class="privacy">
+      <h1 class="privacy__title">Aviso de privacidad</h1>
+      <p class="privacy__lead">
+        {siteConfig.identity.name} se compromete a proteger la información
+        personal de las familias, estudiantes y visitantes de este sitio web.
+      </p>
+
+      <h2 class="privacy__subtitle">1. Responsable del tratamiento</h2>
+      <p class="privacy__text">
+        {siteConfig.identity.name}, con dirección en {siteConfig.contact.address},
+        {siteConfig.contact.city}, es responsable del tratamiento de los datos
+        personales recopilados a través de este sitio.
+      </p>
+
+      <h2 class="privacy__subtitle">2. Datos que recopilamos</h2>
+      <p class="privacy__text">
+        Podemos recopilar nombre, correo electrónico, teléfono, documento de
+        identidad y cualquier otra información necesaria para el proceso de
+        admisión o atención de solicitudes.
+      </p>
+
+      <h2 class="privacy__subtitle">3. Finalidad</h2>
+      <p class="privacy__text">
+        Los datos se usarán para gestionar solicitudes de información,
+        procesos de admisión, comunicaciones institucionales y mejorar
+        nuestros servicios educativos.
+      </p>
+
+      <h2 class="privacy__subtitle">4. Derechos</h2>
+      <p class="privacy__text">
+        Los titulares de los datos pueden ejercer sus derechos de acceso,
+        rectificación, cancelación y oposición escribiendo a{" "}
+        <a href={`mailto:${siteConfig.contact.email}`}>
+          {siteConfig.contact.email}
+        </a>.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .privacy {
+    max-width: var(--container-md);
+  }
+
+  .privacy__title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .privacy__title {
+      font-size: var(--text-5xl);
+    }
+  }
+
+  .privacy__lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+  }
+
+  .privacy__subtitle {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-sm);
+  }
+
+  .privacy__text {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+    word-break: break-words;
+  }
+</style>

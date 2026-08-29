@@ -1,0 +1,1 @@
+@layer components{.contentImage{object-fit:cover;width:100%;max-width:100%;height:auto;display:block}.contentImage--empty{aspect-ratio:16/9;background-color:var(--color-surface-strong)}}

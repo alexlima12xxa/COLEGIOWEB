@@ -1,0 +1,16 @@
+@layer components {
+  .baseLayout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .baseLayout__main {
+    flex: 1 0 auto;
+    width: 100%;
+  }
+
+  .baseLayout__main:focus {
+    outline: none;
+  }
+}

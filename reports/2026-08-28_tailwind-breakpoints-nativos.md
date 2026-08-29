@@ -27,13 +27,13 @@ migrando a utility-first puro (`px-md md:px-lg`).
 
 ## Estado de ejecución
 
-| # | Paso | Estado | Commit | Dificultad | Notas |
-|---|------|--------|--------|------------|-------|
-| 1 | `_tokens.css` — breakpoints nativos | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `--breakpoint-*` en `@theme` |
-| 2 | `_utilities.css` — quitar media query + padding | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `.uContainer` sin padding |
-| 3 | `index.astro` — utility-first | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `px-md md:px-lg` |
-| 4 | Documentación (PROJECT.md + report) | [✓] Completado | `09508a7` | 🟢 TRIVIAL | Convención registrada |
-| 5 | Verificación + commit | [✓] Completado | `09508a7` | 🟢 TRIVIAL | check 0 errores; build OK |
+| #   | Paso                                            | Estado         | Commit    | Dificultad | Notas                        |
+| --- | ----------------------------------------------- | -------------- | --------- | ---------- | ---------------------------- |
+| 1   | `_tokens.css` — breakpoints nativos             | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `--breakpoint-*` en `@theme` |
+| 2   | `_utilities.css` — quitar media query + padding | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `.uContainer` sin padding    |
+| 3   | `index.astro` — utility-first                   | [✓] Completado | `09508a7` | 🟢 TRIVIAL | `px-md md:px-lg`             |
+| 4   | Documentación (PROJECT.md + report)             | [✓] Completado | `09508a7` | 🟢 TRIVIAL | Convención registrada        |
+| 5   | Verificación + commit                           | [✓] Completado | `09508a7` | 🟢 TRIVIAL | check 0 errores; build OK    |
 
 ---
 

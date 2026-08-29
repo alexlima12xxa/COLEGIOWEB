@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../shared/layouts/BaseLayout.astro";
+import Section from "../../shared/ui/Section/Section.astro";
+import NewsList from "../../features/noticias/components/NewsList.astro";
+import { getNewsPage, NEWS_PER_PAGE } from "../../shared/db/content";
+import { siteConfig } from "../../site.config";
+
+const { items, page, totalPages } = await getNewsPage(1, NEWS_PER_PAGE);
+
+const title = "Noticias";
+const description = `Últimas noticias y novedades de ${siteConfig.identity.name}: actividades, logros y comunicados de la comunidad educativa.`;
+---
+
+<BaseLayout title={title} description={description} path="/noticias">
+  <Section padding="lg">
+    <header class="noticiasHeader">
+      <h1 class="noticiasHeader__title">Noticias</h1>
+      <p class="noticiasHeader__text">
+        Lo más reciente de nuestra comunidad educativa: actividades, logros y
+        comunicados institucionales.
+      </p>
+    </header>
+
+    <NewsList items={items} page={page} totalPages={totalPages} />
+  </Section>
+</BaseLayout>
+
+<style>
+  .noticiasHeader {
+    max-width: 55ch;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .noticiasHeader__title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-sm);
+  }
+
+  .noticiasHeader__text {
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+</style>

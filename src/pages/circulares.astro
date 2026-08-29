@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../shared/layouts/BaseLayout.astro";
+import Section from "../shared/ui/Section/Section.astro";
+import CircularesList from "../features/circulares/components/CircularesList.astro";
+import { getAllCirculares } from "../shared/db/content";
+import { siteConfig } from "../site.config";
+
+const circulares = await getAllCirculares();
+
+const title = "Circulares";
+const description = `Circulares y comunicados oficiales de ${siteConfig.identity.name}: citaciones, calendario y avisos institucionales.`;
+---
+
+<BaseLayout title={title} description={description} path="/circulares">
+  <Section padding="lg">
+    <header class="circularesHeader">
+      <h1 class="circularesHeader__title">Circulares</h1>
+      <p class="circularesHeader__text">
+        Comunicados oficiales de la institución: citaciones, calendario,
+        convocatorias y avisos para las familias.
+      </p>
+    </header>
+
+    <CircularesList circulares={circulares} />
+  </Section>
+</BaseLayout>
+
+<style>
+  .circularesHeader {
+    max-width: 55ch;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .circularesHeader__title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-sm);
+  }
+
+  .circularesHeader__text {
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+</style>

@@ -13,14 +13,19 @@ const hexColorSchema = z
   .string()
   .regex(
     /^#[0-9a-fA-F]{6}$/,
-    "El color debe ser HEX de 6 dígitos en mayúsculas o minúsculas (#RRGGBB)"
+    "El color debe ser HEX de 6 dígitos en mayúsculas o minúsculas (#RRGGBB)",
   );
 
 const assetPathSchema = z
   .string()
   .startsWith("/branding/", "Los assets de marca deben vivir en /branding/");
 
-const slugSchema = z.string().regex(/^[a-z0-9-]+$/, "El slug solo puede contener minúsculas, números y guiones");
+const slugSchema = z
+  .string()
+  .regex(
+    /^[a-z0-9-]+$/,
+    "El slug solo puede contener minúsculas, números y guiones",
+  );
 
 const socialSchema = z.object({
   facebook: z.string().url().optional(),
@@ -38,13 +43,20 @@ const contactSchema = z.object({
   whatsapp: z.string().min(7, "El número de WhatsApp es demasiado corto"),
   email: z.string().email("El email de contacto no es válido"),
   mapUrl: z.string().url().optional(),
+  mapEmbedUrl: z.string().url().optional(),
   officeHours: z.string().min(5, "El horario de atención es demasiado corto"),
 });
 
 const levelSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
-  name: z.string().min(2).max(40, "El nombre del nivel no puede superar 40 caracteres"),
-  shortName: z.string().min(2).max(20, "La abreviatura no puede superar 20 caracteres"),
+  name: z
+    .string()
+    .min(2)
+    .max(40, "El nombre del nivel no puede superar 40 caracteres"),
+  shortName: z
+    .string()
+    .min(2)
+    .max(20, "La abreviatura no puede superar 20 caracteres"),
   slug: slugSchema,
   description: z.string().max(280).optional(),
   ageRange: z.string().optional(),
@@ -113,13 +125,20 @@ const brandingSchema = z.object({
     favicon: assetPathSchema.optional(),
     ogImage: assetPathSchema,
     tourVideoPoster: assetPathSchema.optional(),
+    heroPhoto: assetPathSchema.optional(),
   }),
 });
 
 const seoSchema = z.object({
   titleTemplate: z.string().min(1),
-  defaultTitle: z.string().min(1).max(60, "El título por defecto no puede superar 60 caracteres"),
-  defaultDescription: z.string().min(1).max(160, "La meta descripción no puede superar 160 caracteres"),
+  defaultTitle: z
+    .string()
+    .min(1)
+    .max(60, "El título por defecto no puede superar 60 caracteres"),
+  defaultDescription: z
+    .string()
+    .min(1)
+    .max(160, "La meta descripción no puede superar 160 caracteres"),
   keywords: z.array(z.string()).default([]),
   author: z.string().min(1),
   siteUrl: z.string().url(),
@@ -135,7 +154,10 @@ const supabaseSchema = z.object({
 
 export const siteConfigSchema = z.object({
   identity: z.object({
-    name: z.string().min(2).max(40, "El nombre de la institución no puede superar 40 caracteres"),
+    name: z
+      .string()
+      .min(2)
+      .max(40, "El nombre de la institución no puede superar 40 caracteres"),
     slogan: z.string().min(2).max(80, "El lema no puede superar 80 caracteres"),
     shortDescription: z.string().max(160).optional(),
     description: z.string().max(500).optional(),
@@ -143,7 +165,9 @@ export const siteConfigSchema = z.object({
   }),
   contact: contactSchema,
   social: socialSchema,
-  levels: z.array(levelSchema).min(1, "Debe existir al menos un nivel educativo"),
+  levels: z
+    .array(levelSchema)
+    .min(1, "Debe existir al menos un nivel educativo"),
   sections: sectionsSchema,
   admissions: admissionsSchema,
   branding: brandingSchema,
@@ -169,7 +193,9 @@ export const siteConfig = siteConfigSchema.parse({
     phone: "+57 601 234 5678",
     whatsapp: "+573101234567",
     email: "contacto@colegiopiloto.edu.co",
-    mapUrl: "https://maps.google.com/?q=Colegio+Piloto",
+    mapUrl: "https://maps.google.com/?q=Colegio+Piloto+Bogota",
+    mapEmbedUrl:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.1234567890123!2d-74.08175!3d4.60971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMzYnMzUuMCJOIDc0wrAwNCw1NC4zIg!5e0!3m2!1ses!2sco!4v1600000000000",
     officeHours: "Lunes a viernes, 7:00 a.m. – 4:00 p.m.",
   },
   social: {
@@ -192,7 +218,8 @@ export const siteConfig = siteConfigSchema.parse({
       name: "Primaria",
       shortName: "Pri",
       slug: "primaria",
-      description: "Formación académica sólida con valores y pensamiento crítico.",
+      description:
+        "Formación académica sólida con valores y pensamiento crítico.",
       ageRange: "6-10 años",
       enabled: true,
     },
@@ -201,7 +228,8 @@ export const siteConfig = siteConfigSchema.parse({
       name: "Secundaria",
       shortName: "Sec",
       slug: "secundaria",
-      description: "Educación media con orientación hacia la excelencia académica.",
+      description:
+        "Educación media con orientación hacia la excelencia académica.",
       ageRange: "11-14 años",
       enabled: true,
     },
@@ -281,6 +309,8 @@ export const siteConfig = siteConfigSchema.parse({
       logoInverse: "/branding/logo-inverse.svg",
       favicon: "/branding/favicon.svg",
       ogImage: "/branding/og-image.svg",
+      tourVideoPoster: "/branding/placeholders/hero-tour-poster.jpg",
+      heroPhoto: "/branding/placeholders/hero-photo.jpg",
     },
   },
   seo: {

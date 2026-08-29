@@ -1,0 +1,66 @@
+{
+  "departments": [
+    {
+      "name": "Recepción general",
+      "phone": "+57 601 234 5678",
+      "email": "recepcion@colegiopiloto.edu.co",
+      "hours": "Lunes a viernes, 7:00 a.m. – 4:00 p.m."
+    },
+    {
+      "name": "Admisiones",
+      "phone": "+57 601 234 5679",
+      "email": "admisiones@colegiopiloto.edu.co",
+      "hours": "Lunes a viernes, 8:00 a.m. – 12:00 m."
+    },
+    {
+      "name": "Rectoría",
+      "phone": "+57 601 234 5680",
+      "email": "rectoria@colegiopiloto.edu.co",
+      "hours": "Previa cita"
+    },
+    {
+      "name": "Bienestar estudiantil",
+      "phone": "+57 601 234 5681",
+      "email": "bienestar@colegiopiloto.edu.co",
+      "hours": "Lunes a viernes, 8:00 a.m. – 3:00 p.m."
+    },
+    {
+      "name": "Tesorería",
+      "phone": "+57 601 234 5682",
+      "email": "tesoreria@colegiopiloto.edu.co",
+      "hours": "Lunes a viernes, 8:00 a.m. – 2:00 p.m."
+    }
+  ],
+  "formFields": [
+    {
+      "id": "name",
+      "label": "Nombre completo",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "email",
+      "label": "Correo electrónico",
+      "type": "email",
+      "required": true
+    },
+    {
+      "id": "phone",
+      "label": "Teléfono",
+      "type": "tel",
+      "required": true
+    },
+    {
+      "id": "subject",
+      "label": "Asunto",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "message",
+      "label": "Mensaje",
+      "type": "textarea",
+      "required": true
+    }
+  ]
+}

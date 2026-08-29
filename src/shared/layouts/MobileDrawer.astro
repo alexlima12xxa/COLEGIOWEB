@@ -1,0 +1,166 @@
+---
+import { X, Lock } from "@lucide/astro";
+import { siteConfig } from "../../site.config";
+import "./MobileDrawer.css";
+
+export interface Props {
+  id: string;
+  links: Array<{ label: string; href: string }>;
+}
+
+const { id, links } = Astro.props;
+---
+
+<div
+  {id}
+  class="drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menú de navegación"
+  hidden
+>
+  <div class="drawer__overlay" data-drawer-overlay></div>
+  <div class="drawer__panel">
+    <div class="drawer__grabber" aria-hidden="true"></div>
+    <div class="drawer__header">
+      <a
+        href="/"
+        class="drawer__brand"
+        aria-label={`Inicio - ${siteConfig.identity.name}`}
+      >
+        <img
+          src={siteConfig.branding.assets.logo}
+          alt={siteConfig.identity.name}
+          class="drawer__logo"
+          width="140"
+          height="35"
+          decoding="async"
+        />
+      </a>
+      <button
+        type="button"
+        class="drawer__close"
+        data-drawer-close
+        aria-label="Cerrar menú"
+      >
+        <X aria-hidden="true" size={24} />
+      </button>
+    </div>
+
+    <nav class="drawer__nav" aria-label="Móvil">
+      <ul class="drawer__list">
+        {
+          links.map((link) => (
+            <li class="drawer__item">
+              <a href={link.href} class="drawer__link">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="drawer__footer">
+      <a href="/intranet" class="drawer__intranet">
+        <Lock aria-hidden="true" size={18} />
+        <span>Intranet</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initDrawer() {
+    const drawer = document.getElementById("mobile-drawer");
+    if (!drawer || drawer.hasAttribute("data-initialized")) return;
+    drawer.setAttribute("data-initialized", "");
+
+    const drawerEl = drawer;
+    const overlay = drawerEl.querySelector("[data-drawer-overlay]");
+    const closeBtn = drawerEl.querySelector("[data-drawer-close]");
+    const focusableSelectors =
+      'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])';
+
+    let lastFocused: Element | null = null;
+    let isOpen = false;
+
+    function getFocusable(): HTMLElement[] {
+      return Array.from(drawerEl.querySelectorAll(focusableSelectors))
+        .filter((el) => {
+          const htmlEl = el as HTMLElement;
+          return htmlEl.offsetParent !== null;
+        })
+        .map((el) => el as HTMLElement);
+    }
+
+    function trapFocus(event: KeyboardEvent) {
+      if (event.key !== "Tab" || !isOpen) return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    function open() {
+      if (isOpen) return;
+      lastFocused = document.activeElement;
+      drawerEl.hidden = false;
+      drawerEl.setAttribute("data-open", "");
+      document.body.classList.add("drawer-is-open");
+      isOpen = true;
+      drawerEl.dispatchEvent(
+        new CustomEvent("drawer:opened", { bubbles: true }),
+      );
+
+      requestAnimationFrame(() => {
+        const focusable = getFocusable();
+        focusable[0]?.focus();
+      });
+
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    function close() {
+      if (!isOpen) return;
+      drawerEl.removeAttribute("data-open");
+      document.body.classList.remove("drawer-is-open");
+      document.removeEventListener("keydown", handleKeyDown);
+      isOpen = false;
+      drawerEl.dispatchEvent(
+        new CustomEvent("drawer:closed", { bubbles: true }),
+      );
+
+      const transitionDuration = 300;
+      setTimeout(() => {
+        drawerEl.hidden = true;
+        if (lastFocused instanceof HTMLElement) {
+          lastFocused.focus();
+        }
+      }, transitionDuration);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") close();
+      trapFocus(event);
+    }
+
+    drawerEl.addEventListener("drawer:open", open);
+    overlay?.addEventListener("click", close);
+    closeBtn?.addEventListener("click", close);
+
+    drawerEl.querySelectorAll(".drawer__link").forEach((link) => {
+      link.addEventListener("click", close);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initDrawer);
+  if (document.readyState !== "loading") initDrawer();
+</script>

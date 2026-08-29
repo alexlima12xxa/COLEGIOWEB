@@ -1,0 +1,133 @@
+---
+import Section from "../../../shared/ui/Section/Section.astro";
+import Button from "../../../shared/ui/Button/Button.astro";
+import Card from "../../../shared/ui/Card/Card.astro";
+import Badge from "../../../shared/ui/Badge/Badge.astro";
+import ResponsiveImage from "../../../shared/ui/ResponsiveImage/ResponsiveImage.astro";
+import { Check, Clock, BookOpen } from "@lucide/astro";
+import "./NivelLayout.css";
+
+export interface Props {
+  name: string;
+  shortName: string;
+  ageRange?: string;
+  headline: string;
+  description: string;
+  image: string;
+  program: string[];
+  methodology: string;
+  schedule: {
+    mondayFriday: string;
+    saturday: string;
+  };
+  cta: string;
+}
+
+const {
+  name,
+  shortName,
+  ageRange,
+  headline,
+  description,
+  image,
+  program,
+  methodology,
+  schedule,
+  cta,
+} = Astro.props;
+---
+
+<article class="levelLayout">
+  <Section padding="xl" class="levelLayout__hero">
+    <div class="levelLayout__grid">
+      <div class="levelLayout__content">
+        <Badge variant="primary">{shortName}</Badge>
+        <h1 class="levelLayout__title">{headline}</h1>
+        <p class="levelLayout__description">{description}</p>
+        {ageRange && <p class="levelLayout__age">Edades: {ageRange}</p>}
+        <div class="levelLayout__actions">
+          <Button href="/admisiones" size="lg">
+            {cta}
+          </Button>
+          <Button href="/contacto" variant="secondary" size="lg">
+            Hablar con coordinación
+          </Button>
+        </div>
+      </div>
+      <div class="levelLayout__media">
+        <ResponsiveImage
+          src={image}
+          alt={`Estudiantes de ${name} en el Colegio Piloto`}
+          width={1200}
+          height={800}
+          loading="eager"
+          fetchpriority="high"
+          sizes="(min-width: 48rem) 50vw, 100vw"
+          class="levelLayout__image"
+        />
+      </div>
+    </div>
+  </Section>
+
+  <Section padding="lg" bg="muted">
+    <div class="levelLayout__sectionHeader">
+      <h2 class="levelLayout__sectionTitle">
+        <BookOpen aria-hidden="true" size={24} />
+        Plan de estudios
+      </h2>
+      <p class="levelLayout__sectionText">
+        Áreas de aprendizaje que conforman la experiencia académica de {name}.
+      </p>
+    </div>
+
+    <ul class="levelLayout__program" role="list">
+      {
+        program.map((item) => (
+          <li class="levelLayout__programItem">
+            <span class="levelLayout__check" aria-hidden="true">
+              <Check size={18} />
+            </span>
+            <span class="levelLayout__programText">{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section padding="lg">
+    <div class="levelLayout__methodology">
+      <div class="levelLayout__methodologyContent">
+        <h2 class="levelLayout__sectionTitle">Metodología</h2>
+        <p class="levelLayout__methodologyText">{methodology}</p>
+      </div>
+      <Card variant="bordered" class="levelLayout__scheduleCard">
+        <h3 class="levelLayout__scheduleTitle">
+          <Clock aria-hidden="true" size={20} />
+          Horarios
+        </h3>
+        <dl class="levelLayout__scheduleList">
+          <div class="levelLayout__scheduleRow">
+            <dt>Lunes a viernes</dt>
+            <dd>{schedule.mondayFriday}</dd>
+          </div>
+          <div class="levelLayout__scheduleRow">
+            <dt>Sábados</dt>
+            <dd>{schedule.saturday}</dd>
+          </div>
+        </dl>
+      </Card>
+    </div>
+  </Section>
+
+  <Section padding="xl" bg="inverse" class="levelLayout__cta">
+    <div class="levelLayout__ctaContent">
+      <h2 class="levelLayout__ctaTitle">¿Listo para iniciar en {name}?</h2>
+      <p class="levelLayout__ctaText">
+        Nuestro equipo de admisiones te acompaña en cada paso del proceso.
+      </p>
+      <Button href="/admisiones" size="lg">
+        {cta}
+      </Button>
+    </div>
+  </Section>
+</article>

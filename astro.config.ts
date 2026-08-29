@@ -15,6 +15,11 @@ export default defineConfig({
   build: {
     inlineStylesheets: "never",
   },
+  image: {
+    // Autoriza la optimización de imágenes remotas (Supabase Storage) en
+    // build-time: astro:assets las descarga y genera AVIF/WebP (GATE 4).
+    remotePatterns: [{ protocol: "https" }],
+  },
   vite: {
     plugins: [tailwindcss()],
   },

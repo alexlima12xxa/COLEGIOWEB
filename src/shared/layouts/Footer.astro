@@ -1,0 +1,167 @@
+---
+import { siteConfig } from "../../site.config";
+import { Phone, Mail, MapPin, Clock } from "@lucide/astro";
+import "./Footer.css";
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const socialIcons: Record<string, string[]> = {
+  facebook: [
+    "M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z",
+  ],
+  instagram: [
+    "M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z",
+    "M17.5 6.5h.01",
+    "M7.5 2h9a5 5 0 0 1 5 5v9a5 5 0 0 1-5 5h-9A5 5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2z",
+  ],
+  youtube: [
+    "M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z",
+    "M10 15l5-3-5-3z",
+  ],
+  linkedin: [
+    "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z",
+    "M2 9h4v12H2z",
+    "M4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  ],
+  x: ["M4 4l11.5 16.5M20.5 4L9 20.5M20.5 20.5L9 4M4 20.5L15.5 4"],
+  tiktok: ["M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"],
+};
+
+const socialLabels: Record<string, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  youtube: "YouTube",
+  linkedin: "LinkedIn",
+  x: "X",
+  tiktok: "TikTok",
+};
+
+const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
+const currentYear = new Date().getFullYear();
+---
+
+<footer class:list={["footer", className]}>
+  <div class="footer__container uContainer">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a
+          href="/"
+          class="footer__brandLink"
+          aria-label={`Inicio - ${siteConfig.identity.name}`}
+        >
+          <img
+            src={siteConfig.branding.assets.logoInverse ||
+              siteConfig.branding.assets.logo}
+            alt={siteConfig.identity.name}
+            class="footer__logo"
+            width="180"
+            height="45"
+            decoding="async"
+          />
+        </a>
+        <p class="footer__slogan">{siteConfig.identity.slogan}</p>
+      </div>
+
+      <div class="footer__contact">
+        <h2 class="footer__title">Contacto</h2>
+        <address class="footer__address">
+          <p class="footer__contactItem">
+            <MapPin aria-hidden="true" size={18} />
+            <span>
+              {siteConfig.contact.address}, {siteConfig.contact.city}
+            </span>
+          </p>
+          <p class="footer__contactItem">
+            <Phone aria-hidden="true" size={18} />
+            <a
+              href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+              class="footer__link"
+            >
+              {siteConfig.contact.phone}
+            </a>
+          </p>
+          <p class="footer__contactItem">
+            <Mail aria-hidden="true" size={18} />
+            <a href={`mailto:${siteConfig.contact.email}`} class="footer__link">
+              {siteConfig.contact.email}
+            </a>
+          </p>
+          <p class="footer__contactItem">
+            <Clock aria-hidden="true" size={18} />
+            <span>{siteConfig.contact.officeHours}</span>
+          </p>
+        </address>
+      </div>
+
+      <div class="footer__levels">
+        <h2 class="footer__title">Niveles educativos</h2>
+        <ul class="footer__list">
+          {
+            enabledLevels.map((level) => (
+              <li class="footer__item">
+                <a href={`/niveles/${level.slug}`} class="footer__link">
+                  {level.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="footer__social">
+        <h2 class="footer__title">Síguenos</h2>
+        <ul class="footer__socialList">
+          {
+            Object.entries(siteConfig.social).map(([key, url]) => {
+              if (!url) return null;
+              const paths = socialIcons[key];
+              if (!paths) return null;
+              return (
+                <li class="footer__socialItem">
+                  <a
+                    href={url}
+                    class="footer__socialLink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={socialLabels[key]}
+                  >
+                    <svg
+                      aria-hidden="true"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      {paths.map((d) => (
+                        <path d={d} />
+                      ))}
+                    </svg>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal">
+      <p class="footer__copyright">
+        {
+          `© ${currentYear} ${siteConfig.identity.name}. Todos los derechos reservados.`
+        }
+      </p>
+      <a href="/aviso-de-privacidad" class="footer__legalLink">
+        Aviso de privacidad
+      </a>
+    </div>
+  </div>
+</footer>

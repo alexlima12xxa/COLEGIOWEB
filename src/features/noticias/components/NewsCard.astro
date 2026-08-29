@@ -1,0 +1,45 @@
+---
+import Card from "../../../shared/ui/Card/Card.astro";
+import ContentImage from "../../../shared/ui/ContentImage/ContentImage.astro";
+import { formatShortDate } from "../../../shared/lib/formatDate";
+import type { Noticia } from "../../../shared/db/schema";
+import "./NewsCard.css";
+
+export interface Props {
+  noticia: Noticia;
+}
+
+const { noticia } = Astro.props;
+const href = `/noticias/${noticia.slug}`;
+---
+
+<Card variant="elevated" class="newsCard">
+  <a href={href} class="newsCard__media" tabindex="-1" aria-hidden="true">
+    <ContentImage
+      src={noticia.imagenPath}
+      alt={noticia.imagenAlt}
+      widths={[480, 768, 960]}
+      sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+      class="newsCard__image"
+    />
+  </a>
+
+  <div class="newsCard__body">
+    <div class="newsCard__meta">
+      <time datetime={noticia.publicadoEn} class="newsCard__date">
+        {formatShortDate(noticia.publicadoEn)}
+      </time>
+      {noticia.autor && <span class="newsCard__author">{noticia.autor}</span>}
+    </div>
+
+    <h3 class="newsCard__title">
+      <a href={href} class="newsCard__link">
+        {noticia.titulo}
+      </a>
+    </h3>
+
+    {noticia.resumen && <p class="newsCard__resumen">{noticia.resumen}</p>}
+
+    <a href={href} class="newsCard__more"> Leer noticia </a>
+  </div>
+</Card>

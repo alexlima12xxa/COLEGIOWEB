@@ -1,0 +1,68 @@
+---
+import { Picture } from "astro:assets";
+import { resolveAssetUrl } from "../../db/storage";
+import "./ContentImage.css";
+
+/**
+ * Imagen de contenido editorial que puede venir de:
+ *  - Supabase Storage (ruta relativa al bucket "media") → Picture con
+ *    astro:assets: descarga en build + AVIF/WebP + srcset.
+ *  - Ruta local de /public (fallbacks) → <img> nativo (public/ nunca se
+ *    procesa por astro:assets).
+ *  - Sin imagen → placeholder decorativo (evita saltos de layout).
+ */
+export interface Props {
+  src?: string;
+  alt: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: "eager" | "lazy";
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  sizes = "100vw",
+  widths = [480, 768, 1200],
+  loading = "lazy",
+  fetchpriority = "auto",
+  class: className,
+} = Astro.props;
+
+const resolved = resolveAssetUrl(src);
+const isRemote = resolved ? /^https?:\/\//i.test(resolved) : false;
+---
+
+{
+  resolved && isRemote ? (
+    <Picture
+      src={resolved}
+      alt={alt}
+      inferSize
+      formats={["avif", "webp"]}
+      widths={widths}
+      sizes={sizes}
+      fit="cover"
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding="async"
+      class:list={["contentImage", className]}
+    />
+  ) : resolved ? (
+    <img
+      src={resolved}
+      alt={alt}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding="async"
+      class:list={["contentImage", className]}
+    />
+  ) : (
+    <div
+      class:list={["contentImage", "contentImage--empty", className]}
+      aria-hidden="true"
+    />
+  )
+}

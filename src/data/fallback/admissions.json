@@ -1,0 +1,60 @@
+{
+  "schedule": [
+    {
+      "title": "Inscripciones abiertas",
+      "date": "Enero – marzo",
+      "description": "Recepción de formularios y documentos de aspirantes a todos los niveles educativos."
+    },
+    {
+      "title": "Evaluación de admisión",
+      "date": "Abril",
+      "description": "Entrevistas y pruebas de ubicación académica según el nivel al que aspira el estudiante."
+    },
+    {
+      "title": "Publicación de resultados",
+      "date": "Mayo",
+      "description": "Comunicación de resultados y entrega de cartas de aceptación a las familias seleccionadas."
+    },
+    {
+      "title": "Matrícula y bienvenida",
+      "date": "Junio – julio",
+      "description": "Proceso de matrícula, entrega de uniformes e inducción a la comunidad escolar."
+    }
+  ],
+  "requirements": [
+    "Formulario de inscripción debidamente diligenciado",
+    "Copia del documento de identidad del estudiante",
+    "Copia del documento de identidad del acudiente",
+    "Certificado de notas del año escolar anterior",
+    "Fotografía tamaño 3x4 actualizada",
+    "Paz y salvo o certificación académica de la institución anterior",
+    "Soporte de pago de la inscripción"
+  ],
+  "faq": [
+    {
+      "id": "edades",
+      "title": "¿Qué edades corresponden a cada nivel?",
+      "content": "Preescolar recibe niños entre 3 y 5 años, primaria de 6 a 10 años, secundaria de 11 a 14 años y media técnica de 15 a 17 años."
+    },
+    {
+      "id": "costos",
+      "title": "¿Cuáles son los costos de matrícula y pensión?",
+      "content": "Los valores se definen anualmente y se informan en la oficina de admisiones. Ofrecemos facilidades de pago y descuentos por pronto pago."
+    },
+    {
+      "id": "uniforme",
+      "title": "¿El colegio tiene uniforme?",
+      "content": "Sí, contamos con uniforme institucional diario y de educación física. Los detalles se entregan durante el proceso de inducción."
+    },
+    {
+      "id": "ingreso-mitad-ano",
+      "title": "¿Pueden ingresar estudiantes a mitad de año?",
+      "content": "Las vacantes disponibles a mitad de año dependen de cada grado. Te invitamos a consultar directamente con la oficina de admisiones."
+    },
+    {
+      "id": "transporte",
+      "title": "¿Ofrecen servicio de transporte escolar?",
+      "content": "Contamos con rutas de transporte escolar en convenio con empresas certificadas. Las rutas y tarifas se confirman antes del inicio de clases."
+    }
+  ]
+}

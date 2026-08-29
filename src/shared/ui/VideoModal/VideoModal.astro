@@ -1,0 +1,178 @@
+---
+import { Play, X } from "@lucide/astro";
+import "./VideoModal.css";
+
+export interface Props {
+  id: string;
+  videoUrl: string;
+  poster?: string;
+  title?: string;
+  class?: string;
+}
+
+const {
+  id,
+  videoUrl,
+  poster,
+  title = "Reproducir video",
+  class: className,
+} = Astro.props;
+---
+
+<div class:list={["videoModal", className]}>
+  <button
+    type="button"
+    class="videoModal__trigger"
+    aria-controls={id}
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    data-video-trigger
+  >
+    {
+      poster ? (
+        <img
+          src={poster}
+          alt=""
+          class="videoModal__poster"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : null
+    }
+    <span class="videoModal__play">
+      <Play aria-hidden="true" size={24} />
+      <span class="uVisuallyHidden">{title}</span>
+    </span>
+  </button>
+
+  <div
+    id={id}
+    class="videoModal__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label={title}
+    hidden
+  >
+    <div class="videoModal__backdrop" data-video-backdrop></div>
+    <div class="videoModal__content">
+      <button
+        type="button"
+        class="videoModal__close"
+        data-video-close
+        aria-label="Cerrar video"
+      >
+        <X aria-hidden="true" size={24} />
+      </button>
+      <div class="videoModal__player">
+        <video controls preload="none" class="videoModal__video">
+          <source src={videoUrl} type="video/mp4" />
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initVideoModal() {
+    const triggers = document.querySelectorAll("[data-video-trigger]");
+
+    triggers.forEach((trigger) => {
+      if (trigger.hasAttribute("data-initialized")) return;
+      trigger.setAttribute("data-initialized", "");
+
+      const controls = trigger.getAttribute("aria-controls");
+      if (!controls) return;
+
+      const dialog = document.getElementById(controls);
+      if (!dialog) return;
+
+      const dialogEl = dialog;
+      const backdrop = dialogEl.querySelector("[data-video-backdrop]");
+      const closeBtn = dialogEl.querySelector("[data-video-close]");
+      const video = dialogEl.querySelector("video");
+      const focusableSelectors =
+        'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])';
+
+      let lastFocused: Element | null = null;
+      let isOpen = false;
+
+      function getFocusable(): HTMLElement[] {
+        return Array.from(dialogEl.querySelectorAll(focusableSelectors))
+          .filter((el) => {
+            const htmlEl = el as HTMLElement;
+            return htmlEl.offsetParent !== null;
+          })
+          .map((el) => el as HTMLElement);
+      }
+
+      function trapFocus(event: KeyboardEvent) {
+        if (event.key !== "Tab" || !isOpen) return;
+        const focusable = getFocusable();
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+
+      function open() {
+        if (isOpen) return;
+        lastFocused = document.activeElement;
+        dialogEl.hidden = false;
+        dialogEl.setAttribute("data-open", "");
+        document.body.classList.add("video-modal-is-open");
+        trigger.setAttribute("aria-expanded", "true");
+        isOpen = true;
+
+        requestAnimationFrame(() => {
+          (closeBtn as HTMLElement)?.focus();
+          if (video) {
+            video.load();
+            video.play().catch(() => {});
+          }
+        });
+
+        document.addEventListener("keydown", handleKeyDown);
+      }
+
+      function close() {
+        if (!isOpen) return;
+        dialogEl.removeAttribute("data-open");
+        document.body.classList.remove("video-modal-is-open");
+        trigger.setAttribute("aria-expanded", "false");
+        document.removeEventListener("keydown", handleKeyDown);
+        isOpen = false;
+
+        const transitionDuration = 300;
+        setTimeout(() => {
+          dialogEl.hidden = true;
+          if (video) {
+            video.pause();
+            video.currentTime = 0;
+          }
+          if (lastFocused instanceof HTMLElement) {
+            lastFocused.focus();
+          }
+        }, transitionDuration);
+      }
+
+      function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === "Escape") close();
+        trapFocus(event);
+      }
+
+      trigger.addEventListener("click", open);
+      backdrop?.addEventListener("click", close);
+      closeBtn?.addEventListener("click", close);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initVideoModal);
+  if (document.readyState !== "loading") initVideoModal();
+</script>

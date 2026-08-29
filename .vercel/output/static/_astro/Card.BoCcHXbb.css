@@ -1,0 +1,1 @@
+@layer components{.card{gap:var(--space-md);padding:var(--space-lg);background-color:var(--color-surface);border-radius:var(--radius-lg);flex-direction:column;display:flex}.card--bordered{border:1px solid var(--color-border)}.card--elevated{box-shadow:var(--shadow-md)}}

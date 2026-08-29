@@ -1,0 +1,37 @@
+---
+import type { Noticia } from "../../../shared/db/schema";
+import NewsCard from "./NewsCard.astro";
+import NewsPagination from "./NewsPagination.astro";
+import "./NewsList.css";
+
+export interface Props {
+  items: Noticia[];
+  page: number;
+  totalPages: number;
+}
+
+const { items, page, totalPages } = Astro.props;
+---
+
+{
+  items.length > 0 ? (
+    <>
+      <ul class="newsList">
+        {items.map((noticia) => (
+          <li class="newsList__item">
+            <NewsCard noticia={noticia} />
+          </li>
+        ))}
+      </ul>
+
+      <NewsPagination page={page} totalPages={totalPages} />
+    </>
+  ) : (
+    <div class="newsList__empty">
+      <h2 class="newsList__emptyTitle">Aún no hay noticias publicadas</h2>
+      <p class="newsList__emptyText">
+        Pronto compartiremos novedades de nuestra institución.
+      </p>
+    </div>
+  )
+}
