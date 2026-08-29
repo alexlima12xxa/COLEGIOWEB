@@ -52,31 +52,57 @@ function fileSlug(id: string): string {
   );
 }
 
-function toNoticia(entry: CollectionEntry<"noticias">): Noticia {
+function toNoticia(entry: CollectionEntry<"noticias">): Noticia | undefined {
   const slug = fileSlug(entry.id);
+  const titulo = entry.data.titulo;
+  const contenido = entry.body?.trim();
+
+  // Una noticia sin título ni contenido es un borrador inválido del CMS:
+  // se descarta en lugar de romper el build.
+  if (!titulo || !contenido) {
+    console.warn(
+      `[cms] Noticia "${slug}" ignorada: sin título o contenido.`,
+    );
+    return undefined;
+  }
+
   return noticiaSchema.parse({
     id: uuidv5(slug),
     slug,
-    titulo: entry.data.titulo,
+    titulo,
     resumen: entry.data.resumen,
-    contenido: entry.body,
+    contenido,
     imagenPath: entry.data.imagenPath,
-    imagenAlt: entry.data.imagenAlt,
+    imagenAlt: entry.data.imagenAlt ?? "",
     autor: entry.data.autor,
-    publicadoEn: entry.data.publicadoEn,
+    publicadoEn: entry.data.publicadoEn ?? new Date().toISOString(),
   });
 }
 
-function toCircular(entry: CollectionEntry<"circulares">): Circular {
+function toCircular(entry: CollectionEntry<"circulares">): Circular | undefined {
+  const titulo = entry.data.titulo;
+
+  if (!titulo) {
+    console.warn(
+      `[cms] Circular "${fileSlug(entry.id)}" ignorada: sin título.`,
+    );
+    return undefined;
+  }
+
+  const publicadoEn = entry.data.publicadoEn ?? new Date().toISOString();
+  // `fecha` (fecha del evento) cae a la fecha de publicación si el editor
+  // no la rellenó.
+  const fecha = entry.data.fecha ?? publicadoEn.slice(0, 10);
+
   return circularSchema.parse({
     id: uuidv5(fileSlug(entry.id)),
-    titulo: entry.data.titulo,
+    titulo,
     descripcion: entry.data.descripcion,
     categoria: entry.data.categoria,
-    fecha: entry.data.fecha,
+    fecha,
     archivoPath: entry.data.archivoPath,
     archivoNombre: entry.data.archivoNombre,
-    publicadoEn: entry.data.publicadoEn,
+    publicadoEn,
   });
 }
 
@@ -84,6 +110,7 @@ async function getCmsNoticias(): Promise<Noticia[]> {
   const entries = await getCollection("noticias");
   return entries
     .map(toNoticia)
+    .filter((n): n is Noticia => n !== undefined)
     .sort(
       (a, b) =>
         new Date(b.publicadoEn).getTime() - new Date(a.publicadoEn).getTime(),
@@ -94,6 +121,7 @@ async function getCmsCirculares(): Promise<Circular[]> {
   const entries = await getCollection("circulares");
   return entries
     .map(toCircular)
+    .filter((c): c is Circular => c !== undefined)
     .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
 }
 
