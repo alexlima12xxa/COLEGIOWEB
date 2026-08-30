@@ -16,12 +16,48 @@ const levelContent = levelsData[slug as keyof typeof levelsData];
 if (!levelConfig || !levelContent) {
   throw new Error(`Nivel no encontrado: ${slug}`);
 }
+
+const levelUrl = new URL(
+  `/niveles/${levelConfig.slug}/`,
+  siteConfig.seo.siteUrl,
+).toString();
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Inicio",
+      item: new URL("/", siteConfig.seo.siteUrl).toString(),
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Niveles",
+      item: new URL("/niveles/", siteConfig.seo.siteUrl).toString(),
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: levelConfig.name,
+      item: levelUrl,
+    },
+  ],
+};
 ---
 
 <BaseLayout
   title={levelConfig.name}
   description={levelConfig.description}
 >
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbJsonLd)}
+    is:inline
+  />
   <NivelLayout
     name={levelConfig.name}
     shortName={levelConfig.shortName}
