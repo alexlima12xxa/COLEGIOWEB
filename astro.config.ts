@@ -13,7 +13,10 @@ export default defineConfig({
   output: "static",
   adapter: vercel(),
   build: {
-    inlineStylesheets: "never",
+    // CSS total ~10KB: inlinerlo en el HTML elimina 6 peticiones
+    // render-blocking (FCP móvil 2.2s -> ~1.4s). El costo de caché es
+    // despreciable a este tamaño (GATE 7: 100/100 móvil).
+    inlineStylesheets: "always",
   },
   image: {
     // Autoriza la optimización de imágenes remotas (Supabase Storage) en

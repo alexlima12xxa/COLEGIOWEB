@@ -22,6 +22,8 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
+    /* Reserva el espacio 16:9 desde el primer layout (evita CLS del poster) */
+    aspect-ratio: 16 / 9;
   }
 
   .videoModal__trigger:focus-visible {
@@ -30,9 +32,10 @@
   }
 
   .videoModal__poster {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
+    height: 100%;
     object-fit: cover;
   }
 

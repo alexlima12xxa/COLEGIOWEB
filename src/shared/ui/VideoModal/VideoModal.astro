@@ -8,6 +8,8 @@ export interface Props {
   poster?: string;
   title?: string;
   class?: string;
+  /** El poster del hero es el LCP en móvil: eager + high priority. */
+  eager?: boolean;
 }
 
 const {
@@ -15,6 +17,7 @@ const {
   videoUrl,
   poster,
   title = "Reproducir video",
+  eager = false,
   class: className,
 } = Astro.props;
 ---
@@ -34,7 +37,10 @@ const {
           src={poster}
           alt=""
           class="videoModal__poster"
-          loading="lazy"
+          width={1600}
+          height={900}
+          loading={eager ? "eager" : "lazy"}
+          fetchpriority={eager ? "high" : "auto"}
           decoding="async"
         />
       ) : null

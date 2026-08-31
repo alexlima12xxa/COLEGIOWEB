@@ -80,6 +80,7 @@ const videoJsonLd = {
             videoUrl="/branding/tour.mp4"
             poster={tourPoster}
             title="Ver tour virtual"
+            eager
           />
         </div>
         <div class="homeHero__photo">
@@ -290,7 +291,10 @@ const videoJsonLd = {
     overflow: hidden;
   }
 
-  .homeHero__photo img {
+  /* :global — el <img> lo renderiza ResponsiveImage (astro:assets) y no
+     hereda el scope de esta página; sin :global el aspect-ratio no aplicaba
+     y la imagen reservaba altura 0 hasta cargar (CLS 0.11). */
+  .homeHero__photo :global(img) {
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -460,7 +464,7 @@ const videoJsonLd = {
     min-width: 0;
   }
 
-  .homeGallery__figure img {
+  .homeGallery__figure :global(img) {
     width: 100%;
     height: 100%;
     max-width: 100%;
@@ -474,7 +478,7 @@ const videoJsonLd = {
       grid-row: span 2;
     }
 
-    .homeGallery__figure--large img {
+    .homeGallery__figure--large :global(img) {
       aspect-ratio: 1 / 1;
     }
 
@@ -482,7 +486,7 @@ const videoJsonLd = {
       grid-row: span 2;
     }
 
-    .homeGallery__figure--tall img {
+    .homeGallery__figure--tall :global(img) {
       aspect-ratio: 3 / 4;
     }
 
@@ -490,7 +494,7 @@ const videoJsonLd = {
       grid-column: span 2;
     }
 
-    .homeGallery__figure--wide img {
+    .homeGallery__figure--wide :global(img) {
       aspect-ratio: 16 / 9;
     }
   }

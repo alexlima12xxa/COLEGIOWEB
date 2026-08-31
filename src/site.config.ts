@@ -291,9 +291,9 @@ export const siteConfig = siteConfigSchema.parse({
       info: "#0369a1",
     },
     fonts: {
-      sans: '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      sans: '"Inter", "Inter-fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
       display:
-        '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        '"Inter", "Inter-fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
       mono: 'ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
     },
     radius: {
@@ -310,7 +310,7 @@ export const siteConfig = siteConfigSchema.parse({
       favicon: "/branding/favicon.svg",
       ogImage: "/branding/og-image.svg",
       tourVideoPoster: "/branding/placeholders/hero-tour-poster.jpg",
-      heroPhoto: "/branding/placeholders/hero-photo.jpg",
+      heroPhoto: "/branding/placeholders/hero-photo.avif",
     },
   },
   seo: {
