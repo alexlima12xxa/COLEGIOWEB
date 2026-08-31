@@ -44,7 +44,7 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 | # | Paso | Estado | Commit | Dificultad | Notas |
 |---|------|--------|--------|------------|-------|
 | 9 | Fix Noticias → 100 (scoped CSS + heading-order + re-audit) | ✅ Completado | `8ff1247` | 🟡 | /noticias 99/100/100/100 · detalle 99/100/100/100 · LCP 1.9s/1.8s · CLS 0 |
-| 10 | Responsive < 375px | ⏳ Pendiente | — | 🟢 | |
+| 10 | Responsive < 375px | ✅ Completado | — | 🟢 | 0 overflow en 10 páginas a 320px/360px (CDP headless) |
 | 11 | Re-auditoría final Lighthouse | ⏳ Pendiente | — | 🟢 | |
 | 12 | Deploy Vercel | ⏳ Pendiente | — | 🟠 | leftover Netlify Identity |
 | 13 | Deploy hook Vercel | ⏳ Pendiente | — | 🟡 | acción manual usuario |
@@ -65,3 +65,9 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 - Working tree con cambio sin commitear: `reports/2026-08-30_eliminar-decap-cms-endurecer-imagenes.md` (leftover de sesión previa, solo marca estado a ✅ COMPLETADO). Se deja fuera de los commits de esta sesión.
 - **Desvío menor (Paso 9):** el LCP de /noticias quedaba en 3.3s (naranja) tras el fix del bug scoped CSS. Causa raíz adicional: la primera imagen de la lista (`NewsCard`) estaba `loading=lazy` + `fetchpriority=auto`. Fix aplicado: `eager` + `fetchpriority=high` en la primera tarjeta (prop `eager` en NewsCard, pasada por NewsList con `index === 0`). Resultado: LCP 3.3s → 1.9s.
 - **Observación pre-existente (no tocada):** `src/features/noticias/components/NewsList.css` línea 28 usa `:global(.card)` dentro de un archivo CSS externo (no es un `<style>` scoped), lo que genera un warning de lightningcss (`'global' is not a valid pseudo-class`) y el selector no resuelve. No afecta el layout visible (las tarjetas llenan la celda de grid por flexbox). Se revisa en Paso 10 (responsive) si amerita corrección.
+
+### Verificación Paso 10 (responsive < 375px)
+- Método: Chrome headless + CDP (`Emulation.setDeviceMetricsOverride` mobile). Se midió `document.documentElement.scrollWidth` vs `clientWidth` y se detectaron elementos con `getBoundingClientRect()` fuera del viewport (ignorando los contenidos dentro de contenedores con `overflow-x: auto/scroll/hidden`).
+- Páginas probadas a **320px y 360px**: `/`, `/noticias/`, `/noticias/[detalle]/`, `/nosotros/`, `/niveles/`, `/niveles/preescolar/`, `/admisiones/`, `/circulares/`, `/contacto/`, `/aviso-de-privacidad/`.
+- Resultado: **0 overflow horizontal** y **0 elementos desbordados** en todos los casos. No se requirieron cambios de código.
+- La tabla de circulares (`min-width:46rem` en `CircularesList.css`) se desplaza dentro de su contenedor `overflow-x:auto`, sin causar scroll de página.
