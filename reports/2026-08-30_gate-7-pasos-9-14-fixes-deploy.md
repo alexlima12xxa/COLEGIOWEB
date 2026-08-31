@@ -46,7 +46,7 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 | 9 | Fix Noticias → 100 (scoped CSS + heading-order + re-audit) | ✅ Completado | `8ff1247` | 🟡 | /noticias 99/100/100/100 · detalle 99/100/100/100 · LCP 1.9s/1.8s · CLS 0 |
 | 10 | Responsive < 375px | ✅ Completado | — | 🟢 | 0 overflow en 10 páginas a 320px/360px (CDP headless) |
 | 11 | Re-auditoría final Lighthouse | ✅ Completado | `88aed4e` | 🟢 | Home/Noticias/Detalle 99/100/100/100 |
-| 12 | Deploy Vercel | ⏳ Pendiente | — | 🟠 | leftover Netlify Identity |
+| 12 | Deploy Vercel | ✅ Completado | `37c2459` | 🟠 | push a main (14 commits) · build Vercel disparado · verificar URL en dashboard |
 | 13 | Deploy hook Vercel | ⏳ Pendiente | — | 🟡 | acción manual usuario |
 | 14 | Kit de cambio de colegio | ⏳ Pendiente | — | 🟡 | |
 
@@ -82,3 +82,9 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 
 - JSON de evidencia: `reports/lh-final-home.json`, `reports/lh-final-noticias.json`, `reports/lh-final-detalle.json`.
 - **Justificación de Perf=99 (no 100):** el único factor que resta es el Total Blocking Time (~70–100ms) del JS interactivo imprescindible: Astro `ClientRouter` (View Transitions) + drawer de navegación móvil (menú accesible con focus trap). Eliminarlo requeriría quitar funcionalidad de navegación. A11y / Best Practices / SEO están en 100 y el LCP/CLS en verde. Cumple el criterio de aceptación "100/100 o lo más cercano con justificación".
+
+### Deploy Vercel (Paso 12)
+- **Fix aplicado:** eliminado el `<script>` de Netlify Identity en `src/shared/layouts/BaseLayout.astro` (leftover de migración Netlify→Vercel, dominio mal escrito `coegioweb.netlify.app`). Resuelve los 2 errores TS (`netlifyIdentity` no existe en `Window`). `/admin` (Decap CMS) ya no existe desde `c77b7bc`, el script no aplicaba.
+- **Verificación:** `pnpm build` limpio (25 páginas) + `pnpm astro check` → **0 errors** (antes 2).
+- **Deploy:** `git push origin main` → `e2de1a8..37c2459` (14 commits del GATE 7). El push dispara el build+deploy de Vercel (repo conectado por git). Sin CLI `vercel` local (decisión: no instalar, el flujo git es suficiente).
+- **Pendiente de verificación por el usuario:** estado del build y URL en el dashboard de Vercel (o commit status checks en GitHub).
