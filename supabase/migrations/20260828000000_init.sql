@@ -253,8 +253,6 @@ values (
 )
 on conflict (id) do nothing;
 
-comment on table storage.objects is null;
-
 create policy "media_read_public" on storage.objects
   for select
   using (bucket_id = 'media');

@@ -5,7 +5,7 @@
 > **Stack:** Astro 7.2.9 (SSG) + Tailwind v4 + Supabase · Vercel
 > **Riesgo:** MEDIO
 > **Modo de ejecución:** MANUAL
-> **Estado:** 🟡 EN PROGRESO
+> **Estado:** ✅ COMPLETADO
 
 ---
 
@@ -42,17 +42,19 @@ Dos decisiones que se ejecutan juntas:
 
 | # | Paso | Estado | Commit | Dificultad | Notas |
 |---|------|--------|--------|------------|-------|
-| 1 | Eliminar public/admin + src/content + content.config.ts + media/uploads | ⏳ Pendiente | — | 🟢 | verificado: fallbacks usan /branding/, no /media/ |
-| 2 | Refactorizar content.ts (quitar CMS, cadena Supabase→fallback) | ⏳ Pendiente | — | 🟡 | |
-| 3 | Quitar decap-cms de package.json | ⏳ Pendiente | — | 🟢 | |
-| 4 | Restringir remotePatterns + corregir comentario image | ⏳ Pendiente | — | 🟢 | |
-| 5 | Unificar ResponsiveImage con ContentImage | ⏳ Pendiente | — | 🟡 | 3 consumidores: index/nosotros/NivelLayout |
+| 1 | Eliminar public/admin + src/content + content.config.ts + media/uploads | ✅ Completado | `c77b7bc` | 🟢 | fallbacks usan /branding/, no /media/ |
+| 2 | Refactorizar content.ts (quitar CMS, cadena Supabase→fallback) | ✅ Completado | `c77b7bc` | 🟡 | |
+| 3 | Quitar decap-cms de package.json | ✅ Completado | `c77b7bc` | 🟢 | -443 paquetes |
+| 4 | Restringir remotePatterns + corregir comentario image | ✅ Completado | `c77b7bc` | 🟢 | `*.supabase.co` |
+| 5 | Unificar ResponsiveImage con ContentImage | ✅ Completado | `c77b7bc` | 🟡 | 3 consumidores OK |
 
 ---
 
 ## Registro de commits
 
-_(Se llenará conforme avance la ejecución)_
+| Commit | Paso | Mensaje |
+|--------|------|---------|
+| `c77b7bc` | 1-5 | refactor: eliminar Decap CMS y endurecer imágenes de Supabase |
 
 ---
 
