@@ -45,7 +45,7 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 |---|------|--------|--------|------------|-------|
 | 9 | Fix Noticias → 100 (scoped CSS + heading-order + re-audit) | ✅ Completado | `8ff1247` | 🟡 | /noticias 99/100/100/100 · detalle 99/100/100/100 · LCP 1.9s/1.8s · CLS 0 |
 | 10 | Responsive < 375px | ✅ Completado | — | 🟢 | 0 overflow en 10 páginas a 320px/360px (CDP headless) |
-| 11 | Re-auditoría final Lighthouse | ✅ Completado | — | 🟢 | Home/Noticias/Detalle 99/100/100/100 |
+| 11 | Re-auditoría final Lighthouse | ✅ Completado | `88aed4e` | 🟢 | Home/Noticias/Detalle 99/100/100/100 |
 | 12 | Deploy Vercel | ⏳ Pendiente | — | 🟠 | leftover Netlify Identity |
 | 13 | Deploy hook Vercel | ⏳ Pendiente | — | 🟡 | acción manual usuario |
 | 14 | Kit de cambio de colegio | ⏳ Pendiente | — | 🟡 | |
