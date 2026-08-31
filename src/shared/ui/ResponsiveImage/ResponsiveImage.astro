@@ -1,4 +1,6 @@
 ---
+import ContentImage from "../ContentImage/ContentImage.astro";
+import { resolveAssetUrl } from "../../db/storage";
 import "./ResponsiveImage.css";
 
 export interface Props {
@@ -10,6 +12,7 @@ export interface Props {
   fetchpriority?: "high" | "low" | "auto";
   class?: string;
   sizes?: string;
+  widths?: number[];
 }
 
 const {
@@ -21,49 +24,43 @@ const {
   fetchpriority = "auto",
   class: className,
   sizes = "100vw",
+  widths = [480, 768, 1200],
 } = Astro.props;
 
 /**
- * Build a simple srcset for common widths when the source looks like a
- * placeholder or static image path. For external URLs without known sizing
- * support we fall back to the original src only.
+ * Imagen responsiva unificada con ContentImage:
+ * - Fuente remota (Supabase Storage, http/https): delega en ContentImage,
+ *   que usa <Picture> de astro:assets → AVIF/WebP + srcset + widths.
+ * - Ruta local de /public (fallbacks /branding/, placeholders): <img> nativo
+ *   con width/height (astro:assets NO procesa /public).
+ * - Local en src/: (caso cubierto por ContentImage vía import) — aquí no
+ *   aplica porque los assets de branding viven en /public.
  */
-function supportsResizing(imageSrc: string): boolean {
-  return (
-    imageSrc.startsWith("/branding/") ||
-    imageSrc.startsWith("http://localhost") ||
-    imageSrc.startsWith("https://picsum.photos")
-  );
-}
-
-function buildSrcSet(imageSrc: string): string | undefined {
-  if (!supportsResizing(imageSrc)) return undefined;
-
-  if (imageSrc.includes("picsum.photos")) {
-    const widths = [400, 800, 1200];
-    return widths
-      .map((w) => {
-        const url = imageSrc.replace(/\/\d+\/\d+$/, `/${w}/0`);
-        return `${url} ${w}w`;
-      })
-      .join(", ");
-  }
-
-  return undefined;
-}
-
-const srcSet = buildSrcSet(src);
+const resolved = resolveAssetUrl(src);
+const isRemote = resolved ? /^https?:\/\//i.test(resolved) : false;
 ---
 
-<img
-  src={src}
-  srcset={srcSet}
-  sizes={srcSet ? sizes : undefined}
-  alt={alt}
-  width={width}
-  height={height}
-  loading={loading}
-  fetchpriority={fetchpriority}
-  decoding="async"
-  class:list={["responsiveImage", className]}
-/>
+{
+  isRemote ? (
+    <ContentImage
+      src={src}
+      alt={alt}
+      sizes={sizes}
+      widths={widths}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      class={className}
+    />
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding="async"
+      class:list={["responsiveImage", className]}
+    />
+  )
+}

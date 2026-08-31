@@ -19,9 +19,11 @@ export default defineConfig({
     inlineStylesheets: "always",
   },
   image: {
-    // Autoriza la optimización de imágenes remotas (Supabase Storage) en
-    // build-time: astro:assets las descarga y genera AVIF/WebP (GATE 4).
-    remotePatterns: [{ protocol: "https" }],
+    // Restringe la optimización de imágenes remotas a Supabase Storage.
+    // Las imágenes remotas se sirven y optimizan vía el endpoint /_image en
+    // runtime (serverless Vercel), con cache del CDN. Las imágenes LOCALES
+    // (fallbacks /branding/ en /public) NO pasan por astro:assets.
+    remotePatterns: [{ protocol: "https", hostname: "*.supabase.co" }],
   },
   vite: {
     plugins: [tailwindcss()],
