@@ -43,7 +43,7 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 
 | # | Paso | Estado | Commit | Dificultad | Notas |
 |---|------|--------|--------|------------|-------|
-| 9 | Fix Noticias → 100 (scoped CSS + heading-order + re-audit) | ✅ Completado | — | 🟡 | /noticias 99/100/100/100 · detalle 99/100/100/100 · LCP 1.9s/1.8s · CLS 0 |
+| 9 | Fix Noticias → 100 (scoped CSS + heading-order + re-audit) | ✅ Completado | `8ff1247` | 🟡 | /noticias 99/100/100/100 · detalle 99/100/100/100 · LCP 1.9s/1.8s · CLS 0 |
 | 10 | Responsive < 375px | ⏳ Pendiente | — | 🟢 | |
 | 11 | Re-auditoría final Lighthouse | ⏳ Pendiente | — | 🟢 | |
 | 12 | Deploy Vercel | ⏳ Pendiente | — | 🟠 | leftover Netlify Identity |
@@ -56,7 +56,7 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 
 | Commit | Paso | Mensaje |
 |--------|------|---------|
-| _(pendiente)_ | 9 | fix(noticias): scoped CSS :global + heading-order + LCP imagen eager |
+| `8ff1247` | 9 | fix(noticias): scoped CSS :global + heading-order + LCP imagen eager |
 
 ---
 
