@@ -7,9 +7,10 @@ import "./NewsCard.css";
 
 export interface Props {
   noticia: Noticia;
+  eager?: boolean;
 }
 
-const { noticia } = Astro.props;
+const { noticia, eager = false } = Astro.props;
 const href = `/noticias/${noticia.slug}`;
 ---
 
@@ -20,6 +21,8 @@ const href = `/noticias/${noticia.slug}`;
       alt={noticia.imagenAlt}
       widths={[480, 768, 960]}
       sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+      loading={eager ? "eager" : "lazy"}
+      fetchpriority={eager ? "high" : "auto"}
       class="newsCard__image"
     />
   </a>
@@ -32,11 +35,11 @@ const href = `/noticias/${noticia.slug}`;
       {noticia.autor && <span class="newsCard__author">{noticia.autor}</span>}
     </div>
 
-    <h3 class="newsCard__title">
+    <h2 class="newsCard__title">
       <a href={href} class="newsCard__link">
         {noticia.titulo}
       </a>
-    </h3>
+    </h2>
 
     {noticia.resumen && <p class="newsCard__resumen">{noticia.resumen}</p>}
 

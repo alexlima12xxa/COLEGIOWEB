@@ -223,7 +223,10 @@ const jsonLd = {
     background-color: var(--color-surface-strong);
   }
 
-  .newsDetail__image {
+  /* :global — la clase la aplica ContentImage (hijo) y no hereda el scope;
+     sin :global el aspect-ratio 16/9 no aplicaba y la imagen no reservaba
+     espacio (CLS 0.27). */
+  .newsDetail__media :global(.newsDetail__image) {
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -241,57 +244,60 @@ const jsonLd = {
     color: var(--color-text);
   }
 
-  .newsDetail__body h2 {
+  /* :global — el contenido del artículo se inyecta con set:html (markdown),
+     así que los elementos hijo no llevan el scope de esta página; sin
+     :global estos estilos nunca aplicaban (subrayado de links, headings, etc). */
+  .newsDetail__body :global(h2) {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-semibold);
     margin-top: var(--space-lg);
   }
 
-  .newsDetail__body h3 {
+  .newsDetail__body :global(h3) {
     font-size: var(--text-xl);
     font-weight: var(--font-weight-semibold);
     margin-top: var(--space-md);
   }
 
-  .newsDetail__body p {
+  .newsDetail__body :global(p) {
     word-break: break-words;
   }
 
-  .newsDetail__body a {
+  .newsDetail__body :global(a) {
     color: var(--color-primary);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
-  .newsDetail__body ul,
-  .newsDetail__body ol {
+  .newsDetail__body :global(ul),
+  .newsDetail__body :global(ol) {
     padding-left: var(--space-lg);
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
   }
 
-  .newsDetail__body blockquote {
+  .newsDetail__body :global(blockquote) {
     border-left: 4px solid var(--color-primary);
     padding-left: var(--space-md);
     color: var(--color-text-muted);
     font-style: italic;
   }
 
-  .newsDetail__body table {
+  .newsDetail__body :global(table) {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--text-base);
   }
 
-  .newsDetail__body th,
-  .newsDetail__body td {
+  .newsDetail__body :global(th),
+  .newsDetail__body :global(td) {
     padding: var(--space-sm) var(--space-md);
     border: 1px solid var(--color-border);
     text-align: left;
   }
 
-  .newsDetail__body th {
+  .newsDetail__body :global(th) {
     background-color: var(--color-surface-muted);
     font-weight: var(--font-weight-semibold);
   }

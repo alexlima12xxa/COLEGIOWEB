@@ -17,9 +17,9 @@ const { items, page, totalPages } = Astro.props;
   items.length > 0 ? (
     <>
       <ul class="newsList">
-        {items.map((noticia) => (
+        {items.map((noticia, index) => (
           <li class="newsList__item">
-            <NewsCard noticia={noticia} />
+            <NewsCard noticia={noticia} eager={index === 0} />
           </li>
         ))}
       </ul>
