@@ -45,7 +45,7 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 |---|------|--------|--------|------------|-------|
 | 9 | Fix Noticias → 100 (scoped CSS + heading-order + re-audit) | ✅ Completado | `8ff1247` | 🟡 | /noticias 99/100/100/100 · detalle 99/100/100/100 · LCP 1.9s/1.8s · CLS 0 |
 | 10 | Responsive < 375px | ✅ Completado | — | 🟢 | 0 overflow en 10 páginas a 320px/360px (CDP headless) |
-| 11 | Re-auditoría final Lighthouse | ⏳ Pendiente | — | 🟢 | |
+| 11 | Re-auditoría final Lighthouse | ✅ Completado | — | 🟢 | Home/Noticias/Detalle 99/100/100/100 |
 | 12 | Deploy Vercel | ⏳ Pendiente | — | 🟠 | leftover Netlify Identity |
 | 13 | Deploy hook Vercel | ⏳ Pendiente | — | 🟡 | acción manual usuario |
 | 14 | Kit de cambio de colegio | ⏳ Pendiente | — | 🟡 | |
@@ -71,3 +71,14 @@ Continuación del plan GATE 7. Pasos 1–8 ya completados (commits `64035ea` →
 - Páginas probadas a **320px y 360px**: `/`, `/noticias/`, `/noticias/[detalle]/`, `/nosotros/`, `/niveles/`, `/niveles/preescolar/`, `/admisiones/`, `/circulares/`, `/contacto/`, `/aviso-de-privacidad/`.
 - Resultado: **0 overflow horizontal** y **0 elementos desbordados** en todos los casos. No se requirieron cambios de código.
 - La tabla de circulares (`min-width:46rem` en `CircularesList.css`) se desplaza dentro de su contenedor `overflow-x:auto`, sin causar scroll de página.
+
+### Evidencia final Lighthouse (Paso 11) — móvil, throttling devtools 4G estricto
+
+| Página | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|--------|-------------|---------------|----------------|-----|-----|-----|-----|
+| Home (`/`) | **99** | 100 | 100 | 100 | 1.7s | 0.014 | 100ms |
+| Noticias (`/noticias/`) | **99** | 100 | 100 | 100 | 1.8s | 0 | 80ms |
+| Detalle (`/noticias/[slug]/`) | **99** | 100 | 100 | 100 | 1.9s | 0 | 70ms |
+
+- JSON de evidencia: `reports/lh-final-home.json`, `reports/lh-final-noticias.json`, `reports/lh-final-detalle.json`.
+- **Justificación de Perf=99 (no 100):** el único factor que resta es el Total Blocking Time (~70–100ms) del JS interactivo imprescindible: Astro `ClientRouter` (View Transitions) + drawer de navegación móvil (menú accesible con focus trap). Eliminarlo requeriría quitar funcionalidad de navegación. A11y / Best Practices / SEO están en 100 y el LCP/CLS en verde. Cumple el criterio de aceptación "100/100 o lo más cercano con justificación".
