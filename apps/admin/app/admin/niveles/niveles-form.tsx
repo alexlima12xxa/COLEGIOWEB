@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import type { NivelesState } from "./actions";
-import { guardarNiveles, NIVELES } from "./actions";
+import { guardarNiveles } from "./actions";
+import { NIVELES } from "./niveles-constants";
 
 const inputClass =
   "mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20";
