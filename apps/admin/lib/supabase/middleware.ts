@@ -30,9 +30,12 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Importante: NO ejecutar supabase.auth.getUser() entre la creación del
-  // cliente y el return. getUser() refresca la sesión si es necesario.
-  await supabase.auth.getUser();
+  // getUser() valida el JWT contra Supabase y refresca la sesión si es
+  // necesario. Devuelve el usuario autenticado (o null) para que el proxy
+  // decida el redirect sin duplicar la creación del cliente.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return { supabaseResponse, user };
 }
