@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { triggerRebuild } from "@/lib/rebuild";
+import { NIVELES } from "./niveles-constants";
 
 export type NivelesState = {
   ok?: boolean;
@@ -22,15 +23,6 @@ function clamp(value: string, limits: { min: number; max: number }): string | nu
   if (len > limits.max) return `Máximo ${limits.max} caracteres (actual: ${len}).`;
   return null;
 }
-
-export const NIVELES = [
-  { clave: "preescolar", label: "Preescolar" },
-  { clave: "primaria", label: "Primaria" },
-  { clave: "secundaria", label: "Secundaria" },
-  { clave: "media-tecnica", label: "Media Técnica" },
-] as const;
-
-export type NivelClave = (typeof NIVELES)[number]["clave"];
 
 interface NivelShape {
   headline?: string;
