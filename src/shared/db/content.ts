@@ -51,7 +51,7 @@ export async function getAllNoticias(): Promise<Noticia[]> {
       const { data, error } = await context.client
         .from("noticias")
         .select(
-          "id, slug, titulo, resumen, contenido, imagen_path:imagenPath, imagen_alt:imagenAlt, autor, publicado_en:publicadoEn",
+          "id, slug, titulo, resumen, contenido, imagenPath:imagen_path, imagenAlt:imagen_alt, autor, publicadoEn:publicado_en",
         )
         .eq("tenant_id", context.config.tenantId)
         .eq("publicado", true)
@@ -110,7 +110,7 @@ export async function getAllCirculares(): Promise<Circular[]> {
       const { data, error } = await context.client
         .from("circulares")
         .select(
-          "id, titulo, descripcion, categoria, fecha, archivo_path:archivoPath, archivo_nombre:archivoNombre, publicado_en:publicadoEn",
+          "id, titulo, descripcion, categoria, fecha, archivoPath:archivo_path, archivoNombre:archivo_nombre, publicadoEn:publicado_en",
         )
         .eq("tenant_id", context.config.tenantId)
         .eq("publicado", true)
