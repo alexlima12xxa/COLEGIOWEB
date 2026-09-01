@@ -59,8 +59,20 @@ export async function getAllNoticias(): Promise<Noticia[]> {
 
       if (error) throw error;
       if (data && data.length > 0) {
-        noticiasCache = z.array(noticiaSchema).parse(data);
-        return noticiasCache;
+        // Parse fila por fila: una fila inválida (p. ej. slug con mayúsculas
+        // o puntos) NO debe descartar el resto de noticias reales.
+        const parsed = data
+          .map((row) => noticiaSchema.safeParse(row))
+          .filter(
+            (result): result is { success: true; data: Noticia } =>
+              result.success,
+          )
+          .map((result) => result.data);
+
+        if (parsed.length > 0) {
+          noticiasCache = parsed;
+          return noticiasCache;
+        }
       }
     } catch (error) {
       console.warn(
@@ -118,8 +130,19 @@ export async function getAllCirculares(): Promise<Circular[]> {
 
       if (error) throw error;
       if (data && data.length > 0) {
-        circularesCache = z.array(circularSchema).parse(data);
-        return circularesCache;
+        // Parse fila por fila: una fila inválida NO debe descartar el resto.
+        const parsed = data
+          .map((row) => circularSchema.safeParse(row))
+          .filter(
+            (result): result is { success: true; data: Circular } =>
+              result.success,
+          )
+          .map((result) => result.data);
+
+        if (parsed.length > 0) {
+          circularesCache = parsed;
+          return circularesCache;
+        }
       }
     } catch (error) {
       console.warn(
