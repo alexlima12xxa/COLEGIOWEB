@@ -41,8 +41,17 @@
 | `hono-cloudflare` | `~/.opencode/skills/hono-cludfare` | No aplica |
 
 ## Brechas conocidas
-- **Decap CMS**: no existe skill confiable en el marketplace. Se cubre con `astro` (Content Collections) + documentación oficial de Decap CMS.
+- **Decap CMS**: ELIMINADO (2026-08-30). No aplica ya.
 - **Playwright/E2E**: no instalado — post-MVP, se decide más adelante.
+
+## Skills Next.js instalados (panel admin / aula virtual)
+- `nextjs-app-router-patterns` (`~/.agents/skills/nextjs-app-router-patterns`) — arquitectura App Router (server components, routing, layout)
+- `nextjs-supabase-auth` (`~/.agents/skills/nextjs-supabase-auth`) — login con Supabase Auth + RLS (sesión del director)
+
+## Monorepo (pnpm workspaces)
+- `apps/web` → Astro (web pública) · `apps/admin` → Next.js (panel admin) · `apps/aula` → Next.js (aula virtual) · `packages/shared` → tipos BD + tokens
+- Comandos con filtros: `pnpm --filter @web-modelo/web build`, `pnpm --filter @web-modelo/admin dev`, etc.
+- Vercel: cada app usa `rootDirectory` = su carpeta (`apps/web`, `apps/admin`, `apps/aula`)
 
 ## Instalación de nuevos skills
 ```
@@ -66,6 +75,7 @@ Cada fase se ejecuta en un **chat nuevo** pegando el "BLOQUE FX" correspondiente
   - F3 (páginas): `astro`, `tailwind-design-system`, `accessibility`, `performance`, `design-taste-frontend`, `ui-ux-pro-max`
   - F4 (Supabase): `astro`, `supabase`, `seo`
   - F5 (leads): `astro`, `supabase`, `accessibility`
-  - F6 (Decap CMS): `astro`
+  - F6 (eliminar Decap CMS): `astro`
   - F7 (optimización): `astro`, `seo`, `performance`, `accessibility`, `tailwind-design-system`, `deploy-to-vercel`, `full-output-enforcement`
+  - Panel admin A0-A8 (Fase 2): `nextjs` (instalar), `supabase`, `tailwind-design-system`, `accessibility`, `ui-ux-pro-max`, `deploy-to-vercel`, `astro` (A7 web)
   - Diseño Stitch: `stitch-design-taste`, `design-taste-frontend`, `gpt-taste`, `high-end-visual-design`, `brandkit`

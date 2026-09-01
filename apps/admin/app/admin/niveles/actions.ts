@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { triggerRebuild } from "@/lib/rebuild";
 
 export type NivelesState = {
   ok?: boolean;
@@ -79,6 +80,7 @@ export async function guardarNiveles(
     return { error: `No se pudo guardar "niveles": ${error.message}` };
   }
 
+  await triggerRebuild();
   revalidatePath("/admin/niveles");
   return { ok: true };
 }

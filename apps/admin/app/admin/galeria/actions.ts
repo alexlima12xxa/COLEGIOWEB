@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { triggerRebuild } from "@/lib/rebuild";
 
 export type GaleriaState = {
   ok?: boolean;
@@ -120,6 +121,7 @@ export async function guardarGaleria(
     return { error: `No se pudo guardar "galeria": ${error.message}` };
   }
 
+  await triggerRebuild();
   revalidatePath("/admin/galeria");
   return { ok: true };
 }

@@ -2,6 +2,9 @@
 dist/
 # generated types
 .astro/
+# next.js
+.next/
+out/
 
 # dependencies
 node_modules/
@@ -28,3 +31,4 @@ pnpm-debug.log*
 .env.local
 # vercel build output
 .vercel/
+.vercel

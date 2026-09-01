@@ -19,21 +19,25 @@
 - Dominio: Cloudflare Registrar (DNS central)
 
 ## Arquitectura
-- Web pública: Astro SSG en `tuapp.com` (Vercel)
-- Aula virtual (futuro): Next.js en `aula.tuapp.com` (Vercel)
+- Monorepo pnpm (workspaces): `apps/*` + `packages/*`
+  - `apps/web` → Astro SSG (web pública) en `tuapp.com` (Vercel)
+  - `apps/admin` → Next.js (panel admin, Fase 2) en `admin.tuapp.com` (Vercel)
+  - `apps/aula` → Next.js (aula virtual, Fase 3) en `aula.tuapp.com` (Vercel)
+  - `packages/shared` → tipos BD Supabase + tokens de marca compartidos
 - BD compartida: Supabase (una BD, tablas con `tenant_id` + RLS)
-- Sesión entre subdominios: Opción B (login propio en el aula) — decidida para MVP
+- Sesión entre subdominios: Opción B (login propio en cada app) — decidida para MVP
 
-## Mapa de responsabilidades (estructura objetivo)
-- `src/site.config.ts` → fuente de verdad del white-label (validado con zod en build)
-- `src/styles/` → sistema de capas CSS (`_tokens.css`, `_reset.css`, `_base.css`, `_layers.css`, `global.css`)
-- `src/shared/` → componentes UI reutilizables, layouts, lib, db client
-- `src/features/` → componentes específicos por feature (noticias, admisiones, etc.)
-- `src/pages/` → rutas públicas (10+ páginas)
-- `src/data/fallback/` → JSON versionados (mismo contrato que tablas Supabase)
-- `public/branding/` → assets por colegio (logo SVG, fotos, video tour)
-- `public/admin/` → configuración Decap CMS
-- `supabase/migrations/` → esquema multi-tenant + RLS
+## Mapa de responsabilidades
+- `apps/web/src/site.config.ts` → fuente de verdad del white-label (zod en build)
+- `apps/web/src/styles/` → sistema de capas CSS (`_tokens.css`, `_reset.css`, `_base.css`, `_layers.css`, `_fonts.css`, `_utilities.css`, `global.css`)
+- `apps/web/src/shared/` → componentes UI, layouts, lib, db client
+- `apps/web/src/features/` → componentes por feature (noticias, levels, admissions)
+- `apps/web/src/pages/` → rutas públicas (15 páginas)
+- `apps/web/src/data/fallback/` → JSON versionados (resiliencia sin Supabase)
+- `apps/web/public/branding/` → assets por colegio
+- `supabase/migrations/` → esquema multi-tenant + RLS (init + grant service role)
+- `supabase/functions/rebuild-webhook/` → Edge Function Supabase → Vercel deploy hook
+- `packages/shared/` → tipos y tokens compartidos entre apps
 
 ## Convenciones detectadas (decididas en planificación)
 - Mobile-first estricto (70%+ tráfico móvil)
@@ -45,28 +49,31 @@
 - Formulario de leads: doble vía (persistir en Supabase → abrir WhatsApp)
 
 ## Restricciones (decisiones que NO se cuestionan)
-- Vercel para ambas apps (web pública + aula virtual)
+- Vercel para las 3 apps (web pública + panel admin + aula virtual)
 - Dominio comprado en Cloudflare Registrar
-- pnpm como gestor de paquetes
-- White-label 100% vía `site.config.ts` + tokens CSS
-- Contenido editorial vía Decap CMS (Fase 1) → migración a panel del portal (Fase 2 futura)
+- pnpm como gestor de paquetes (monorepo workspaces)
+- White-label 100% vía `site.config.ts` + tokens CSS (la agencia configura marca; el director edita contenido vía panel admin)
+- Decap CMS ELIMINADO — Supabase es la única fuente de contenido editorial (con fallback JSON)
 - Objetivo: 100/100 Google PageSpeed móvil
 
 ## Estado actual
-- GATE 0 completado: 20 skills operativos (8 core + 12 diseño/UI), contexto creado
-- Fase 0.1 completada: scaffolding Astro 7.2.9 + TS strict + pnpm; dependencias base instaladas (tailwindcss, @tailwindcss/vite, @lucide/astro, @astrojs/vercel); build de prueba OK
-- Fase 0.2-0.4 pendiente: configurar astro.config.mjs (Tailwind Vite + adapter Vercel), sistema de capas CSS, estructura feature-based, ESLint/Prettier/CI
-- Skills de diseño/UI integrados y clasificados en `.agents/skills/resumen.md` (brandkit, design-taste-frontend, ui-ux-pro-max, high-end-visual-design, stitch-design-taste, gpt-taste, imagegen-web/mobile, image-to-code, minimalist-ui, full-output-enforcement). Eliminados: design-taste-frontend-v1 (duplicado) e industrial-brutalist-ui (no aplica).
-- Instrucciones por fase (bloques autocontenidos para chat nuevo) documentadas en `.agents/skills/resumen.md`
+- Monorepo creado: `apps/web` (Astro, movida), `apps/admin` y `apps/aula` (esqueletos Next.js), `packages/shared` (tipos + tokens). Las 3 apps compilan (validado).
+- Web pública: GATE 8 en curso (producción, webhook, imágenes remotas). ~15 páginas, build OK, placeholders en site.config.ts (Supabase URL, dominio, nombre del colegio).
+- Panel admin (Fase 2): plan A0-A8 definido (esqueleto listo; pendiente auth, CRUD, editor de textos, leads).
+- Aula virtual (Fase 3): solo esqueleto + plan (notas por estudiante, cursos, RLS por relación familiar) — no planificada en detalle.
+- Decap CMS eliminado; Netlify cancelado; no se necesita script sharp (astro:assets + remotePatterns cubren imágenes).
+- `.agents/skills/resumen.md` documenta skills por fase.
 
 ## Decisiones clave
 - SSG + fetch en build-time (no SSR, no fetch en cliente) para noticias/circulares
 - Webhook Supabase → deploy hook de Vercel para rebuild (< 2 min)
 - Multi-tenancy: una BD compartida con `tenant_id` + RLS en todas las tablas
 - Validación de contraste WCAG ≥ 4.5:1 en build (falla si no cumple)
-- Decap CMS sobre Supabase como CMS en Fase 1 (contrato de datos compartido)
+- Panel admin + aula virtual sobre la MISMA BD Supabase (apps separadas, login propio)
+- Director edita TODO el contenido institucional (Opción 1: misión, visión, hero, video, autoridades, descripciones, galería) — la agencia solo configura marca/estructura
 
 ## Ambigüedades pendientes
-- Nombre real del dominio (`tuapp.com` es placeholder)
+- Nombre real del dominio (`tuapp.com` / `colegioweb.vercel.app` son placeholders)
 - Datos reales del colegio piloto (nombre, colores, niveles, contacto)
-- Cuenta de GitHub para Decap CMS (Git Gateway)
+- Supabase real aún en placeholder (`https://placeholder.supabase.co`) — pendiente de configurar en GATE 8
+- Panel admin: instalar skill `nextjs` antes de Fase A0

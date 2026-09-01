@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../shared/layouts/BaseLayout.astro";
+import Section from "../shared/ui/Section/Section.astro";
+import Button from "../shared/ui/Button/Button.astro";
+import Card from "../shared/ui/Card/Card.astro";
+import Badge from "../shared/ui/Badge/Badge.astro";
+import { siteConfig } from "../site.config";
+
+const title = "Niveles educativos";
+const description =
+  "Conoce nuestra oferta académica: preescolar, primaria, secundaria y media técnica.";
+
+const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
+---
+
+<BaseLayout title={title} description={description}>
+  <Section padding="xl" class="levelsIndex">
+    <div class="levelsIndex__header">
+      <h1 class="levelsIndex__title">Niveles educativos</h1>
+      <p class="levelsIndex__lead">
+        Una propuesta formativa continua que acompaña el crecimiento de cada
+        estudiante desde la primera infancia hasta la educación media.
+      </p>
+    </div>
+
+    <div class="levelsIndex__grid">
+      {
+        enabledLevels.map((level) => (
+          <Card variant="bordered" class="levelsIndex__card">
+            <Badge variant="primary">{level.shortName}</Badge>
+            <h2 class="levelsIndex__name">{level.name}</h2>
+            <p class="levelsIndex__description">{level.description}</p>
+            {level.ageRange && <p class="levelsIndex__age">{level.ageRange}</p>}
+            <Button href={`/niveles/${level.slug}`} variant="primary" size="md">
+              Ver nivel
+            </Button>
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .levelsIndex__header {
+    max-width: 60ch;
+    margin-bottom: var(--space-xl);
+  }
+
+  .levelsIndex__title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .levelsIndex__title {
+      font-size: var(--text-5xl);
+    }
+  }
+
+  .levelsIndex__lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+  }
+
+  .levelsIndex__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 48rem) {
+    .levelsIndex__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .levelsIndex__card {
+    min-width: 0;
+  }
+
+  .levelsIndex__name {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .levelsIndex__description {
+    color: var(--color-text-muted);
+    flex: 1 1 auto;
+  }
+
+  .levelsIndex__age {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+  }
+</style>

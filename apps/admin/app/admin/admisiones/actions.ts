@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { triggerRebuild } from "@/lib/rebuild";
 
 export type AdmisionesState = {
   ok?: boolean;
@@ -113,6 +114,7 @@ export async function guardarAdmisiones(
     return { error: `No se pudo guardar "admisiones": ${error.message}` };
   }
 
+  await triggerRebuild();
   revalidatePath("/admin/admisiones");
   return { ok: true };
 }

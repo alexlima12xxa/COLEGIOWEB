@@ -46,7 +46,7 @@ Tareas (cada una es un paso independiente):
 
 ## Registro de commits
 
-_(Se llenará conforme avance la ejecución)_
+- `661bdd1` — feat(admin): CRUD de contenido editorial (autoridades, galeria, niveles, admisiones, contacto) — commit único con los 5 pasos (16 archivos).
 
 ---
 

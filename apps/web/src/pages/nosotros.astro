@@ -1,0 +1,385 @@
+---
+import BaseLayout from "../shared/layouts/BaseLayout.astro";
+import Section from "../shared/ui/Section/Section.astro";
+import Button from "../shared/ui/Button/Button.astro";
+import Card from "../shared/ui/Card/Card.astro";
+import Timeline from "../shared/ui/Timeline/Timeline.astro";
+import ResponsiveImage from "../shared/ui/ResponsiveImage/ResponsiveImage.astro";
+import { siteConfig } from "../site.config";
+import {
+  getMision,
+  getVision,
+  getFilosofia,
+  getHistoria,
+  getAutoridades,
+} from "../shared/db/contenido";
+
+const title = "Nosotros";
+const description =
+  "Conoce la historia, misión, visión y equipo directivo del Colegio Piloto.";
+
+// Contenido editorial desde Supabase (tabla `contenido`), con fallback local.
+// Se resuelve en build-time: un cambio del panel aparece tras el rebuild.
+const mission = await getMision();
+const vision = await getVision();
+const philosophy = await getFilosofia();
+const history = await getHistoria();
+const authorities = await getAutoridades();
+---
+
+<BaseLayout title={title} description={description}>
+  <Section padding="xl" class="aboutHero">
+    <div class="aboutHero__grid">
+      <div class="aboutHero__content">
+        <h1 class="aboutHero__title">Nuestra historia</h1>
+        <p class="aboutHero__lead">
+          Desde {siteConfig.identity.founded} construimos una comunidad de aprendizaje
+          centrada en las personas.
+        </p>
+        <p class="aboutHero__description">
+          {siteConfig.identity.description}
+        </p>
+      </div>
+      <div class="aboutHero__media">
+        <ResponsiveImage
+          src="/branding/placeholders/about-campus.jpg"
+          alt="Sede principal del Colegio Piloto"
+          width={1200}
+          height={800}
+          loading="eager"
+          fetchpriority="high"
+          sizes="(min-width: 48rem) 50vw, 100vw"
+          class="aboutHero__image"
+        />
+      </div>
+    </div>
+  </Section>
+
+  <Section padding="lg" bg="muted">
+    <Timeline items={history} />
+  </Section>
+
+  <Section padding="lg">
+    <div class="aboutMission">
+      <article class="aboutMission__card">
+        <h2 class="aboutMission__title">Misión</h2>
+        <p class="aboutMission__text">{mission}</p>
+      </article>
+      <article class="aboutMission__card aboutMission__card--inverse">
+        <h2 class="aboutMission__title">Visión</h2>
+        <p class="aboutMission__text">{vision}</p>
+      </article>
+    </div>
+  </Section>
+
+  <Section padding="lg" bg="muted">
+    <div class="aboutSectionHeader">
+      <h2 class="aboutSectionHeader__title">Filosofía institucional</h2>
+      <p class="aboutSectionHeader__text">
+        Principios que guían nuestra práctica educativa día a día.
+      </p>
+    </div>
+
+    <div class="aboutPhilosophy">
+      {
+        philosophy.map((item) => (
+          <Card variant="elevated" class="aboutPhilosophy__card">
+            <h3 class="aboutPhilosophy__title">{item.title}</h3>
+            <p class="aboutPhilosophy__text">{item.description}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section padding="lg">
+    <div class="aboutSectionHeader">
+      <h2 class="aboutSectionHeader__title">Autoridades</h2>
+      <p class="aboutSectionHeader__text">
+        Equipo directivo que lidera nuestra comunidad educativa.
+      </p>
+    </div>
+
+    <div class="aboutAuthorities">
+      {
+        authorities.map((authority) => (
+          <article class="aboutAuthorities__card">
+            <div class="aboutAuthorities__photo">
+              <ResponsiveImage
+                src={authority.image}
+                alt={`Foto de ${authority.name}, ${authority.role}`}
+                width={600}
+                height={750}
+                loading="lazy"
+                sizes="(min-width: 64rem) 25vw, (min-width: 48rem) 50vw, 100vw"
+              />
+            </div>
+            <div class="aboutAuthorities__info">
+              <h3 class="aboutAuthorities__name">{authority.name}</h3>
+              <p class="aboutAuthorities__role">{authority.role}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section padding="xl" bg="inverse" class="aboutCta">
+    <div class="aboutCta__content">
+      <h2 class="aboutCta__title">¿Quieres conocernos en persona?</h2>
+      <p class="aboutCta__text">
+        Agenda una visita guiada y descubre por qué somos la mejor opción para
+        la educación de tus hijos.
+      </p>
+      <div class="aboutCta__actions">
+        <Button href="/admisiones" size="lg"> Proceso de admisiones </Button>
+        <Button href="/contacto" variant="secondary" size="lg">
+          Contactar
+        </Button>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .aboutHero__grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .aboutHero__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .aboutHero__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  .aboutHero__title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+  }
+
+  @media (min-width: 48rem) {
+    .aboutHero__title {
+      font-size: var(--text-5xl);
+    }
+  }
+
+  .aboutHero__lead {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+  }
+
+  .aboutHero__description {
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+
+  .aboutHero__media {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .aboutHero__image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .aboutMission {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 48rem) {
+    .aboutMission {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .aboutMission__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-muted);
+    min-width: 0;
+  }
+
+  .aboutMission__card--inverse {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .aboutMission__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .aboutMission__card--inverse .aboutMission__title {
+    color: var(--color-text-inverse);
+  }
+
+  .aboutMission__text {
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+
+  .aboutMission__card--inverse .aboutMission__text {
+    color: var(--color-text-inverse);
+    opacity: 0.9;
+  }
+
+  .aboutSectionHeader {
+    max-width: 55ch;
+    margin-bottom: var(--space-xl);
+  }
+
+  .aboutSectionHeader__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-sm);
+  }
+
+  @media (min-width: 48rem) {
+    .aboutSectionHeader__title {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .aboutSectionHeader__text {
+    color: var(--color-text-muted);
+  }
+
+  .aboutPhilosophy {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 48rem) {
+    .aboutPhilosophy {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .aboutPhilosophy__card {
+    min-width: 0;
+  }
+
+  .aboutPhilosophy__title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-sm);
+  }
+
+  .aboutPhilosophy__text {
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+
+  .aboutAuthorities {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 40rem) {
+    .aboutAuthorities {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .aboutAuthorities {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .aboutAuthorities__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  .aboutAuthorities__photo {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--color-surface-strong);
+  }
+
+  .aboutAuthorities__photo img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .aboutAuthorities__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .aboutAuthorities__name {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    word-break: break-words;
+  }
+
+  .aboutAuthorities__role {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .aboutCta__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-md);
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  .aboutCta__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+  }
+
+  @media (min-width: 48rem) {
+    .aboutCta__title {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .aboutCta__text {
+    color: var(--color-text-inverse);
+    opacity: 0.85;
+  }
+
+  .aboutCta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+</style>

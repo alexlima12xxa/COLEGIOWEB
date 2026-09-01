@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { triggerRebuild } from "@/lib/rebuild";
 
 export type ContactoState = {
   ok?: boolean;
@@ -113,6 +114,7 @@ export async function guardarContacto(
     return { error: `No se pudo guardar "contacto": ${error.message}` };
   }
 
+  await triggerRebuild();
   revalidatePath("/admin/contacto");
   return { ok: true };
 }

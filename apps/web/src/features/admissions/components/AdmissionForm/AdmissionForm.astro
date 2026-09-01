@@ -1,0 +1,418 @@
+---
+import "./AdmissionForm.css";
+import Input from "../../../../shared/ui/Input/Input.astro";
+import Button from "../../../../shared/ui/Button/Button.astro";
+
+export interface LevelOption {
+  id: string;
+  name: string;
+}
+
+export interface Props {
+  whatsapp: string;
+  schoolName: string;
+  levels: LevelOption[];
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+  tenantId?: string;
+  privacyUrl?: string;
+}
+
+const {
+  whatsapp,
+  schoolName,
+  levels,
+  supabaseUrl,
+  supabaseAnonKey,
+  tenantId,
+  privacyUrl = "/aviso-de-privacidad",
+} = Astro.props;
+
+const levelOptions = levels.map((level) => ({
+  value: level.id,
+  label: level.name,
+}));
+---
+
+<form
+  id="admission-form"
+  class="admissionForm"
+  action="#"
+  method="post"
+  novalidate
+  data-whatsapp={whatsapp}
+  data-school-name={schoolName}
+  data-supabase-url={supabaseUrl}
+  data-supabase-anon-key={supabaseAnonKey}
+  data-tenant-id={tenantId}
+>
+  <script
+    type="application/json"
+    id="admission-levels"
+    set:html={JSON.stringify(levels)}
+  />
+  <div class="admissionForm__header">
+    <h2 class="admissionForm__title">Solicita información de admisiones</h2>
+    <p class="admissionForm__lead">
+      Completa el formulario y te contactaremos por WhatsApp.
+    </p>
+  </div>
+
+  <div
+    id="admission-form-errors"
+    class="admissionForm__globalError"
+    role="alert"
+    aria-live="assertive"
+    hidden
+  >
+  </div>
+
+  <div class="admissionForm__fields">
+    <Input
+      id="admission-parentName"
+      name="parentName"
+      label="Nombre del acudiente"
+      type="text"
+      required
+      placeholder="Ej. María Gómez"
+      autocomplete="name"
+      class="admissionForm__field"
+    />
+
+    <Input
+      id="admission-phone"
+      name="phone"
+      label="Teléfono"
+      type="tel"
+      required
+      placeholder="Ej. +57 310 123 4567"
+      autocomplete="tel"
+      class="admissionForm__field"
+    />
+
+    <Input
+      id="admission-email"
+      name="email"
+      label="Correo electrónico"
+      type="email"
+      required
+      placeholder="Ej. maria@email.com"
+      autocomplete="email"
+      class="admissionForm__field"
+    />
+
+    <Input
+      id="admission-level"
+      name="level"
+      label="Grado de interés"
+      type="select"
+      required
+      options={[{ value: "", label: "Selecciona un grado" }, ...levelOptions]}
+      class="admissionForm__field"
+    />
+
+    <Input
+      id="admission-message"
+      name="message"
+      label="Mensaje"
+      type="textarea"
+      placeholder="Cuéntanos qué información necesitas..."
+      rows={4}
+      class="admissionForm__field admissionForm__field--full"
+    />
+
+    {/* Honeypot: campo invisible para bots */}
+    <div class="admissionForm__honeypot" aria-hidden="true">
+      <label for="admission-website">No completar este campo</label>
+      <input
+        id="admission-website"
+        name="website"
+        type="text"
+        tabindex="-1"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="admissionForm__privacy admissionForm__field--full">
+      <label class="admissionForm__checkbox">
+        <input
+          id="admission-privacy"
+          name="privacyAccepted"
+          type="checkbox"
+          required
+          aria-describedby="admission-privacy-error"
+        />
+        <span>
+          Acepto el{" "}
+          <a href={privacyUrl} target="_blank" rel="noopener noreferrer">
+            aviso de privacidad
+          </a>{" "}
+          y el tratamiento de mis datos para recibir información.
+        </span>
+      </label>
+      <span
+        id="admission-privacy-error"
+        class="admissionForm__checkboxError"
+        aria-live="polite"
+        hidden
+      >
+      </span>
+    </div>
+  </div>
+
+  <div class="admissionForm__actions">
+    <Button
+      id="admission-submit"
+      type="submit"
+      variant="success"
+      size="lg"
+      class="admissionForm__submit"
+    >
+      Enviar por WhatsApp
+    </Button>
+    <p class="admissionForm__help">
+      Si tienes problemas, escríbenos directamente al{" "}
+      <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}>
+        {whatsapp}
+      </a>.
+    </p>
+  </div>
+</form>
+
+<script>
+  import { createBrowserClient } from "../../../../shared/db/browserClient";
+  import {
+    isRateLimited,
+    markSubmitted,
+    secondsUntilNext,
+  } from "../../../../shared/lib/rateLimit";
+  import {
+    buildWhatsAppMessage,
+    buildWhatsAppUrl,
+  } from "../../../../shared/lib/whatsapp";
+
+  interface LevelOption {
+    id: string;
+    name: string;
+  }
+
+  interface FieldError {
+    field: string;
+    message: string;
+  }
+
+  function initAdmissionForm(): void {
+    const form = document.getElementById(
+      "admission-form",
+    ) as HTMLFormElement | null;
+    if (!form || form.hasAttribute("data-initialized")) return;
+    form.setAttribute("data-initialized", "");
+    const formEl: HTMLFormElement = form;
+
+    const errorContainer = document.getElementById("admission-form-errors");
+    const submitButton = document.getElementById(
+      "admission-submit",
+    ) as HTMLButtonElement | null;
+    const levelsJson = document.getElementById("admission-levels")?.textContent;
+    const levels: LevelOption[] = levelsJson ? JSON.parse(levelsJson) : [];
+
+    const dataset = form.dataset;
+    const whatsapp = dataset.whatsapp ?? "";
+    const schoolName = dataset.schoolName ?? "";
+    const supabaseUrl = dataset.supabaseUrl ?? "";
+    const supabaseAnonKey = dataset.supabaseAnonKey ?? "";
+    const tenantId = dataset.tenantId ?? "";
+
+    function getLevelName(levelId: string): string {
+      const level = levels.find((l) => l.id === levelId);
+      return level ? level.name : levelId;
+    }
+
+    function showGlobalError(message: string): void {
+      if (!errorContainer) return;
+      errorContainer.textContent = message;
+      errorContainer.hidden = false;
+    }
+
+    function clearGlobalError(): void {
+      if (!errorContainer) return;
+      errorContainer.textContent = "";
+      errorContainer.hidden = true;
+    }
+
+    function setFieldError(fieldName: string, message: string): void {
+      const control = formEl.querySelector<HTMLElement>(
+        `[name="${fieldName}"]`,
+      );
+      const errorId = control?.id ? `${control.id}-error` : null;
+      const errorEl = errorId ? document.getElementById(errorId) : null;
+
+      if (control) {
+        control.setAttribute("aria-invalid", message ? "true" : "false");
+        if (message && errorId) {
+          control.setAttribute("aria-describedby", errorId);
+        } else {
+          control.removeAttribute("aria-describedby");
+        }
+      }
+
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.hidden = !message;
+      }
+    }
+
+    function clearFieldErrors(): void {
+      const fields =
+        formEl.querySelectorAll<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >("[name]") ?? [];
+      fields.forEach((field) => {
+        setFieldError(field.name, "");
+        field.setAttribute("aria-invalid", "false");
+      });
+    }
+
+    function validate(): FieldError[] {
+      const errors: FieldError[] = [];
+      const formData = new FormData(formEl);
+
+      // Honeypot: si tiene valor, es un bot.
+      if (formData.get("website")) {
+        errors.push({ field: "website", message: "Detectado como spam." });
+        return errors;
+      }
+
+      const parentName = String(formData.get("parentName") || "").trim();
+      if (!parentName || parentName.length < 2) {
+        errors.push({
+          field: "parentName",
+          message: "Ingresa tu nombre completo.",
+        });
+      }
+
+      const email = String(formData.get("email") || "").trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errors.push({
+          field: "email",
+          message: "Ingresa un correo electrónico válido.",
+        });
+      }
+
+      const phone = String(formData.get("phone") || "").trim();
+      if (!phone || phone.length < 7) {
+        errors.push({
+          field: "phone",
+          message: "Ingresa un número de teléfono válido.",
+        });
+      }
+
+      const level = String(formData.get("level") || "");
+      if (!level) {
+        errors.push({
+          field: "level",
+          message: "Selecciona un grado de interés.",
+        });
+      }
+
+      const privacyAccepted = formData.get("privacyAccepted");
+      if (!privacyAccepted) {
+        errors.push({
+          field: "privacyAccepted",
+          message: "Debes aceptar el aviso de privacidad.",
+        });
+      }
+
+      return errors;
+    }
+
+    function focusFirstError(errors: FieldError[]): void {
+      const first = errors[0];
+      if (!first) return;
+      const control = formEl.querySelector<HTMLElement>(
+        `[name="${first.field}"]`,
+      );
+      if (control) {
+        control.focus();
+      }
+    }
+
+    formEl.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearGlobalError();
+      clearFieldErrors();
+
+      if (isRateLimited()) {
+        showGlobalError(
+          `Por favor espera ${secondsUntilNext()} segundos antes de enviar otro mensaje.`,
+        );
+        return;
+      }
+
+      const errors = validate();
+      if (errors.length > 0) {
+        errors.forEach(({ field, message }) => setFieldError(field, message));
+        showGlobalError("Por favor revisa los campos marcados.");
+        focusFirstError(errors);
+        return;
+      }
+
+      const formData = new FormData(form);
+      const data = {
+        parentName: String(formData.get("parentName")).trim(),
+        phone: String(formData.get("phone") || "").trim(),
+        email: String(formData.get("email")).trim(),
+        level: String(formData.get("level")),
+        message: String(formData.get("message") || "").trim(),
+      };
+
+      const levelName = getLevelName(data.level);
+
+      // Intento de persistir en Supabase (no bloquea el flujo).
+      if (supabaseUrl && supabaseAnonKey) {
+        try {
+          const client = createBrowserClient({
+            url: supabaseUrl,
+            anonKey: supabaseAnonKey,
+            tenantId,
+          });
+          const { error } = await client.from("leads").insert({
+            tenant_id: tenantId,
+            nombre: data.parentName,
+            email: data.email,
+            telefono: data.phone || null,
+            nivel_interes: levelName,
+            mensaje: data.message || null,
+            origen: "web",
+            estado: "nuevo",
+          });
+
+          if (error) {
+            console.error("[AdmissionForm] Supabase error:", error);
+          }
+        } catch (error) {
+          console.error("[AdmissionForm] Supabase exception:", error);
+        }
+      }
+
+      // Siempre abrir WhatsApp, incluso si Supabase falló.
+      const whatsappMessage = buildWhatsAppMessage({
+        ...data,
+        level: levelName,
+        schoolName,
+      });
+      const whatsappUrl = buildWhatsAppUrl(whatsapp, whatsappMessage);
+
+      markSubmitted();
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Mensaje enviado";
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", initAdmissionForm);
+  if (document.readyState !== "loading") initAdmissionForm();
+</script>

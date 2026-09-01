@@ -1,0 +1,12 @@
+{
+  "name": "@web-modelo/shared",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "gen:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" > src/types.ts"
+  }
+}

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { triggerRebuild } from "@/lib/rebuild";
 
 export type AutoridadesState = {
   ok?: boolean;
@@ -109,6 +110,7 @@ export async function guardarAutoridades(
     return { error: `No se pudo guardar "autoridades": ${error.message}` };
   }
 
+  await triggerRebuild();
   revalidatePath("/admin/autoridades");
   return { ok: true };
 }
