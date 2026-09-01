@@ -9,6 +9,7 @@ import ResponsiveImage from "../shared/ui/ResponsiveImage/ResponsiveImage.astro"
 import { siteConfig } from "../site.config";
 import homeData from "../data/fallback/home.json";
 import { getHero, getVideoTour, getGaleria } from "../shared/db/contenido";
+import { resolveAssetUrl } from "../shared/db/storage";
 
 // Hero y video tour desde Supabase (tabla `contenido`), con fallback a
 // site.config. Se resuelven en build-time: un cambio del panel aparece tras
@@ -31,6 +32,11 @@ const tourPoster =
   hero.data.tourPoster ||
   siteConfig.branding.assets.tourVideoPoster ||
   "/branding/og-image.svg";
+// Resuelve rutas relativas de Storage a URLs absolutas (el preload y el
+// poster del video NO pasan por ResponsiveImage/ContentImage, que resuelven
+// internamente). resolveAssetUrl devuelve tal cual las URLs absolutas.
+const heroPhotoUrl = resolveAssetUrl(heroPhoto) ?? heroPhoto;
+const tourPosterUrl = resolveAssetUrl(tourPoster) ?? tourPoster;
 const tourTitle = videoTour.data.title || "Ver tour virtual";
 const periodLabel = siteConfig.admissions.periodLabel;
 
@@ -46,7 +52,7 @@ const videoJsonLd = {
   "@type": "VideoObject",
   name: `Tour virtual por ${siteConfig.identity.name}`,
   description: `Recorrido virtual por las instalaciones de ${siteConfig.identity.name}: aulas, laboratorios, zonas deportivas y espacios comunes.`,
-  thumbnailUrl: absoluteUrl(tourPoster),
+  thumbnailUrl: absoluteUrl(tourPosterUrl),
   uploadDate: new Date().toISOString(),
   contentUrl: absoluteUrl(tourVideoUrl),
   embedUrl: absoluteUrl("/"),
@@ -67,7 +73,7 @@ const videoJsonLd = {
     slot="head"
     rel="preload"
     as="image"
-    href={heroPhoto}
+    href={heroPhotoUrl}
     fetchpriority="high"
   />
 
@@ -104,14 +110,14 @@ const videoJsonLd = {
           <VideoModal
             id="home-tour"
             videoUrl={tourVideoUrl}
-            poster={tourPoster}
+            poster={tourPosterUrl}
             title={tourTitle}
             eager
           />
         </div>
         <div class="homeHero__photo">
           <ResponsiveImage
-            src={heroPhoto}
+            src={heroPhotoUrl}
             alt="Estudiantes del Colegio Piloto en actividad académica"
             width={1200}
             height={900}
