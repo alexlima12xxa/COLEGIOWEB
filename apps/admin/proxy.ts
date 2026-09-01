@@ -7,6 +7,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 // - /admin y /admin/* requieren rol admin (app_metadata.role === 'admin') y
 //   tenant asignado → sin eso, el usuario no tiene acceso al panel.
 // - /login con sesión de admin → redirige a /admin.
+// - / (raíz) sin sesión → redirige a /login; con sesión admin → redirige a /admin.
 export async function proxy(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
 
@@ -15,8 +16,17 @@ export async function proxy(request: NextRequest) {
   const isAdmin = isLoggedIn && user.app_metadata?.role === "admin";
   const hasTenant = isAdmin && !!user.app_metadata?.tenant_id;
 
+  const isRootRoute = pathname === "/";
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const isLoginRoute = pathname === "/login";
+
+  if (isRootRoute && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (isRootRoute && hasTenant) {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
 
   if (isAdminRoute && !isLoggedIn) {
     const url = request.nextUrl.clone();
