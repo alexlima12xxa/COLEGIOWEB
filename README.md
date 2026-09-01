@@ -33,6 +33,24 @@ fallbacks versionados de `src/data/fallback/` (`noticias.json`,
 `circulares.json`, ...), que comparten el mismo contrato de tipos (zod en
 `src/shared/db/schema.ts`) que las tablas.
 
+> **Seguridad**: `.env.example` contiene SOLO placeholders. El repo es
+> público; si una clave real se commitea, Supabase la revoca automáticamente.
+> Guarda los valores reales solo en `.env` (gitignored) y en las env vars de
+> Vercel.
+
+### Rotar claves comprometidas
+
+Si una key se filtró (p. ej. en git), la web seguirá con fallback hasta que se
+roten las claves:
+
+1. **Supabase** → **Settings → API** → rotar el JWT secret (regenera anon y
+   service role key). Opcionalmente crea una key nueva y elimina la filtrada.
+2. **Vercel** → **Project → Settings → Environment Variables**: actualizar
+   `PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`.
+3. **Local**: actualizar los mismos valores en `.env`.
+4. **Redeploy** y verificar en los logs de build que no aparece el warning
+   `[db] ... Usando fallback local`.
+
 ## Contenido editorial (noticias y circulares)
 
 - `/noticias` — listado paginado (9 por página; `/noticias/pagina/2`, ...).
