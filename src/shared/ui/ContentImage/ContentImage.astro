@@ -33,10 +33,44 @@ const {
 
 const resolved = resolveAssetUrl(src);
 const isRemote = resolved ? /^https?:\/\//i.test(resolved) : false;
+
+/**
+ * Cache a nivel de módulo del resultado de accesibilidad por URL resuelta.
+ * Evita repetir requests HEAD por el mismo asset dentro de un mismo build
+ * (una noticia se renderiza en card + detalle, y varias noticias pueden
+ * compartir placeholder).
+ */
+const imageAccessCache = new Map<string, boolean>();
+
+/**
+ * Comprueba si una URL remota responde con status 2xx (accesible).
+ * Solo se considera válido un 2xx: Supabase Storage devuelve 404 para objetos
+ * faltantes y 400 para rutas malformadas. Cualquier otro código (o error de
+ * red) se trata como inaccesible para no renderizar una imagen rota.
+ */
+async function isImageAccessible(url: string): Promise<boolean> {
+  const cached = imageAccessCache.get(url);
+  if (cached !== undefined) return cached;
+
+  let accessible = false;
+  try {
+    const res = await fetch(url, { method: "HEAD" });
+    accessible = res.status >= 200 && res.status < 300;
+  } catch {
+    accessible = false;
+  }
+
+  imageAccessCache.set(url, accessible);
+  return accessible;
+}
+
+// Si la imagen es remota, validamos su accesibilidad en build-time. Si no
+// responde, degradamos al placeholder decorativo (evita imagen rota y CLS).
+const remoteAccessible = isRemote ? await isImageAccessible(resolved) : true;
 ---
 
 {
-  resolved && isRemote ? (
+  resolved && isRemote && remoteAccessible ? (
     <Picture
       src={resolved}
       alt={alt}
@@ -50,7 +84,7 @@ const isRemote = resolved ? /^https?:\/\//i.test(resolved) : false;
       decoding="async"
       class:list={["contentImage", className]}
     />
-  ) : resolved ? (
+  ) : resolved && !isRemote ? (
     <img
       src={resolved}
       alt={alt}
