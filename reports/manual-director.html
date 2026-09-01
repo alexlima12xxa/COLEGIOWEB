@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual del Director — Panel Admin</title>
+<style>
+  :root {
+    --primary: #1d4ed8;
+    --primary-dark: #1e40af;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --success: #059669;
+    --step-bg: #eff6ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    padding: 24px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header.hero {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+  header.hero h1 { font-size: 1.8rem; margin-bottom: 8px; }
+  header.hero p { opacity: 0.9; font-size: 1rem; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    margin-top: 12px;
+  }
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+  .toc h2 { font-size: 1.1rem; margin-bottom: 8px; }
+  .toc ol { padding-left: 20px; }
+  .toc a { color: var(--primary); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  section.guide {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+    page-break-inside: avoid;
+  }
+  section.guide h2 {
+    font-size: 1.4rem;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .step-body { flex: 1; }
+  .step-body h3 { font-size: 1.05rem; margin-bottom: 6px; }
+  .step-body p { color: var(--muted); margin-bottom: 8px; }
+  .step-body img {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+  .tip {
+    background: var(--step-bg);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.92rem;
+  }
+  .tip strong { color: var(--primary-dark); }
+  .success {
+    background: #ecfdf5;
+    border-left: 4px solid var(--success);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.92rem;
+  }
+  .success strong { color: var(--success); }
+  .url-box {
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.85rem;
+    word-break: break-all;
+    margin: 6px 0;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .container { max-width: 100%; }
+    section.guide { border: 1px solid #ccc; page-break-inside: auto; }
+    .step { page-break-inside: avoid; }
+    header.hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .step-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <h1>📘 Manual del Director</h1>
+  <p>Panel de administración del colegio — publica contenido en la web en menos de 5 minutos.</p>
+  <span class="badge">Panel: admin-coral-three-91.vercel.app</span>
+  <span class="badge">Web pública: colegioweb.vercel.app</span>
+</header>
+
+<div class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#guia-1">Cómo publicar una noticia en 5 pasos</a></li>
+    <li><a href="#guia-2">Cómo actualizar la misión y la portada</a></li>
+  </ol>
+</div>
+
+<!-- ================= GUÍA 1 ================= -->
+<section class="guide" id="guia-1">
+  <h2>📰 Guía 1 — Cómo publicar una noticia en 5 pasos</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Entra al panel</h3>
+      <p>Abre el panel de administración en tu navegador e inicia sesión con tu correo y contraseña.</p>
+      <div class="url-box">https://admin-coral-three-91.vercel.app/login</div>
+      <img src="manual-capturas/01-login.png" alt="Pantalla de inicio de sesión del panel">
+      <div class="tip"><strong>Consejo:</strong> marca "Recordarme" si usas tu computadora personal para no escribir la contraseña cada vez.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Ve al módulo de Noticias</h3>
+      <p>En el menú lateral haz clic en <strong>Noticias</strong>. Verás el listado de todas las noticias publicadas.</p>
+      <img src="manual-capturas/04-noticias-lista.png" alt="Listado de noticias del panel">
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Crea una noticia nueva</h3>
+      <p>Haz clic en el botón <strong>"Nueva noticia"</strong>. Se abre el formulario de creación.</p>
+      <img src="manual-capturas/05-noticia-form.png" alt="Formulario de nueva noticia">
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Completa los datos y sube la foto</h3>
+      <p>
+        <strong>Título</strong> (obligatorio) · <strong>Resumen</strong> (1-2 frases) ·
+        <strong>Contenido</strong> (obligatorio, texto completo) · <strong>Autor</strong> ·
+        <strong>Imagen</strong> (foto principal, JPG/PNG/WebP hasta 10 MB) · <strong>Texto alternativo</strong> (describe la foto).
+      </p>
+      <div class="tip"><strong>Consejo:</strong> la foto debe ser horizontal (16:9 aprox.) para que se vea bien en la web. El texto alternativo ayuda a personas con discapacidad visual y al SEO.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Publica</h3>
+      <p>Deja marcada la casilla <strong>"Publicado"</strong> y haz clic en <strong>"Guardar"</strong>.</p>
+      <div class="success"><strong>¡Listo!</strong> La web se reconstruye automáticamente y tu noticia aparece en <strong>colegioweb.vercel.app/noticias</strong> en menos de 5 minutos. No necesitas hacer nada más.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GUÍA 2 ================= -->
+<section class="guide" id="guia-2">
+  <h2>✏️ Guía 2 — Cómo actualizar la misión y la portada</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Actualizar la misión y visión</h3>
+      <p>En el menú lateral haz clic en <strong>Textos</strong>. Verás los campos de <strong>Misión</strong> y <strong>Visión</strong> (y también Filosofía e Historia).</p>
+      <img src="manual-capturas/06-textos.png" alt="Formulario de textos (misión y visión)">
+      <p>Edita el texto, haz clic en <strong>"Guardar"</strong> y la web se actualiza sola en <strong>/nosotros</strong>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Actualizar la portada (título y foto principal)</h3>
+      <p>En el menú lateral haz clic en <strong>Portada</strong>. Ahí puedes cambiar el <strong>título principal</strong>, el <strong>subtítulo</strong> y la <strong>foto del hero</strong> (la imagen grande de la página de inicio).</p>
+      <img src="manual-capturas/07-portada.png" alt="Formulario de portada (hero)">
+      <p>También puedes actualizar el <strong>video del tour virtual</strong> (URL de YouTube + póster).</p>
+      <div class="success"><strong>¡Listo!</strong> Guarda y la portada nueva aparece en <strong>colegioweb.vercel.app</strong> en menos de 5 minutos.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Verifica tu trabajo</h3>
+      <p>Abre la web pública en otra pestaña y confirma que el cambio apareció:</p>
+      <div class="url-box">https://colegioweb.vercel.app</div>
+      <div class="tip"><strong>Nota:</strong> si no ves el cambio de inmediato, espera 2-3 minutos (la web se está reconstruyendo) y recarga con <strong>Ctrl+F5</strong>.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Manual del Director — Panel Admin · Generado el 2026-09-01 · GATE A8
+</footer>
+
+</div>
+</body>
+</html>
