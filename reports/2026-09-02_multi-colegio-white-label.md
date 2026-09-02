@@ -5,7 +5,7 @@
 > **Stack:** Astro SSG + Next.js + Supabase multi-tenant + Vercel
 > **Riesgo:** MEDIO
 > **Modo de ejecución:** MANUAL
-> **Estado:** 🟡 EN PROGRESO
+> **Estado:** [✓] COMPLETADO
 
 ---
 
@@ -134,7 +134,7 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 | P3.2 | Crear `scripts/colegio-alta.mjs` | [✓] Completado | `a2e725b` | 🟠 | Service role + Vercel REST API (token); seed parametrizado 11 claves; idempotente |
 | P3.3 | `package.json` raíz + script `colegio:alta` | [✓] Completado | `a2e725b` | 🟢 | Privado; dep @supabase/supabase-js; packageManager pnpm@11.18.0 |
 | P4.1 | Crear `docs/multi-colegio.md` | [✓] Completado | — | 🟡 | Checklist por colegio, Ignored Build Step, dominio, webhook, limitaciones |
-| P4.2 | Actualizar `.agents/PROJECT.md` (+ AGENTS.md) | [✓] Completado | — | 🟢 | PROJECT.md: arquitectura, mapa, decisiones, estado; AGENTS.md: comando colegio:alta |
+| P4.2 | Actualizar `.agents/PROJECT.md` (+ AGENTS.md) | [✓] Completado | `7499395` | 🟢 | PROJECT.md: arquitectura, mapa, decisiones, estado; AGENTS.md: comando colegio:alta |
 
 ---
 
@@ -145,6 +145,7 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 - `47b9beb` — feat(db): tabla tenant_settings con RLS admin-only (P2.1)
 - `97abf45` — refactor(admin): triggerRebuild por tenant en 9 actions (P2.2 + P2.3)
 - `a2e725b` — feat(ops): catalogo clients.json y script de alta de colegio (P3.1 + P3.2 + P3.3)
+- `7499395` — docs: guia multi-colegio y actualizar PROJECT.md (P4.1 + P4.2)
 
 ---
 
