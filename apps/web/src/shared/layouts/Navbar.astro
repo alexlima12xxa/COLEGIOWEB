@@ -3,6 +3,7 @@ import { siteConfig } from "../../site.config";
 import { Menu, Lock } from "@lucide/astro";
 import MobileDrawer from "./MobileDrawer.astro";
 import Button from "../ui/Button/Button.astro";
+import Logo from "../ui/Logo/Logo.astro";
 import "./Navbar.css";
 
 export interface Props {
@@ -44,14 +45,7 @@ const navLinks = [
       aria-label={`Inicio - ${siteConfig.identity.name}`}
       transition:name="navbar-logo"
     >
-      <img
-        src={siteConfig.branding.assets.logo}
-        alt={siteConfig.identity.name}
-        class="navbar__logo"
-        width="160"
-        height="40"
-        decoding="async"
-      />
+      <Logo variant="light" size="md" class="navbar__logo" />
     </a>
 
     <nav class="navbar__nav" aria-label="Principal">

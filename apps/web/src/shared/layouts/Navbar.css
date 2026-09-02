@@ -25,10 +25,7 @@
   }
 
   .navbar__logo {
-    display: block;
     max-width: 7.5rem;
-    width: auto;
-    height: auto;
   }
 
   @media (min-width: 48rem) {

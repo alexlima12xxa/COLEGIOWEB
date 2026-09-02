@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from "../../site.config";
 import { Phone, Mail, MapPin, Clock } from "@lucide/astro";
+import Logo from "../ui/Logo/Logo.astro";
 import "./Footer.css";
 
 export interface Props {
@@ -53,15 +54,7 @@ const currentYear = new Date().getFullYear();
           class="footer__brandLink"
           aria-label={`Inicio - ${siteConfig.identity.name}`}
         >
-          <img
-            src={siteConfig.branding.assets.logoInverse ||
-              siteConfig.branding.assets.logo}
-            alt={siteConfig.identity.name}
-            class="footer__logo"
-            width="180"
-            height="45"
-            decoding="async"
-          />
+          <Logo variant="dark" size="md" class="footer__logo" />
         </a>
         <p class="footer__slogan">{siteConfig.identity.slogan}</p>
       </div>

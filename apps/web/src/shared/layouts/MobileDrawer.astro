@@ -1,6 +1,7 @@
 ---
 import { X, Lock } from "@lucide/astro";
 import { siteConfig } from "../../site.config";
+import Logo from "../ui/Logo/Logo.astro";
 import "./MobileDrawer.css";
 
 export interface Props {
@@ -28,14 +29,7 @@ const { id, links } = Astro.props;
         class="drawer__brand"
         aria-label={`Inicio - ${siteConfig.identity.name}`}
       >
-        <img
-          src={siteConfig.branding.assets.logo}
-          alt={siteConfig.identity.name}
-          class="drawer__logo"
-          width="140"
-          height="35"
-          decoding="async"
-        />
+        <Logo variant="light" size="sm" class="drawer__logo" />
       </a>
       <button
         type="button"

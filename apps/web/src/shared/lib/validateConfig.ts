@@ -141,6 +141,10 @@ function validateWhatsApp(errors: string[]): void {
 }
 
 function validateAssets(errors: string[]): void {
+  // logo y logoInverse son opcionales: si un colegio los omite, el componente
+  // Logo usa el fallback generado. El filtro de tipo excluye undefined y
+  // strings vacíos, por lo que solo se valida la existencia de archivos
+  // cuando el path SÍ está definido.
   const assetPaths = [
     siteConfig.branding.assets.logo,
     siteConfig.branding.assets.logoInverse,

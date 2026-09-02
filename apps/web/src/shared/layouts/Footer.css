@@ -45,10 +45,7 @@
   }
 
   .footer__logo {
-    display: block;
     max-width: 10rem;
-    width: auto;
-    height: auto;
   }
 
   .footer__slogan {

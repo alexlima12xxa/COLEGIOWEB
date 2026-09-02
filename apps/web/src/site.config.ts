@@ -120,7 +120,7 @@ const brandingSchema = z.object({
     full: z.string().min(1),
   }),
   assets: z.object({
-    logo: assetPathSchema,
+    logo: assetPathSchema.optional(),
     logoInverse: assetPathSchema.optional(),
     favicon: assetPathSchema.optional(),
     ogImage: assetPathSchema,
