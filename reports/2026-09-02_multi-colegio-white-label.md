@@ -126,9 +126,9 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 | P1.2 | Convertir `site.config.ts` en cargador por slug | [✓] Completado | `0131d5f` | 🟡 | import.meta.glob eager; fallback piloto; 21 imports intactos |
 | P1.3 | Assets: confirmar branding piloto actual | [✓] Completado | — (sin cambios) | 🟢 | Todos los assets referenciados existen; sin migración |
 | P1.4 | Validar F1: check + build web slug piloto | [✓] Completado | `f920b4a` | 🟢 | check OK (0 errores) + build OK (13 páginas) |
-| P2.1 | Migración `tenant_settings.sql` + RLS | [✓] Completado | — | 🟡 | Tabla mínima (tenant_id PK + rebuild_hook_url); select/update solo admin; grants authenticated + service_role |
-| P2.2 | Refactor `triggerRebuild(supabase, tenantId)` | ⏳ Pendiente | — | 🟡 | Fallback env var |
-| P2.3 | Actualizar 9 `actions.ts` con supabase, tenantId | ⏳ Pendiente | — | 🟠 | Grep verificación |
+| P2.1 | Migración `tenant_settings.sql` + RLS | [✓] Completado | `47b9beb` | 🟡 | Tabla mínima (tenant_id PK + rebuild_hook_url); select/update solo admin; grants authenticated + service_role |
+| P2.2 | Refactor `triggerRebuild(supabase, tenantId)` | [✓] Completado | (commit atómico P2.2+P2.3) | 🟡 | Lee tenant_settings.rebuild_hook_url; fallback REBUILD_HOOK_URL; nunca lanza |
+| P2.3 | Actualizar 9 `actions.ts` con supabase, tenantId | [✓] Completado | (commit atómico P2.2+P2.3) | 🟠 | 16/16 llamadas actualizadas (grep verificado); textos y portada requieren requireAdmin() extra |
 | P2.4 | Validar F2: build admin | ⏳ Pendiente | — | 🟢 | Ejecuta usuario |
 | P3.1 | Crear `clients.json` (catálogo) | ⏳ Pendiente | — | 🟢 | — |
 | P3.2 | Crear `scripts/colegio-alta.mjs` | ⏳ Pendiente | — | 🟠 | Vercel CLI + service role |
@@ -142,6 +142,7 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 
 - `0131d5f` — feat(web): cargar config por PUBLIC_SITE_SLUG con fallback al piloto (P1.1 + P1.2)
 - `f920b4a` — fix(web): eliminar funcion no usada y formatear site.config.ts (P1.4)
+- `47b9beb` — feat(db): tabla tenant_settings con RLS admin-only (P2.1)
 
 ---
 
@@ -149,3 +150,4 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 
 - 2026-09-02: P1.1 sin commit propio. El checklist del plan agrupa P1.1+P1.2 en un solo commit atómico (`feat(web): cargar config por PUBLIC_SITE_SLUG...`). El commit se propone al cerrar P1.2.
 - 2026-09-02: P1.4 — `astro check` falló 2 veces: (1) ESLint por `slugFromPath` no usada (eliminada), (2) Prettier por formato (corregido con `prettier --write`). Build final OK: 13 páginas.
+- 2026-09-02: P2.2+P2.3 se agrupan en UN solo commit atómico por decisión del usuario (evita estado intermedio roto: los 9 actions.ts llamaban triggerRebuild() sin argumentos). En textos y portada, `triggerRebuild` no tenía supabase/tenantId en scope → se agregó `requireAdmin()` antes de cada llamada.

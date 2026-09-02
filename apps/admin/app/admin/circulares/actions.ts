@@ -82,7 +82,7 @@ export async function crearCircular(
     return { error: `No se pudo crear la circular: ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/circulares");
   redirect("/admin/circulares");
 }
@@ -92,7 +92,7 @@ export async function actualizarCircular(
   _prevState: CircularState,
   formData: FormData,
 ): Promise<CircularState> {
-  const { supabase } = await requireAdmin();
+  const { supabase, tenantId } = await requireAdmin();
   const { titulo, descripcion, categoria, fecha, publicado, currentPath, currentNombre, file, fieldErrors } =
     parseForm(formData);
 
@@ -126,13 +126,13 @@ export async function actualizarCircular(
     return { error: `No se pudo actualizar la circular: ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/circulares");
   redirect("/admin/circulares");
 }
 
 export async function eliminarCircular(formData: FormData) {
-  const { supabase } = await requireAdmin();
+  const { supabase, tenantId } = await requireAdmin();
   const id = String(formData.get("id") ?? "");
 
   if (!id) return;
@@ -142,7 +142,7 @@ export async function eliminarCircular(formData: FormData) {
     throw new Error(`No se pudo eliminar la circular: ${error.message}`);
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/circulares");
   redirect("/admin/circulares");
 }

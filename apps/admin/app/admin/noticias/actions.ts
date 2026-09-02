@@ -73,7 +73,7 @@ export async function crearNoticia(
     return { error: `No se pudo crear la noticia: ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/noticias");
   redirect("/admin/noticias");
 }
@@ -83,7 +83,7 @@ export async function actualizarNoticia(
   _prevState: NoticiaState,
   formData: FormData,
 ): Promise<NoticiaState> {
-  const { supabase } = await requireAdmin();
+  const { supabase, tenantId } = await requireAdmin();
   const { titulo, resumen, contenido, autor, publicado, imagenAlt, currentPath, file, fieldErrors } =
     parseForm(formData);
 
@@ -127,13 +127,13 @@ export async function actualizarNoticia(
     return { error: `No se pudo actualizar la noticia: ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/noticias");
   redirect("/admin/noticias");
 }
 
 export async function eliminarNoticia(formData: FormData) {
-  const { supabase } = await requireAdmin();
+  const { supabase, tenantId } = await requireAdmin();
   const id = String(formData.get("id") ?? "");
 
   if (!id) return;
@@ -143,7 +143,7 @@ export async function eliminarNoticia(formData: FormData) {
     throw new Error(`No se pudo eliminar la noticia: ${error.message}`);
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/noticias");
   redirect("/admin/noticias");
 }

@@ -110,7 +110,7 @@ export async function guardarAutoridades(
     return { error: `No se pudo guardar "autoridades": ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/autoridades");
   return { ok: true };
 }

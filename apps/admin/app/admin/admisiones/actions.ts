@@ -114,7 +114,7 @@ export async function guardarAdmisiones(
     return { error: `No se pudo guardar "admisiones": ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/admisiones");
   return { ok: true };
 }

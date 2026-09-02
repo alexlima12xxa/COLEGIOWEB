@@ -114,7 +114,7 @@ export async function guardarContacto(
     return { error: `No se pudo guardar "contacto": ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/contacto");
   return { ok: true };
 }

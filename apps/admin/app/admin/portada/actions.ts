@@ -116,7 +116,8 @@ export async function guardarHero(
   const res = await upsertContenido("hero", valor);
   if (res.error) return res;
 
-  await triggerRebuild();
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/portada");
   return { ok: true };
 }
@@ -164,7 +165,8 @@ export async function guardarVideoTour(
   const res = await upsertContenido("video_tour", valor);
   if (res.error) return res;
 
-  await triggerRebuild();
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/portada");
   return { ok: true };
 }

@@ -72,7 +72,7 @@ export async function guardarNiveles(
     return { error: `No se pudo guardar "niveles": ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/niveles");
   return { ok: true };
 }

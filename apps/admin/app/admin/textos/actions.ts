@@ -65,7 +65,8 @@ export async function guardarMision(
   const visionRes = await upsertContenido({ clave: "vision", valor: vision });
   if (visionRes.error) return visionRes;
 
-  await triggerRebuild();
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/textos");
   return { ok: true };
 }
@@ -101,7 +102,8 @@ export async function guardarFilosofia(
   const res = await upsertContenido({ clave: "filosofia", valor: pilares });
   if (res.error) return res;
 
-  await triggerRebuild();
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/textos");
   return { ok: true };
 }
@@ -141,7 +143,8 @@ export async function guardarHistoria(
   const res = await upsertContenido({ clave: "historia", valor: hitos });
   if (res.error) return res;
 
-  await triggerRebuild();
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/textos");
   return { ok: true };
 }

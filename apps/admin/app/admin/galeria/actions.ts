@@ -121,7 +121,7 @@ export async function guardarGaleria(
     return { error: `No se pudo guardar "galeria": ${error.message}` };
   }
 
-  await triggerRebuild();
+  await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/galeria");
   return { ok: true };
 }
