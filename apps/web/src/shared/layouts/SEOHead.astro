@@ -27,10 +27,9 @@ const canonicalUrl = new URL(
   siteConfig.seo.siteUrl,
 ).toString();
 const ogImageUrl = new URL(image, siteConfig.seo.siteUrl).toString();
-const logoUrl = new URL(
-  siteConfig.branding.assets.logo,
-  siteConfig.seo.siteUrl,
-).toString();
+const logoUrl = siteConfig.branding.assets.logo
+  ? new URL(siteConfig.branding.assets.logo, siteConfig.seo.siteUrl).toString()
+  : undefined;
 
 const jsonLd = {
   "@context": "https://schema.org",

@@ -59,7 +59,9 @@ const videoJsonLd = {
   publisher: {
     "@type": "School",
     name: siteConfig.identity.name,
-    logo: absoluteUrl(siteConfig.branding.assets.logo),
+    logo: siteConfig.branding.assets.logo
+      ? absoluteUrl(siteConfig.branding.assets.logo)
+      : undefined,
   },
 };
 ---

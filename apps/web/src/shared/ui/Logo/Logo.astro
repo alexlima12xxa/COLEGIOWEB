@@ -1,0 +1,45 @@
+---
+import { siteConfig } from "../../../site.config";
+import "./Logo.css";
+
+export interface Props {
+  variant?: "light" | "dark";
+  size?: "sm" | "md" | "lg";
+  class?: string;
+}
+
+const { variant = "light", size = "md", class: className } = Astro.props;
+
+const logoPath =
+  variant === "dark"
+    ? (siteConfig.branding.assets.logoInverse ??
+      siteConfig.branding.assets.logo)
+    : siteConfig.branding.assets.logo;
+const logoClass = ["logo", `logo--${variant}`, `logo--${size}`, className];
+---
+
+{
+  logoPath ? (
+    <img
+      src={logoPath}
+      alt={siteConfig.identity.name}
+      class:list={logoClass}
+      width="160"
+      height="40"
+      decoding="async"
+    />
+  ) : (
+    <span class:list={logoClass}>
+      <svg
+        class="logo__icon"
+        viewBox="0 0 48 48"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <circle class="logo__iconCircle" cx="24" cy="24" r="18" />
+        <path class="logo__iconTriangle" d="M18 30 24 18 30 30H18z" />
+      </svg>
+      <span class="logo__name">{siteConfig.identity.name}</span>
+    </span>
+  )
+}

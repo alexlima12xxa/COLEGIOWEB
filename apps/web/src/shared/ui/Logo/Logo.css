@@ -1,0 +1,74 @@
+@layer components {
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  img.logo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .logo__icon {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .logo__iconCircle {
+    fill: var(--color-primary);
+  }
+
+  .logo__iconTriangle {
+    fill: var(--color-text-inverse);
+  }
+
+  .logo__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+  }
+
+  .logo--light .logo__name {
+    color: var(--color-text);
+  }
+
+  .logo--dark .logo__name {
+    color: var(--color-text-inverse);
+  }
+
+  .logo--sm .logo__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .logo--sm .logo__name {
+    font-size: var(--text-sm);
+  }
+
+  .logo--md .logo__icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .logo--md .logo__name {
+    font-size: var(--text-base);
+  }
+
+  .logo--lg .logo__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .logo--lg .logo__name {
+    font-size: var(--text-lg);
+  }
+}

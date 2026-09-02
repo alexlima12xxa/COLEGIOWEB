@@ -80,13 +80,15 @@ const jsonLd = {
   publisher: {
     "@type": "Organization",
     name: siteConfig.identity.name,
-    logo: {
-      "@type": "ImageObject",
-      url: new URL(
-        siteConfig.branding.assets.logo,
-        siteConfig.seo.siteUrl,
-      ).toString(),
-    },
+    logo: siteConfig.branding.assets.logo
+      ? {
+          "@type": "ImageObject",
+          url: new URL(
+            siteConfig.branding.assets.logo,
+            siteConfig.seo.siteUrl,
+          ).toString(),
+        }
+      : undefined,
   },
   mainEntityOfPage: pageUrl,
 };
