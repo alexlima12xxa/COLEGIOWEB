@@ -3,6 +3,25 @@
     --navbar-height: 4rem;
   }
 
+  /* Entrada escalonada: el navbar baja suavemente al cargar la página.
+     Solo transform/opacity, gated por prefers-reduced-motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .navbar {
+      animation: navbarDrop var(--duration-slow) var(--ease-standard) both;
+    }
+  }
+
+  @keyframes navbarDrop {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .navbar__container {
     display: flex;
     align-items: center;
