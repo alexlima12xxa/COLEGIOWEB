@@ -25,12 +25,12 @@
   }
 
   .navbar__logo {
-    max-width: 7.5rem;
+    max-width: 9rem;
   }
 
   @media (min-width: 48rem) {
     .navbar__logo {
-      max-width: 9rem;
+      max-width: 12rem;
     }
   }
 
