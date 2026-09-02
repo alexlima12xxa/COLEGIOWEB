@@ -125,8 +125,8 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 | P1.1 | Crear `configs/colegio-piloto.ts` (datos actuales) | [✓] Completado | `0131d5f` | 🟢 | Datos copiados del objeto actual site.config.ts |
 | P1.2 | Convertir `site.config.ts` en cargador por slug | [✓] Completado | `0131d5f` | 🟡 | import.meta.glob eager; fallback piloto; 21 imports intactos |
 | P1.3 | Assets: confirmar branding piloto actual | [✓] Completado | — (sin cambios) | 🟢 | Todos los assets referenciados existen; sin migración |
-| P1.4 | Validar F1: check + build web slug piloto | ⏳ Pendiente | — | 🟢 | Ejecuta usuario |
-| P2.1 | Migración `tenant_settings.sql` + RLS | ⏳ Pendiente | — | 🟡 | — |
+| P1.4 | Validar F1: check + build web slug piloto | [✓] Completado | `f920b4a` | 🟢 | check OK (0 errores) + build OK (13 páginas) |
+| P2.1 | Migración `tenant_settings.sql` + RLS | [✓] Completado | — | 🟡 | Tabla mínima (tenant_id PK + rebuild_hook_url); select/update solo admin; grants authenticated + service_role |
 | P2.2 | Refactor `triggerRebuild(supabase, tenantId)` | ⏳ Pendiente | — | 🟡 | Fallback env var |
 | P2.3 | Actualizar 9 `actions.ts` con supabase, tenantId | ⏳ Pendiente | — | 🟠 | Grep verificación |
 | P2.4 | Validar F2: build admin | ⏳ Pendiente | — | 🟢 | Ejecuta usuario |
@@ -141,9 +141,11 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 ## Registro de commits
 
 - `0131d5f` — feat(web): cargar config por PUBLIC_SITE_SLUG con fallback al piloto (P1.1 + P1.2)
+- `f920b4a` — fix(web): eliminar funcion no usada y formatear site.config.ts (P1.4)
 
 ---
 
 ## Incidentes y desvíos
 
 - 2026-09-02: P1.1 sin commit propio. El checklist del plan agrupa P1.1+P1.2 en un solo commit atómico (`feat(web): cargar config por PUBLIC_SITE_SLUG...`). El commit se propone al cerrar P1.2.
+- 2026-09-02: P1.4 — `astro check` falló 2 veces: (1) ESLint por `slugFromPath` no usada (eliminada), (2) Prettier por formato (corregido con `prettier --write`). Build final OK: 13 páginas.
