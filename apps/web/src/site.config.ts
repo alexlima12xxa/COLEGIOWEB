@@ -194,16 +194,9 @@ const DEFAULT_SLUG = "colegio-piloto";
  * Carga eager de todas las configs de colegio en `./configs/*.ts`.
  * Cada módulo exporta por defecto un objeto plano (sin schema).
  */
-const configModules = import.meta.glob<{ default: unknown }>(
-  "./configs/*.ts",
-  { eager: true },
-);
-
-/** Normaliza la ruta del módulo a su slug: "./configs/<slug>.ts" → "<slug>". */
-function slugFromPath(path: string): string {
-  const match = /\.\/configs\/(.+)\.ts$/.exec(path);
-  return match ? match[1] : "";
-}
+const configModules = import.meta.glob<{ default: unknown }>("./configs/*.ts", {
+  eager: true,
+});
 
 /** Slug activo: env var PUBLIC_SITE_SLUG, o fallback al piloto. */
 function resolveActiveSlug(): string {
