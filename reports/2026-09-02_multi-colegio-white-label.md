@@ -146,6 +146,7 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 - `97abf45` — refactor(admin): triggerRebuild por tenant en 9 actions (P2.2 + P2.3)
 - `a2e725b` — feat(ops): catalogo clients.json y script de alta de colegio (P3.1 + P3.2 + P3.3)
 - `7499395` — docs: guia multi-colegio y actualizar PROJECT.md (P4.1 + P4.2)
+- `ac2fb3e` — fix(web): site dinamico desde siteConfig.seo.siteUrl (fix post-plan)
 
 ---
 
@@ -155,4 +156,5 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 - 2026-09-02: P1.4 — `astro check` falló 2 veces: (1) ESLint por `slugFromPath` no usada (eliminada), (2) Prettier por formato (corregido con `prettier --write`). Build final OK: 13 páginas.
 - 2026-09-02: P2.2+P2.3 se agrupan en UN solo commit atómico por decisión del usuario (evita estado intermedio roto: los 9 actions.ts llamaban triggerRebuild() sin argumentos). En textos y portada, `triggerRebuild` no tenía supabase/tenantId en scope → se agregó `requireAdmin()` antes de cada llamada.
 - 2026-09-02: P3.2 — el plan menciona "Vercel CLI", pero se implementó con la **REST API de Vercel** (token `VERCEL_TOKEN`) por ser determinista y no interactiva para automatización. Mismo resultado: proyecto, env vars, dominio y deploy hook. Se documenta en docs/multi-colegio.md.
-- 2026-09-02: P3.2 — hallazgo: `astro.config.ts` tiene `site` hardcodeado (`colegioweb.vercel.app`). Fuera del alcance del plan; se documenta como limitación conocida en P4.1.
+- 2026-09-02: P3.2 — hallazgo: `astro.config.ts` tiene `site` hardcodeado (`colegioweb.vercel.app`). Se corrigió en commit `ac2fb3e` usando `siteConfig.seo.siteUrl` (fuente única de verdad por colegio).
+- 2026-09-02: Migración `tenant_settings` aplicada vía SQL Editor del dashboard Supabase (no por CLI). La tabla `tenant_settings` ya existe en la BD.
