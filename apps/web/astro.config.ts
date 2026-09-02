@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import vercel from "@astrojs/vercel";
 
+import { siteConfig } from "./src/site.config";
 import { validateConfig } from "./src/shared/lib/validateConfig.ts";
 
 // Fail fast if the white-label configuration is invalid.
@@ -9,7 +10,9 @@ validateConfig();
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://colegioweb.vercel.app",
+  // El origen canónico sale de la config del colegio activo (seleccionada por
+  // PUBLIC_SITE_SLUG). Así cada build genera canónicos/og:url con su dominio.
+  site: siteConfig.seo.siteUrl,
   output: "static",
   adapter: vercel(),
   build: {
