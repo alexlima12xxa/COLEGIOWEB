@@ -1,0 +1,105 @@
+---
+import Section from "../../../shared/ui/Section/Section.astro";
+import Badge from "../../../shared/ui/Badge/Badge.astro";
+import Button from "../../../shared/ui/Button/Button.astro";
+import VideoModal from "../../../shared/ui/VideoModal/VideoModal.astro";
+import ResponsiveImage from "../../../shared/ui/ResponsiveImage/ResponsiveImage.astro";
+import { ArrowDown } from "@lucide/astro";
+import "./HomeHero.css";
+
+/**
+ * Hero de portada — componente presentacional y data-agnóstico.
+ *
+ * Recibe props ya resueltas por la página (cascada DB → siteConfig →
+ * placeholder). El contenedor de media es condicional según lo que el
+ * colegio configure en el panel admin:
+ *
+ *  - "photo-video": heroPhoto como póster con botón Play encima.
+ *  - "photo-only":  heroPhoto limpia (sin botón de Play).
+ *  - "video-only":  póster del tour con botón Play.
+ *
+ * Así el campo `heroPhoto` del admin se sigue usando al 100% y el diseño
+ * siempre se ve limpio con un solo contenedor Bento.
+ */
+export interface Props {
+  badge: string;
+  title: string;
+  description: string;
+  ctaPrimary: { label: string; href: string };
+  ctaSecondary: { label: string; href: string };
+  mediaMode: "photo-video" | "photo-only" | "video-only";
+  heroPhoto?: string;
+  heroPhotoAlt?: string;
+  videoUrl?: string;
+  videoPoster?: string;
+  videoTitle?: string;
+  class?: string;
+}
+
+const {
+  badge,
+  title,
+  description,
+  ctaPrimary,
+  ctaSecondary,
+  mediaMode,
+  heroPhoto,
+  heroPhotoAlt = "Estudiantes en actividad académica",
+  videoUrl,
+  videoPoster,
+  videoTitle = "Ver video institucional",
+  class: className,
+} = Astro.props;
+---
+
+<Section padding="xl" class:list={["homeHero", className]}>
+  <div class="homeHero__grid">
+    <div class="homeHero__content">
+      <Badge variant="success" class="homeHero__badge">
+        <span class="homeHero__badgeDot" aria-hidden="true"></span>
+        {badge}
+      </Badge>
+
+      <h1 class="homeHero__title">{title}</h1>
+
+      <p class="homeHero__description">{description}</p>
+
+      <div class="homeHero__actions">
+        <Button href={ctaPrimary.href} size="lg">
+          {ctaPrimary.label}
+        </Button>
+        <Button href={ctaSecondary.href} variant="secondary" size="lg">
+          {ctaSecondary.label}
+          <ArrowDown aria-hidden="true" size={18} />
+        </Button>
+      </div>
+    </div>
+
+    <div class="homeHero__media">
+      {
+        mediaMode === "photo-only" ? (
+          <figure class="homeHero__frame">
+            <ResponsiveImage
+              src={heroPhoto}
+              alt={heroPhotoAlt}
+              width={1200}
+              height={675}
+              loading="eager"
+              fetchpriority="high"
+              sizes="(min-width: 48rem) 45vw, 100vw"
+              class="homeHero__frameImage"
+            />
+          </figure>
+        ) : (
+          <VideoModal
+            id="home-tour"
+            videoUrl={videoUrl}
+            poster={mediaMode === "photo-video" ? heroPhoto : videoPoster}
+            title={videoTitle}
+            eager
+          />
+        )
+      }
+    </div>
+  </div>
+</Section>

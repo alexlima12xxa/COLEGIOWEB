@@ -1,0 +1,164 @@
+@layer features {
+  .homeHero__grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .homeHero__grid {
+      grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+      gap: var(--space-2xl);
+    }
+  }
+
+  .homeHero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  /* Badge de admisiones con punto pulsante (sin emoji) */
+  .homeHero__badgeDot {
+    flex: 0 0 auto;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-success);
+  }
+
+  @keyframes homeHeroPulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-success) 45%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 0.5rem color-mix(in oklch, var(--color-success) 0%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-success) 0%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .homeHero__badgeDot {
+      animation: homeHeroPulse 2s var(--ease-standard) infinite;
+    }
+  }
+
+  .homeHero__title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  @media (min-width: 48rem) {
+    .homeHero__title {
+      font-size: var(--text-5xl);
+    }
+  }
+
+  .homeHero__description {
+    color: var(--color-text-muted);
+    max-width: 50ch;
+  }
+
+  .homeHero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+
+  .homeHero__media {
+    min-width: 0;
+  }
+
+  /* Contenedor Bento único (modo solo foto) */
+  .homeHero__frame {
+    margin: 0;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .homeHero__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+  }
+
+  /* Coreografía staggered de carga — solo transform/opacity.
+     Gated por prefers-reduced-motion: sin animación = estado final. */
+  @media (prefers-reduced-motion: no-preference) {
+    .homeHero__badge,
+    .homeHero__title,
+    .homeHero__description,
+    .homeHero__actions,
+    .homeHero__media {
+      opacity: 0;
+      animation: homeHeroRise var(--duration-slow) var(--ease-standard) forwards;
+    }
+
+    .homeHero__badge {
+      animation-name: homeHeroScale;
+      animation-delay: 80ms;
+    }
+
+    .homeHero__title {
+      animation-delay: 160ms;
+    }
+
+    .homeHero__description {
+      animation-delay: 240ms;
+    }
+
+    .homeHero__actions {
+      animation-delay: 320ms;
+    }
+
+    .homeHero__media {
+      animation-name: homeHeroMediaIn;
+      animation-delay: 400ms;
+    }
+  }
+
+  @keyframes homeHeroRise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes homeHeroScale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes homeHeroMediaIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
