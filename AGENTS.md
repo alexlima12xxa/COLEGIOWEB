@@ -20,6 +20,12 @@ pnpm --filter @web-modelo/admin build
 pnpm --filter @web-modelo/aula build
 ```
 
+Modelo multi-colegio (onboarding de un colegio nuevo):
+
+```
+pnpm colegio:alta <slug>   # alta automatizada (Supabase + Vercel), ver docs/multi-colegio.md
+```
+
 Supabase CLI (esquema y edge functions):
 
 ```

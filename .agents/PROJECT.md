@@ -1,6 +1,6 @@
 # PROJECT.md
 > Generado por el agente de planificación. Modificar solo vía propuesta del agente.
-> Creado: 2026-08-27 | Actualizado: 2026-08-27 | Motivo: Inicio de construcción (GATE 0)
+> Creado: 2026-08-27 | Actualizado: 2026-09-02 | Motivo: Modelo multi-colegio (white-label escalable)
 
 ## Origen
 - Tipo: nuevo (directorio vacío, solo `.git/`)
@@ -16,27 +16,33 @@
 - CMS: Decap CMS (edición no-técnica para el colegio)
 - Iconos: @lucide/astro (lucide-astro está deprecated)
 - Deploy: Vercel (web pública + futuro aula virtual Next.js) — adapter @astrojs/vercel instalado
+  - **Modelo multi-colegio**: N proyectos Vercel (uno por colegio, `web-<slug>`), cada uno con su dominio, env vars (`PUBLIC_TENANT_ID`, `PUBLIC_SITE_SLUG`) y deploy hook propio
 - Dominio: Cloudflare Registrar (DNS central)
 
 ## Arquitectura
 - Monorepo pnpm (workspaces): `apps/*` + `packages/*`
-  - `apps/web` → Astro SSG (web pública) en `tuapp.com` (Vercel)
-  - `apps/admin` → Next.js (panel admin, Fase 2) en `admin.tuapp.com` (Vercel)
+  - `apps/web` → Astro SSG (web pública) — **un build por colegio** (`configs/<slug>.ts` + `PUBLIC_SITE_SLUG`)
+  - `apps/admin` → Next.js (panel admin, Fase 2) en `admin.tuapp.com` (Vercel) — un solo panel para todos los directores
   - `apps/aula` → Next.js (aula virtual, Fase 3) en `aula.tuapp.com` (Vercel)
   - `packages/shared` → tipos BD Supabase + tokens de marca compartidos
-- BD compartida: Supabase (una BD, tablas con `tenant_id` + RLS)
+- BD compartida: Supabase (una BD, tablas con `tenant_id` + RLS) — un solo proyecto multi-tenant
 - Sesión entre subdominios: Opción B (login propio en cada app) — decidida para MVP
 
 ## Mapa de responsabilidades
-- `apps/web/src/site.config.ts` → fuente de verdad del white-label (zod en build)
+- `apps/web/src/site.config.ts` → cargador multi-colegio (zod en build): selecciona `configs/<PUBLIC_SITE_SLUG>.ts` con fallback a `colegio-piloto`
+- `apps/web/src/configs/<slug>.ts` → fuente de verdad del white-label por colegio (marca en código, controlada por la agencia)
 - `apps/web/src/styles/` → sistema de capas CSS (`_tokens.css`, `_reset.css`, `_base.css`, `_layers.css`, `_fonts.css`, `_utilities.css`, `global.css`)
 - `apps/web/src/shared/` → componentes UI, layouts, lib, db client
 - `apps/web/src/features/` → componentes por feature (noticias, levels, admissions)
 - `apps/web/src/pages/` → rutas públicas (15 páginas)
 - `apps/web/src/data/fallback/` → JSON versionados (resiliencia sin Supabase)
-- `apps/web/public/branding/` → assets por colegio
-- `supabase/migrations/` → esquema multi-tenant + RLS (init + grant service role)
+- `apps/web/public/branding/<slug>/` → assets por colegio
+- `supabase/migrations/` → esquema multi-tenant + RLS (init + grant service role + tenant_settings)
 - `supabase/functions/rebuild-webhook/` → Edge Function Supabase → Vercel deploy hook
+- `apps/admin/lib/rebuild.ts` → `triggerRebuild(supabase, tenantId)`: lee `tenant_settings.rebuild_hook_url` (fallback `REBUILD_HOOK_URL`)
+- `clients.json` → catálogo de colegios (slug, domain, tenantId, adminEmail, rebuildHookUrl)
+- `scripts/colegio-alta.mjs` → onboarding automatizado (Supabase service role + Vercel REST API)
+- `docs/multi-colegio.md` → guía operativa por colegio
 - `packages/shared/` → tipos y tokens compartidos entre apps
 
 ## Convenciones detectadas (decididas en planificación)
@@ -62,12 +68,15 @@
 - Panel admin (Fase 2): plan A0-A8 definido (esqueleto listo; pendiente auth, CRUD, editor de textos, leads).
 - Aula virtual (Fase 3): solo esqueleto + plan (notas por estudiante, cursos, RLS por relación familiar) — no planificada en detalle.
 - Decap CMS eliminado; Netlify cancelado; no se necesita script sharp (astro:assets + remotePatterns cubren imágenes).
+- **Modelo multi-colegio (2026-09-02): COMPLETADO** — config por slug con fallback al piloto, `tenant_settings` con RLS admin-only, `triggerRebuild` por tenant en 9 actions, catálogo `clients.json`, script `colegio:alta`, guía `docs/multi-colegio.md`.
 - `.agents/skills/resumen.md` documenta skills por fase.
 
 ## Decisiones clave
 - SSG + fetch en build-time (no SSR, no fetch en cliente) para noticias/circulares
 - Webhook Supabase → deploy hook de Vercel para rebuild (< 2 min)
 - Multi-tenancy: una BD compartida con `tenant_id` + RLS en todas las tablas
+- **Marca en código por colegio** (`configs/<slug>.ts` + `public/branding/<slug>/`): la agencia configura marca; el director edita contenido vía panel. NO editable desde el panel (decisión).
+- **Rebuild por tenant**: `tenant_settings.rebuild_hook_url` (hook URL secreto, RLS admin-only) con fallback a `REBUILD_HOOK_URL`
 - Validación de contraste WCAG ≥ 4.5:1 en build (falla si no cumple)
 - Panel admin + aula virtual sobre la MISMA BD Supabase (apps separadas, login propio)
 - Director edita TODO el contenido institucional (Opción 1: misión, visión, hero, video, autoridades, descripciones, galería) — la agencia solo configura marca/estructura
