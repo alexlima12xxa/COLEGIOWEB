@@ -1,0 +1,13 @@
+{
+  "name": "web-modelo-1",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Monorepo multi-colegio: web pública (Astro SSG), panel admin (Next.js), aula virtual (Next.js).",
+  "scripts": {
+    "colegio:alta": "node scripts/colegio-alta.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.4"
+  },
+  "packageManager": "pnpm@11.18.0"
+}

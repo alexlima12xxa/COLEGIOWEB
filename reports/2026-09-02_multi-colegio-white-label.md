@@ -127,12 +127,12 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 | P1.3 | Assets: confirmar branding piloto actual | [✓] Completado | — (sin cambios) | 🟢 | Todos los assets referenciados existen; sin migración |
 | P1.4 | Validar F1: check + build web slug piloto | [✓] Completado | `f920b4a` | 🟢 | check OK (0 errores) + build OK (13 páginas) |
 | P2.1 | Migración `tenant_settings.sql` + RLS | [✓] Completado | `47b9beb` | 🟡 | Tabla mínima (tenant_id PK + rebuild_hook_url); select/update solo admin; grants authenticated + service_role |
-| P2.2 | Refactor `triggerRebuild(supabase, tenantId)` | [✓] Completado | (commit atómico P2.2+P2.3) | 🟡 | Lee tenant_settings.rebuild_hook_url; fallback REBUILD_HOOK_URL; nunca lanza |
-| P2.3 | Actualizar 9 `actions.ts` con supabase, tenantId | [✓] Completado | (commit atómico P2.2+P2.3) | 🟠 | 16/16 llamadas actualizadas (grep verificado); textos y portada requieren requireAdmin() extra |
-| P2.4 | Validar F2: build admin | ⏳ Pendiente | — | 🟢 | Ejecuta usuario |
-| P3.1 | Crear `clients.json` (catálogo) | ⏳ Pendiente | — | 🟢 | — |
-| P3.2 | Crear `scripts/colegio-alta.mjs` | ⏳ Pendiente | — | 🟠 | Vercel CLI + service role |
-| P3.3 | `package.json` raíz + script `colegio:alta` | ⏳ Pendiente | — | 🟢 | — |
+| P2.2 | Refactor `triggerRebuild(supabase, tenantId)` | [✓] Completado | `97abf45` | 🟡 | Lee tenant_settings.rebuild_hook_url; fallback REBUILD_HOOK_URL; nunca lanza |
+| P2.3 | Actualizar 9 `actions.ts` con supabase, tenantId | [✓] Completado | `97abf45` | 🟠 | 16/16 llamadas actualizadas (grep verificado); textos y portada requieren requireAdmin() extra |
+| P2.4 | Validar F2: build admin | [✓] Completado | — (sin cambios) | 🟢 | Build OK: TS 9.9s, 18 rutas, sin errores |
+| P3.1 | Crear `clients.json` (catálogo) | [✓] Completado | — | 🟢 | Piloto como primera entrada; tenantId/rebuildHookUrl vacíos (pendiente Supabase real) |
+| P3.2 | Crear `scripts/colegio-alta.mjs` | [✓] Completado | (commit atómico P3.1+P3.2+P3.3) | 🟠 | Service role + Vercel REST API (token); seed parametrizado 11 claves; idempotente |
+| P3.3 | `package.json` raíz + script `colegio:alta` | [✓] Completado | (commit atómico P3.1+P3.2+P3.3) | 🟢 | Privado; dep @supabase/supabase-js; packageManager pnpm@11.18.0 |
 | P4.1 | Crear `docs/multi-colegio.md` | ⏳ Pendiente | — | 🟡 | — |
 | P4.2 | Actualizar `.agents/PROJECT.md` (+ AGENTS.md) | ⏳ Pendiente | — | 🟢 | — |
 
@@ -143,6 +143,7 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 - `0131d5f` — feat(web): cargar config por PUBLIC_SITE_SLUG con fallback al piloto (P1.1 + P1.2)
 - `f920b4a` — fix(web): eliminar funcion no usada y formatear site.config.ts (P1.4)
 - `47b9beb` — feat(db): tabla tenant_settings con RLS admin-only (P2.1)
+- `97abf45` — refactor(admin): triggerRebuild por tenant en 9 actions (P2.2 + P2.3)
 
 ---
 
@@ -151,3 +152,5 @@ Marca editable desde el panel (NO); migrar a build multi-tenant (Camino 2); aula
 - 2026-09-02: P1.1 sin commit propio. El checklist del plan agrupa P1.1+P1.2 en un solo commit atómico (`feat(web): cargar config por PUBLIC_SITE_SLUG...`). El commit se propone al cerrar P1.2.
 - 2026-09-02: P1.4 — `astro check` falló 2 veces: (1) ESLint por `slugFromPath` no usada (eliminada), (2) Prettier por formato (corregido con `prettier --write`). Build final OK: 13 páginas.
 - 2026-09-02: P2.2+P2.3 se agrupan en UN solo commit atómico por decisión del usuario (evita estado intermedio roto: los 9 actions.ts llamaban triggerRebuild() sin argumentos). En textos y portada, `triggerRebuild` no tenía supabase/tenantId en scope → se agregó `requireAdmin()` antes de cada llamada.
+- 2026-09-02: P3.2 — el plan menciona "Vercel CLI", pero se implementó con la **REST API de Vercel** (token `VERCEL_TOKEN`) por ser determinista y no interactiva para automatización. Mismo resultado: proyecto, env vars, dominio y deploy hook. Se documenta en docs/multi-colegio.md.
+- 2026-09-02: P3.2 — hallazgo: `astro.config.ts` tiene `site` hardcodeado (`colegioweb.vercel.app`). Fuera del alcance del plan; se documenta como limitación conocida en P4.1.
