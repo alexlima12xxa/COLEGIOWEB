@@ -4,8 +4,8 @@ import Section from "../shared/ui/Section/Section.astro";
 import Button from "../shared/ui/Button/Button.astro";
 import Card from "../shared/ui/Card/Card.astro";
 import Badge from "../shared/ui/Badge/Badge.astro";
-import VideoModal from "../shared/ui/VideoModal/VideoModal.astro";
 import ResponsiveImage from "../shared/ui/ResponsiveImage/ResponsiveImage.astro";
+import HomeHero from "../features/home/components/HomeHero/HomeHero.astro";
 import { siteConfig } from "../site.config";
 import homeData from "../data/fallback/home.json";
 import { getHero, getVideoTour, getGaleria } from "../shared/db/contenido";
@@ -18,10 +18,12 @@ const hero = await getHero();
 const videoTour = await getVideoTour();
 const gallery = await getGaleria();
 
-const heroName = hero.data.name || siteConfig.identity.name;
 const heroSlogan = hero.data.slogan || siteConfig.identity.slogan;
 const heroDescription =
-  hero.data.description || siteConfig.identity.description;
+  hero.data.description ||
+  siteConfig.identity.description ||
+  siteConfig.identity.shortDescription ||
+  "";
 const heroPhoto =
   hero.data.heroPhoto ||
   siteConfig.branding.assets.heroPhoto ||
@@ -39,6 +41,20 @@ const heroPhotoUrl = resolveAssetUrl(heroPhoto) ?? heroPhoto;
 const tourPosterUrl = resolveAssetUrl(tourPoster) ?? tourPoster;
 const tourTitle = videoTour.data.title || "Ver tour virtual";
 const periodLabel = siteConfig.admissions.periodLabel;
+
+// Modo de media condicional según lo que el colegio configure en el admin:
+// - Foto + Video → heroPhoto como póster con botón Play encima.
+// - Solo Foto → heroPhoto limpia (sin botón de Play).
+// - Solo Video → póster del tour con botón Play.
+// El campo `heroPhoto` del admin se sigue usando al 100%.
+const hasVideo = Boolean(videoTour.data?.videoUrl);
+const hasPhoto = Boolean(
+  hero.data.heroPhoto || siteConfig.branding.assets.heroPhoto,
+);
+const mediaMode: "photo-video" | "photo-only" | "video-only" =
+  hasPhoto && hasVideo ? "photo-video" : hasPhoto ? "photo-only" : "video-only";
+// LCP: la imagen que se preloada depende del modo de media.
+const lcpImage = mediaMode === "video-only" ? tourPosterUrl : heroPhotoUrl;
 
 const enabledLevels = siteConfig.levels
   .filter((level) => level.enabled)
@@ -75,62 +91,37 @@ const videoJsonLd = {
     slot="head"
     rel="preload"
     as="image"
-    href={heroPhotoUrl}
+    href={lcpImage}
     fetchpriority="high"
   />
 
-  <script
-    slot="head"
-    type="application/ld+json"
-    set:html={JSON.stringify(videoJsonLd)}
-    is:inline
+  {
+    hasVideo && (
+      <script
+        slot="head"
+        type="application/ld+json"
+        set:html={JSON.stringify(videoJsonLd)}
+        is:inline
+      />
+    )
+  }
+
+  <HomeHero
+    badge={hero.data.badge || periodLabel}
+    title={heroSlogan}
+    description={heroDescription}
+    ctaPrimary={{
+      label: siteConfig.admissions.ctaLabel,
+      href: siteConfig.admissions.ctaUrl,
+    }}
+    ctaSecondary={{ label: "Conocer propuesta", href: "#niveles" }}
+    mediaMode={mediaMode}
+    heroPhoto={heroPhotoUrl}
+    heroPhotoAlt={`Estudiantes de ${siteConfig.identity.name} en actividad académica`}
+    videoUrl={hasVideo ? tourVideoUrl : undefined}
+    videoPoster={tourPosterUrl}
+    videoTitle={tourTitle}
   />
-
-  <Section padding="xl" class="homeHero">
-    <div class="homeHero__grid">
-      <div class="homeHero__content">
-        <Badge variant="primary">{hero.data.badge || periodLabel}</Badge>
-        <h1 class="homeHero__title">
-          {heroName}
-        </h1>
-        <p class="homeHero__lead">{heroSlogan}</p>
-        <p class="homeHero__description">
-          {heroDescription}
-        </p>
-        <div class="homeHero__actions">
-          <Button href={siteConfig.admissions.ctaUrl} size="lg">
-            {siteConfig.admissions.ctaLabel}
-          </Button>
-          <Button href="/nosotros" variant="secondary" size="lg">
-            Conócenos
-          </Button>
-        </div>
-      </div>
-
-      <div class="homeHero__media">
-        <div class="homeHero__video">
-          <VideoModal
-            id="home-tour"
-            videoUrl={tourVideoUrl}
-            poster={tourPosterUrl}
-            title={tourTitle}
-            eager
-          />
-        </div>
-        <div class="homeHero__photo">
-          <ResponsiveImage
-            src={heroPhotoUrl}
-            alt="Estudiantes del Colegio Piloto en actividad académica"
-            width={1200}
-            height={900}
-            loading="eager"
-            fetchpriority="high"
-            sizes="(min-width: 48rem) 50vw, 100vw"
-          />
-        </div>
-      </div>
-    </div>
-  </Section>
 
   <Section padding="md" bg="inverse" class="trustStrip">
     <ul class="trustStrip__list" role="list">
@@ -145,7 +136,7 @@ const videoJsonLd = {
     </ul>
   </Section>
 
-  <Section padding="lg">
+  <Section padding="lg" id="niveles">
     <div class="homeSectionHeader">
       <h2 class="homeSectionHeader__title">Niveles educativos</h2>
       <p class="homeSectionHeader__text">
@@ -249,89 +240,6 @@ const videoJsonLd = {
 </BaseLayout>
 
 <style>
-  .homeHero__grid {
-    display: grid;
-    gap: var(--space-xl);
-    align-items: center;
-  }
-
-  @media (min-width: 48rem) {
-    .homeHero__grid {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-2xl);
-    }
-  }
-
-  .homeHero__content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
-    min-width: 0;
-  }
-
-  .homeHero__title {
-    font-size: var(--text-4xl);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--leading-tight);
-    color: var(--color-text);
-  }
-
-  @media (min-width: 48rem) {
-    .homeHero__title {
-      font-size: var(--text-5xl);
-    }
-  }
-
-  .homeHero__lead {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-primary);
-  }
-
-  .homeHero__description {
-    color: var(--color-text-muted);
-    max-width: 50ch;
-  }
-
-  .homeHero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-md);
-    margin-top: var(--space-sm);
-  }
-
-  .homeHero__media {
-    display: grid;
-    gap: var(--space-md);
-    min-width: 0;
-  }
-
-  @media (min-width: 64rem) {
-    .homeHero__media {
-      grid-template-columns: 1.2fr 0.8fr;
-      align-items: stretch;
-    }
-  }
-
-  .homeHero__video,
-  .homeHero__photo {
-    min-width: 0;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-  }
-
-  /* :global — el <img> lo renderiza ResponsiveImage (astro:assets) y no
-     hereda el scope de esta página; sin :global el aspect-ratio no aplicaba
-     y la imagen reservaba altura 0 hasta cargar (CLS 0.11). */
-  .homeHero__photo :global(img) {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-    aspect-ratio: 4 / 3;
-  }
-
   .trustStrip__list {
     display: grid;
     grid-template-columns: 1fr;

@@ -60,3 +60,36 @@
   font-style: italic;
   font-display: swap;
 }
+
+/*
+ * Outfit variable (títulos / display) — self-hosted, sin CDN externo.
+ * Fuente geométrica cálida con carácter educativo (Google Fonts, subset latín).
+ * font-display: swap para evitar FOIT.
+ *
+ * CLS: el fallback local (Segoe UI / Arial / system-ui) tiene métricas más
+ * anchas que Outfit. La @font-face de fallback calibra ascent/descent/line-gap
+ * y size-adjust para que el texto tenga prácticamente el mismo alto antes y
+ * después del swap. Métricas de Outfit (unitsPerEm 1000): ascender 1000,
+ * descender 260, lineGap 0. size-adjust ~106% aproximado para fuentes de
+ * sistema (referencia pública de ajuste de métricas).
+ */
+@font-face {
+  font-family: "Outfit-fallback";
+  src:
+    local("Segoe UI"), local("Arial"), local("Helvetica Neue"), local("Roboto"),
+    local("Liberation Sans");
+  font-weight: 100 900;
+  font-style: normal;
+  ascent-override: 100%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+  size-adjust: 106%;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/outfit/OutfitVariable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

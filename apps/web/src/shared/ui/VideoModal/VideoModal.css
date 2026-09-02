@@ -37,39 +37,83 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-standard);
   }
 
+  /* Botón de Play flotante con glassmorphism (círculo central) */
   .videoModal__play {
     position: absolute;
-    inset: 0;
-    display: flex;
+    top: 50%;
+    left: 50%;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: var(--radius-full);
     background-color: color-mix(
       in oklch,
-      var(--color-surface-inverse) 30%,
+      var(--color-surface) 90%,
       transparent
     );
-    color: var(--color-text-inverse);
-    transition: background-color var(--duration-fast) var(--ease-standard);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid
+      color-mix(in oklch, var(--color-surface) 55%, var(--color-border));
+    box-shadow: var(--shadow-md);
+    color: var(--color-primary);
+    transform: translate(-50%, -50%);
+    transition:
+      transform var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+  }
+
+  /* Anillo de onda expansiva sutil alrededor del Play */
+  .videoModal__play::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    border: 2px solid color-mix(in oklch, var(--color-primary) 40%, transparent);
+    animation: videoModalPing 2.4s var(--ease-standard) infinite;
+  }
+
+  @keyframes videoModalPing {
+    0% {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    70% {
+      transform: scale(1.55);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.55);
+      opacity: 0;
+    }
   }
 
   @media (hover: hover) {
     .videoModal__trigger:hover .videoModal__play {
-      background-color: color-mix(
-        in oklch,
-        var(--color-surface-inverse) 50%,
-        transparent
-      );
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .videoModal__trigger:hover .videoModal__poster {
+      transform: scale(1.05);
     }
   }
 
   .videoModal__trigger:active .videoModal__play {
-    background-color: color-mix(
-      in oklch,
-      var(--color-surface-inverse) 50%,
-      transparent
-    );
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  /* Fallback sólido cuando el usuario reduce transparencias */
+  @media (prefers-reduced-transparency: reduce) {
+    .videoModal__play {
+      background-color: var(--color-surface);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
 
   .videoModal__dialog {
@@ -124,6 +168,15 @@
     .videoModal__content {
       transform: none;
       opacity: 1;
+    }
+
+    .videoModal__play::before {
+      animation: none;
+    }
+
+    .videoModal__poster,
+    .videoModal__play {
+      transition: none;
     }
   }
 
