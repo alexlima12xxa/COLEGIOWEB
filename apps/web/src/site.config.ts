@@ -3,10 +3,17 @@ import { z } from "astro/zod";
 /**
  * White-label configuration — single source of truth for the school brand.
  *
- * Changing values here (colors, name, levels, contact, etc.) updates the
- * entire site without touching components, because UI components read CSS
- * custom properties generated from this config (see SEOHead.astro) and
- * import values from this file at build time.
+ * Este archivo es un CARGADOR multi-colegio:
+ *  - Define el schema (zod) que valida la config de cada colegio.
+ *  - Carga todas las configs de `./configs/*.ts` (una por colegio).
+ *  - Selecciona la config según la env var `PUBLIC_SITE_SLUG`.
+ *  - Si el slug no está definido o no existe su config, usa `colegio-piloto`.
+ *
+ * Los componentes importan `siteConfig` (mismo símbolo de siempre), por lo
+ * que los imports existentes siguen funcionando sin cambios.
+ *
+ * Colegios nuevos → `apps/web/src/configs/<slug>.ts` + assets en
+ * `public/branding/<slug>/`. La selección ocurre en build-time (SSG puro).
  */
 
 const hexColorSchema = z
@@ -177,156 +184,54 @@ export const siteConfigSchema = z.object({
 
 export type SiteConfig = z.infer<typeof siteConfigSchema>;
 
-export const siteConfig = siteConfigSchema.parse({
-  identity: {
-    name: "Colegio Piloto",
-    slogan: "Formando líderes para el futuro con excelencia académica",
-    shortDescription:
-      "Institución educativa comprometida con la excelencia académica y la formación integral.",
-    description:
-      "Somos una institución educativa con décadas de trayectoria formando estudiantes íntegros, críticos y preparados para los desafíos del mundo actual.",
-    founded: 1985,
-  },
-  contact: {
-    address: "Calle 123 # 45-67",
-    city: "Bogotá, Colombia",
-    phone: "+57 601 234 5678",
-    whatsapp: "+573101234567",
-    email: "contacto@colegiopiloto.edu.co",
-    mapUrl: "https://maps.google.com/?q=Colegio+Piloto+Bogota",
-    mapEmbedUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.1234567890123!2d-74.08175!3d4.60971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMzYnMzUuMCJOIDc0wrAwNCw1NC4zIg!5e0!3m2!1ses!2sco!4v1600000000000",
-    officeHours: "Lunes a viernes, 7:00 a.m. – 4:00 p.m.",
-  },
-  social: {
-    facebook: "https://facebook.com/colegiopiloto",
-    instagram: "https://instagram.com/colegiopiloto",
-    youtube: "https://youtube.com/@colegiopiloto",
-  },
-  levels: [
-    {
-      id: "preescolar",
-      name: "Preescolar",
-      shortName: "Pre",
-      slug: "preescolar",
-      description: "Primera experiencia escolar con enfoque lúdico y afectivo.",
-      ageRange: "3-5 años",
-      enabled: true,
-    },
-    {
-      id: "primaria",
-      name: "Primaria",
-      shortName: "Pri",
-      slug: "primaria",
-      description:
-        "Formación académica sólida con valores y pensamiento crítico.",
-      ageRange: "6-10 años",
-      enabled: true,
-    },
-    {
-      id: "secundaria",
-      name: "Secundaria",
-      shortName: "Sec",
-      slug: "secundaria",
-      description:
-        "Educación media con orientación hacia la excelencia académica.",
-      ageRange: "11-14 años",
-      enabled: true,
-    },
-    {
-      id: "media",
-      name: "Media Técnica",
-      shortName: "Media",
-      slug: "media-tecnica",
-      description:
-        "Bachillerato con énfasis técnico y preparación para la educación superior.",
-      ageRange: "15-17 años",
-      enabled: true,
-    },
-  ],
-  sections: {
-    hero: true,
-    about: true,
-    levels: true,
-    admissions: true,
-    news: true,
-    testimonials: true,
-    gallery: true,
-    contact: true,
-  },
-  admissions: {
-    active: true,
-    periodLabel: "Admisiones 2026 abiertas",
-    ctaLabel: "Solicitar información",
-    ctaUrl: "#contacto",
-    deadline: "2026-11-30",
-    requirements: [
-      "Formulario de inscripción",
-      "Certificado de notas",
-      "Copia del documento de identidad",
-      "Entrevista con coordinación",
-    ],
-  },
-  branding: {
-    colors: {
-      primary: "#1e40af",
-      primaryHover: "#1e3a8a",
-      primaryActive: "#172554",
-      primarySoft: "#dbeafe",
-      accent: "#b45309",
-      accentSoft: "#ffedd5",
-      surface: "#ffffff",
-      surfaceMuted: "#f8fafc",
-      surfaceStrong: "#f1f5f9",
-      surfaceInverse: "#0f172a",
-      text: "#1e293b",
-      textMuted: "#475569",
-      textSubtle: "#64748b",
-      textInverse: "#ffffff",
-      border: "#e2e8f0",
-      borderStrong: "#cbd5e1",
-      success: "#15803d",
-      warning: "#a16207",
-      danger: "#b91c1c",
-      info: "#0369a1",
-    },
-    fonts: {
-      sans: '"Inter", "Inter-fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      display:
-        '"Inter", "Inter-fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      mono: 'ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
-    },
-    radius: {
-      xs: "0.125rem",
-      sm: "0.25rem",
-      md: "0.5rem",
-      lg: "0.75rem",
-      xl: "1rem",
-      full: "9999px",
-    },
-    assets: {
-      logo: "/branding/logo.svg",
-      logoInverse: "/branding/logo-inverse.svg",
-      favicon: "/branding/favicon.svg",
-      ogImage: "/branding/og-image.svg",
-      tourVideoPoster: "/branding/placeholders/hero-tour-poster.jpg",
-      heroPhoto: "/branding/placeholders/hero-photo.avif",
-    },
-  },
-  seo: {
-    titleTemplate: "%s | Colegio Piloto",
-    defaultTitle: "Inicio",
-    defaultDescription:
-      "Colegio Piloto: educación integral de calidad para preescolar, primaria, secundaria y media técnica.",
-    keywords: ["colegio", "educación", "primaria", "secundaria", "Bogotá"],
-    author: "Colegio Piloto",
-    siteUrl: "https://colegioweb.vercel.app",
-    ogImage: "/branding/og-image.svg",
-    twitterHandle: "@colegiopiloto",
-  },
-  supabase: {
-    url: "https://placeholder.supabase.co",
-    anonKeyEnvName: "PUBLIC_SUPABASE_ANON_KEY",
-    serviceKeyEnvName: "SUPABASE_SERVICE_ROLE_KEY",
-  },
-});
+/* ------------------------------------------------------------------ */
+/* Cargador multi-colegio                                              */
+/* ------------------------------------------------------------------ */
+
+const DEFAULT_SLUG = "colegio-piloto";
+
+/**
+ * Carga eager de todas las configs de colegio en `./configs/*.ts`.
+ * Cada módulo exporta por defecto un objeto plano (sin schema).
+ */
+const configModules = import.meta.glob<{ default: unknown }>(
+  "./configs/*.ts",
+  { eager: true },
+);
+
+/** Normaliza la ruta del módulo a su slug: "./configs/<slug>.ts" → "<slug>". */
+function slugFromPath(path: string): string {
+  const match = /\.\/configs\/(.+)\.ts$/.exec(path);
+  return match ? match[1] : "";
+}
+
+/** Slug activo: env var PUBLIC_SITE_SLUG, o fallback al piloto. */
+function resolveActiveSlug(): string {
+  const envSlug = import.meta.env.PUBLIC_SITE_SLUG;
+  if (envSlug && configModules[`./configs/${envSlug}.ts`]) {
+    return envSlug;
+  }
+  if (envSlug) {
+    console.warn(
+      `[site.config] No existe config para PUBLIC_SITE_SLUG="${envSlug}". ` +
+        `Usando fallback "${DEFAULT_SLUG}".`,
+    );
+  }
+  return DEFAULT_SLUG;
+}
+
+const activeSlug = resolveActiveSlug();
+const activeModule = configModules[`./configs/${activeSlug}.ts`];
+
+if (!activeModule) {
+  throw new Error(
+    `[site.config] No se encontró la config "${activeSlug}" en ./configs/. ` +
+      `Crea apps/web/src/configs/${activeSlug}.ts`,
+  );
+}
+
+/** Config del colegio activo, validada contra el schema. */
+export const siteConfig = siteConfigSchema.parse(activeModule.default);
+
+/** Slug del colegio activo (útil para logs y assets). */
+export const siteSlug = activeSlug;
