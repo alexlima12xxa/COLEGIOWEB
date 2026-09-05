@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "plantillaId": "duotono",
+      "orden": 0,
+      "activo": true,
+      "datos": {
+        "kicker": "Admisiones 2026 abiertas",
+        "title": "Una formación que transforma",
+        "subtitle": "Desde la primera infancia hasta la secundaria, formamos estudiantes íntegros.",
+        "tono": "azulTeal",
+        "cta": {
+          "label": "Iniciar admisión",
+          "href": "/admisiones",
+          "variant": "primary"
+        }
+      }
+    },
+    {
+      "plantillaId": "granulado",
+      "orden": 1,
+      "activo": true,
+      "datos": {
+        "kicker": "Comunidad",
+        "title": "Acompañamos a cada familia",
+        "subtitle": "Un equipo de orientación y bienestar presente en cada etapa del proceso.",
+        "tono": "marino",
+        "actions": [
+          {
+            "label": "Conocer propuesta",
+            "href": "#niveles",
+            "variant": "primary"
+          },
+          {
+            "label": "Visita el colegio",
+            "href": "/contacto",
+            "variant": "ghost"
+          }
+        ]
+      }
+    },
+    {
+      "plantillaId": "foto",
+      "orden": 2,
+      "activo": true,
+      "datos": {
+        "background": "/branding/placeholders/gallery-2.jpg",
+        "kicker": "Innovación",
+        "title": "Tecnología al servicio del aprendizaje",
+        "subtitle": "Aulas equipadas y una plataforma que acerca a estudiantes y docentes.",
+        "cta": {
+          "label": "Explorar niveles",
+          "href": "#niveles",
+          "variant": "primary"
+        }
+      }
+    }
+  ]
+}

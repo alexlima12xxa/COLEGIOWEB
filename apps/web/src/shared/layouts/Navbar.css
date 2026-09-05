@@ -1,8 +1,4 @@
 @layer components {
-  .navbar {
-    --navbar-height: 4rem;
-  }
-
   /* Entrada escalonada: el navbar baja suavemente al cargar la página.
      Solo transform/opacity, gated por prefers-reduced-motion. */
   @media (prefers-reduced-motion: no-preference) {
@@ -39,17 +35,56 @@
 
   .navbar__brand {
     display: inline-flex;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    min-width: 0;
     align-items: center;
+    gap: var(--space-sm);
   }
 
-  .navbar__logo {
-    max-width: 9rem;
+  /* Lockup de marca: isotipo + nombre + campus (multi-tenant, truncable) */
+  .navbar__identity {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: var(--leading-tight);
+  }
+
+  .navbar__name {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.025em;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   @media (min-width: 48rem) {
-    .navbar__logo {
-      max-width: 12rem;
+    .navbar__name {
+      font-size: var(--text-lg);
+    }
+  }
+
+  .navbar__campus {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Isotipo nítido: h-9 en móvil, h-10 en ≥48rem */
+  .navbar__logo.logo .logo__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  @media (min-width: 48rem) {
+    .navbar__logo.logo .logo__icon {
+      width: 2.5rem;
+      height: 2.5rem;
     }
   }
 
@@ -96,6 +131,10 @@
     }
   }
 
+  .navbar__link[aria-current="page"] {
+    color: var(--color-primary);
+  }
+
   .navbar__link:active {
     background-color: var(--color-surface-strong);
     color: var(--color-primary);
@@ -108,6 +147,7 @@
 
   .navbar__actions {
     display: flex;
+    flex: none;
     align-items: center;
     gap: var(--space-sm);
   }

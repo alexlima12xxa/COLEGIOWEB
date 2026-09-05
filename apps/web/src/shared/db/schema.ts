@@ -171,8 +171,8 @@ export const galeriaItemSchema = z.object({
 export type GaleriaItem = z.infer<typeof galeriaItemSchema>;
 
 // ── Detalle de nivel educativo (clave `niveles`) ────────────────────────────
-// Objeto con una entrada por nivel: {preescolar, primaria, secundaria,
-// media-tecnica}. Cada entrada alimenta NivelLayout. Fallback levels.json.
+// Objeto con una entrada por nivel: {preescolar, primaria, secundaria}.
+// Cada entrada alimenta NivelLayout. Fallback levels.json.
 
 export const nivelDetalleSchema = z.object({
   headline: z.string().min(3).max(200),
@@ -194,14 +194,36 @@ export const nivelesSchema = z.record(z.string(), nivelDetalleSchema);
 export type Niveles = z.infer<typeof nivelesSchema>;
 
 // ── Admisiones (clave `admisiones`) ─────────────────────────────────────────
-// {schedule[], requirements[], faq[]}. Fallback admissions.json.
-// schedule alimenta Timeline, requirements la lista de requisitos, faq el
-// Accordion y el FAQ JSON-LD de la página.
+// {fechasClave[], aviso?, etapas[], requisitosPorNivel{}, faq[]}.
+// Fallback admissions.json.
+//  - fechasClave alimenta la tarjeta Bento "Fechas Clave" del hero.
+//  - etapas alimenta el stepper de 4 etapas.
+//  - requisitosPorNivel alimenta las tabs de requisitos (una clave por nivel).
+//  - faq alimenta el acordeón bento y el FAQ JSON-LD de la página.
 
-export const admisionHitoSchema = z.object({
+export const admisionEstadoSchema = z.enum([
+  "en-curso",
+  "ultimos-cupos",
+  "familias-admitidas",
+]);
+
+export const admisionFechaSchema = z.object({
   title: z.string().min(2).max(120),
   date: z.string().min(1).max(80),
+  estado: admisionEstadoSchema.default("en-curso"),
+  description: z.string().min(5).max(500).optional(),
+});
+
+export const admisionEtapaSchema = z.object({
+  title: z.string().min(2).max(120),
   description: z.string().min(5).max(500),
+  pie: z.string().min(2).max(120),
+});
+
+export const admisionRequisitoSchema = z.object({
+  title: z.string().min(2).max(160),
+  description: z.string().min(5).max(500),
+  formato: z.string().min(2).max(120),
 });
 
 export const admisionFaqSchema = z.object({
@@ -211,12 +233,65 @@ export const admisionFaqSchema = z.object({
 });
 
 export const admisionesSchema = z.object({
-  schedule: z.array(admisionHitoSchema).default([]),
-  requirements: z.array(z.string().min(1).max(300)).default([]),
+  periodLabel: z.string().max(160).optional(),
+  fechasClave: z.array(admisionFechaSchema).default([]),
+  aviso: z.string().min(5).max(500).optional(),
+  etapas: z.array(admisionEtapaSchema).default([]),
+  requisitosPorNivel: z
+    .record(z.string(), z.array(admisionRequisitoSchema).default([]))
+    .default({}),
   faq: z.array(admisionFaqSchema).default([]),
 });
 
 export type Admisiones = z.infer<typeof admisionesSchema>;
+
+// ── Banners del hero (tabla `banners`) ──────────────────────────────────────
+// Slider de portada por tenant. Cada banner elige una plantilla (`plantilla_id`)
+// y guarda en `datos` el payload visual de dicha plantilla. El shape de `datos`
+// es flexible por diseño (textos, colores, assets, acciones), pero el contrato
+// mínimo común está tipado abajo. Fallback: banners.json (src/data/fallback).
+
+export const bannerAccionSchema = z.object({
+  label: z.string().min(1).max(80),
+  href: z.string().min(1),
+  variant: z.enum(["primary", "secondary", "ghost"]).optional(),
+});
+
+export const bannerAssetSchema = z.object({
+  src: z.string().min(1),
+  alt: z.string().default(""),
+});
+
+export const bannerSchema = z.object({
+  id: z.uuid().optional(),
+  plantillaId: z.enum(["duotono", "granulado", "foto"]),
+  orden: z.number().int().default(0),
+  activo: z.boolean().default(true),
+  datos: z
+    .object({
+      background: z.string().default(""),
+      image: z.string().optional(),
+      imageAlt: z.string().default(""),
+      kicker: z.string().max(60).optional(),
+      title: z.string().min(1).max(160),
+      subtitle: z.string().max(300).optional(),
+      // Clave del par/tono elegido (apunta a una opción controlada de la
+      // paleta en packages/shared). Tipado/validado porque es común a todos.
+      tono: z.string().default(""),
+      cta: bannerAccionSchema.optional(),
+      actions: z.array(bannerAccionSchema).default([]),
+      assets: z.array(bannerAssetSchema).default([]),
+    })
+    .passthrough(),
+});
+
+export type Banner = z.infer<typeof bannerSchema>;
+export type BannerAccion = z.infer<typeof bannerAccionSchema>;
+
+export const bannersFallbackSchema = z.object({
+  version: z.number().int().positive(),
+  items: z.array(bannerSchema),
+});
 
 // ── Contacto (clave `contacto`) ─────────────────────────────────────────────
 // {departments[], formFields[]}. Fallback contact.json.
@@ -227,6 +302,7 @@ export const departamentoSchema = z.object({
   phone: z.string().min(7).max(40),
   email: z.string().email(),
   hours: z.string().min(2).max(160),
+  hidden: z.boolean().default(false),
 });
 
 export const formFieldSchema = z.object({

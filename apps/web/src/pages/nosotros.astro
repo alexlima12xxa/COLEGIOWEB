@@ -216,32 +216,44 @@ const authorities = await getAutoridades();
     gap: var(--space-md);
     padding: var(--space-xl);
     border-radius: var(--radius-lg);
-    background-color: var(--color-surface-muted);
+    background-color: var(--color-mission);
+    color: var(--color-text-inverse);
     min-width: 0;
+    transition:
+      transform var(--duration-base) var(--ease-spring),
+      box-shadow var(--duration-base) var(--ease-standard);
+    will-change: transform;
   }
 
   .aboutMission__card--inverse {
     background-color: var(--color-primary);
-    color: var(--color-text-inverse);
   }
 
   .aboutMission__title {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-semibold);
-  }
-
-  .aboutMission__card--inverse .aboutMission__title {
     color: var(--color-text-inverse);
   }
 
   .aboutMission__text {
-    color: var(--color-text-muted);
+    color: var(--color-text-inverse);
+    opacity: 0.9;
     word-break: break-words;
   }
 
-  .aboutMission__card--inverse .aboutMission__text {
-    color: var(--color-text-inverse);
-    opacity: 0.9;
+  @media (prefers-reduced-motion: no-preference) {
+    @media (hover: hover) {
+      .aboutMission__card:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aboutMission__card {
+      transition: none;
+    }
   }
 
   .aboutSectionHeader {

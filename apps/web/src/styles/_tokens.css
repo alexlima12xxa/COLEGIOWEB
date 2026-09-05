@@ -9,6 +9,8 @@
     --color-accent: oklch(72% 0.16 72);
     --color-accent-soft: oklch(96% 0.04 72);
 
+    --color-mission: #582c7e;
+
     --color-surface: oklch(100% 0 0);
     --color-surface-muted: oklch(97.5% 0.005 264);
     --color-surface-strong: oklch(94% 0.01 264);
@@ -84,23 +86,31 @@
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
+    --radius-3xl: 1.5rem;
     --radius-full: 9999px;
 
     --shadow-xs: 0 1px 2px oklch(0% 0 0 / 0.05);
     --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.08);
     --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.1);
+    --shadow-lift: 0 12px 24px -10px oklch(0% 0 0 / 0.08);
     --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.14);
+    --shadow-2xl: 0 24px 64px -16px oklch(20% 0.02 264 / 0.16);
     --shadow-up: 0 -12px 32px oklch(0% 0 0 / 0.14);
 
     --duration-fast: 150ms;
     --duration-base: 250ms;
     --duration-slow: 400ms;
+    --duration-slower: 600ms;
     --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
     --container-sm: 40rem;
     --container-md: 48rem;
     --container-lg: 64rem;
     --container-xl: 72rem;
+
+    --navbar-height: 4.5rem;
 
     --z-base: 0;
     --z-nav: 40;
@@ -115,6 +125,7 @@
   --color-primary-hover: var(--color-primary-hover);
   --color-primary-soft: var(--color-primary-soft);
   --color-accent: var(--color-accent);
+  --color-mission: var(--color-mission);
   --color-surface: var(--color-surface);
   --color-surface-muted: var(--color-surface-muted);
   --color-surface-strong: var(--color-surface-strong);
@@ -154,6 +165,8 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
   --radius-full: var(--radius-full);
 }
 

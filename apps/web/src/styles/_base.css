@@ -8,6 +8,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    /* Los anclas (#formulario, #niveles…) aterrizan bajo el navbar sticky
+       si no se compensa su altura. */
+    scroll-padding-top: calc(var(--navbar-height) + var(--space-md));
   }
 
   @media (prefers-reduced-motion: reduce) {

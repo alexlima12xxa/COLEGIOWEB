@@ -22,8 +22,18 @@ export default async function AdmisionesPage() {
     admisiones && typeof admisiones === "object" && !Array.isArray(admisiones)
       ? (admisiones as {
           periodLabel?: string;
-          requirements?: string[];
-          schedule?: { title?: string; date?: string; description?: string }[];
+          aviso?: string;
+          fechasClave?: {
+            title?: string;
+            date?: string;
+            estado?: string;
+            description?: string;
+          }[];
+          etapas?: { title?: string; description?: string; pie?: string }[];
+          requisitosPorNivel?: Record<
+            string,
+            { title?: string; description?: string; formato?: string }[]
+          >;
           faq?: { title?: string; content?: string }[];
         })
       : {};

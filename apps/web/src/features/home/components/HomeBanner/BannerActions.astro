@@ -1,0 +1,39 @@
+---
+import Button from "../../../../shared/ui/Button/Button.astro";
+import type { BannerAccion } from "../../../../shared/db/schema";
+
+/**
+ * Acciones (CTA) dentro de un banner. Consolidan el `datos.cta` único y
+ * `datos.actions[]` en una única lista de botones. Los enlaces viven DENTRO
+ * del banner (sustituyen a los CTA flotantes del hero antiguo).
+ */
+export interface Props {
+  cta?: BannerAccion;
+  actions?: BannerAccion[];
+}
+
+const { cta, actions = [] } = Astro.props;
+
+const items: BannerAccion[] = [...(cta ? [cta] : []), ...actions];
+if (items.length === 0) return null;
+---
+
+<div class="bannerActions">
+  {
+    items.map((action) => (
+      <Button
+        href={action.href}
+        variant={
+          action.variant === "secondary"
+            ? "secondary"
+            : action.variant === "ghost"
+              ? "ghost"
+              : "primary"
+        }
+        size="lg"
+      >
+        {action.label}
+      </Button>
+    ))
+  }
+</div>

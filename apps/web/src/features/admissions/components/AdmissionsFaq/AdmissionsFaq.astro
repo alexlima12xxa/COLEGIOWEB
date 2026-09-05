@@ -1,0 +1,96 @@
+---
+import Section from "../../../../shared/ui/Section/Section.astro";
+import { ChevronDown } from "@lucide/astro";
+import "./AdmissionsFaq.css";
+
+export interface FaqItem {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export interface Props {
+  items: FaqItem[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+---
+
+<Section padding="lg" class:list={["admissionsFaq", className]}>
+  <header class="admissionsFaq__header">
+    <p class="admissionsFaq__overline">Resolución de inquietudes</p>
+    <h2 class="admissionsFaq__title">Preguntas Frecuentes sobre Admisiones</h2>
+    <p class="admissionsFaq__intro">
+      Aquí resolvemos las dudas más comunes. Si necesitas más ayuda, nuestro
+      equipo de admisiones está disponible para acompañarte.
+    </p>
+  </header>
+
+  <div class="admissionsFaq__list" data-faq>
+    {
+      items.map((item) => (
+        <div class="admissionsFaq__card">
+          <h3 class="admissionsFaq__heading">
+            <button
+              type="button"
+              class="admissionsFaq__trigger"
+              aria-expanded="false"
+              aria-controls={`admissions-faq-panel-${item.id}`}
+              id={`admissions-faq-header-${item.id}`}
+              data-faq-trigger
+            >
+              <span class="admissionsFaq__question">{item.title}</span>
+              <span class="admissionsFaq__icon" aria-hidden="true">
+                <ChevronDown size={20} />
+              </span>
+            </button>
+          </h3>
+          <div
+            id={`admissions-faq-panel-${item.id}`}
+            class="admissionsFaq__panel"
+            role="region"
+            aria-labelledby={`admissions-faq-header-${item.id}`}
+            data-faq-panel
+          >
+            <div class="admissionsFaq__content">
+              <p class="admissionsFaq__text">{item.content}</p>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<script>
+  function initFaq(): void {
+    const root = document.querySelector<HTMLElement>("[data-faq]");
+    if (!root || root.hasAttribute("data-initialized")) return;
+    root.setAttribute("data-initialized", "");
+
+    const triggers = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-faq-trigger]"),
+    );
+
+    function setExpanded(trigger: HTMLButtonElement, expanded: boolean): void {
+      trigger.setAttribute("aria-expanded", String(expanded));
+      const panelId = trigger.getAttribute("aria-controls");
+      const panel = panelId ? document.getElementById(panelId) : null;
+      if (panel) panel.setAttribute("data-open", expanded ? "true" : "false");
+    }
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const expanded = trigger.getAttribute("aria-expanded") === "true";
+
+        // Un solo item abierto a la vez (más limpio para FAQ).
+        triggers.forEach((t) => setExpanded(t, false));
+        setExpanded(trigger, !expanded);
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initFaq);
+  if (document.readyState !== "loading") initFaq();
+</script>

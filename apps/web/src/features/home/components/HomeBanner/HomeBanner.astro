@@ -1,0 +1,34 @@
+---
+import type { Banner } from "../../../../shared/db/schema";
+import BannerDuotono from "./templates/BannerDuotono.astro";
+import BannerGranulado from "./templates/BannerGranulado.astro";
+import BannerFoto from "./templates/BannerFoto.astro";
+
+/**
+ * Despachador de plantillas de banner. Recibe un `Banner` ya resuelto por el
+ * repositorio (plantilla_id + datos) y renderiza el componente Astro que
+ * corresponde. Cada plantilla es data-agnóstica: el `datos` lleva el payload.
+ *
+ * Para agregar un banner nuevo (importado de Figma): crea el .astro en
+ * templates/, añade su entrada al catálogo (packages/shared/src/banners) y
+ * registra el componente en el mapa de abajo.
+ */
+
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const plantilla = banner.plantillaId;
+
+const COMPONENTES = {
+  duotono: BannerDuotono,
+  granulado: BannerGranulado,
+  foto: BannerFoto,
+} as const;
+
+const Plantilla =
+  COMPONENTES[plantilla as keyof typeof COMPONENTES] ?? BannerFoto;
+---
+
+<Plantilla banner={banner} />

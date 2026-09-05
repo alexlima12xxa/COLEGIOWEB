@@ -1,0 +1,32 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import BannerActions from "../BannerActions.astro";
+import { tonoGranuladoPorKey } from "@web-modelo/shared";
+import "../_banner.css";
+import "./BannerGranulado.css";
+
+/**
+ * Banner "granulado": fondo de color sólido (sin foto) + textura de ruido
+ * generada con SVG (feTurbulence) superpuesta. El director elige el tono base
+ * entre opciones controladas (clave `tono`). Sin scrim.
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const tono = tonoGranuladoPorKey(String(datos.tono ?? ""));
+---
+
+<article class="banner banner--granulado">
+  <div class="banner__granoBg" style={{ "--grano-color": tono.color }}></div>
+  <div class="banner__granoNoise" aria-hidden="true"></div>
+
+  <div class="banner__content banner__content--granulado">
+    {datos.kicker && <span class="banner__kicker">{datos.kicker}</span>}
+    <h1 class="banner__title">{datos.title}</h1>
+    {datos.subtitle && <p class="banner__subtitle">{datos.subtitle}</p>}
+    <BannerActions cta={datos.cta} actions={datos.actions} />
+  </div>
+</article>

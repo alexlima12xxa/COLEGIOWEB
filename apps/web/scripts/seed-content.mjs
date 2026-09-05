@@ -114,9 +114,9 @@ async function seedPaginas() {
       slug: "niveles",
       titulo: "Niveles educativos",
       descripcion:
-        "Resumen de la oferta académica por niveles: preescolar, primaria, secundaria y media técnica.",
+        "Resumen de la oferta académica por niveles: preescolar, primaria y secundaria.",
       contenido:
-        "Ofrecemos una propuesta educativa articulada desde preescolar hasta media técnica, centrada en el desarrollo integral de cada estudiante.",
+        "Ofrecemos una propuesta educativa articulada desde preescolar hasta secundaria, centrada en el desarrollo integral de cada estudiante.",
     },
     {
       slug: "contacto",

@@ -1,0 +1,351 @@
+@layer features {
+  /* Rejilla adaptable: colapsa de forma nativa en tablets y smartphones. */
+  .levelCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 48rem) {
+    .levelCards {
+      gap: var(--space-xl);
+    }
+  }
+
+  /* Columnas fijas para páginas índice con N pares (p. ej. /niveles). */
+  .levelCards--2 {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+
+  .levelCards--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Carrusel horizontal solo en móvil: las tarjetas se deslizan con swipe.
+     En >= 48rem se mantiene el grid de columnas definido arriba. */
+  @media (max-width: 48rem) {
+    .levelCards {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--space-md);
+      gap: var(--space-md);
+      padding-bottom: var(--space-xs);
+      scrollbar-width: none;
+    }
+
+    .levelCards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .levelCards--2,
+    .levelCards--3 {
+      flex-direction: row;
+    }
+
+    .levelCard {
+      flex: 0 0 82%;
+      scroll-snap-align: center;
+    }
+  }
+
+  /* Tarjeta tipo "Human-Centered Academic Bento Card".
+     El esquema de color semántico del nivel se define por modificador. */
+  .levelCard {
+    /* Valores por defecto (nivel desconocido) — se sobreescriben por modificador. */
+    --level-badge-bg: var(--color-primary-soft);
+    --level-badge-text: var(--color-primary);
+    --level-hover-border: var(--color-border-strong);
+    --level-btn-bg: var(--color-primary-soft);
+    --level-btn-text: var(--color-primary);
+    --level-btn-border: var(--color-primary-soft);
+    --level-btn-hover-bg: var(--color-primary-soft);
+
+    position: relative; /* base del enlace estirado (card-link) */
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl); /* 20px */
+    overflow: hidden; /* la media hereda el radio superior */
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform 200ms var(--ease-standard),
+      box-shadow 200ms var(--ease-standard),
+      border-color 200ms var(--ease-standard);
+  }
+
+  /* Preescolar / Guardería — Tema cálido / ámbar. */
+  .levelCard--honey {
+    --level-badge-bg: #fef3c7;
+    --level-badge-text: #92400e;
+    --level-hover-border: #f59e0b;
+    --level-btn-bg: #fffbeb;
+    --level-btn-text: #b45309;
+    --level-btn-border: #fde68a;
+    --level-btn-hover-bg: #fef3c7;
+  }
+
+  /* Primaria — Tema esmeralda / verde. */
+  .levelCard--mint {
+    --level-badge-bg: #d1fae5;
+    --level-badge-text: #065f46;
+    --level-hover-border: #10b981;
+    --level-btn-bg: #ecfdf5;
+    --level-btn-text: #047857;
+    --level-btn-border: #a7f3d0;
+    --level-btn-hover-bg: #d1fae5;
+  }
+
+  /* Secundaria — Tema azul / índigo. */
+  .levelCard--blue {
+    --level-badge-bg: #dbeafe;
+    --level-badge-text: #1e40af;
+    --level-hover-border: #3b82f6;
+    --level-btn-bg: #eff6ff;
+    --level-btn-text: #1d4ed8;
+    --level-btn-border: #bfdbfe;
+    --level-btn-hover-bg: #dbeafe;
+  }
+
+  /* Media / grado extra — pizarra sobria (neutro). */
+  .levelCard--slate {
+    --level-badge-bg: var(--color-surface-strong);
+    --level-badge-text: var(--color-text-muted);
+    --level-hover-border: var(--color-border-strong);
+    --level-btn-bg: var(--color-surface-strong);
+    --level-btn-text: var(--color-text);
+    --level-btn-border: var(--color-border);
+    --level-btn-hover-bg: var(--color-surface-strong);
+  }
+
+  /* Área de medios superior: ratio constante 4:3 con imagen a sangre. */
+  .levelCard__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: var(--color-surface-strong);
+  }
+
+  .levelCard__media .levelCard__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Placeholder decorativo (sin imagen o Storage inaccesible) a sangre. */
+  .levelCard__media .levelCard__image.contentImage--empty {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Chip de edad flotante sobre la imagen (pill de alto contraste AA). */
+  .levelCard__badge {
+    position: absolute;
+    top: 0.875rem;
+    left: 0.875rem;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-full);
+    background-color: var(--level-badge-bg);
+    color: var(--level-badge-text);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+    text-align: left;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Cuerpo: título (fondo de superficie limpia). El borde inferior de
+     padding controla la separación con el botón de acción. */
+  .levelCard__body {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1.25rem;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .levelCard__title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-snug);
+    color: var(--color-text);
+    text-align: center;
+  }
+
+  @media (min-width: 48rem) {
+    .levelCard__title {
+      font-size: var(--text-2xl);
+    }
+  }
+
+  /* Docked Action Footer: pie de acción integrado de borde a borde.
+     Hijo directo de .levelCard, sin padding ni márgenes laterales, para
+     que herede el border-radius inferior de la tarjeta (overflow: hidden).
+     Sin margin-top: auto para que el botón quede pegado al título y no se
+     genere un vacío por el estiramiento del grid a altura uniforme. */
+  .levelCard__footer {
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* CTA full-bleed: fondo tintado + borde superior de separación por nivel,
+     texto a la izquierda y flecha a la derecha, target táctil ≥ 48px. */
+  .levelCard__cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    width: 100%;
+    min-height: 42px;
+    padding-block: 0.625rem;
+    padding-inline: 1.25rem;
+    background-color: var(--level-btn-bg);
+    color: var(--level-btn-text);
+    border-top: 1px solid var(--level-btn-border);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+    text-decoration: none;
+    transition:
+      background-color 200ms var(--ease-standard),
+      border-color 200ms var(--ease-standard),
+      color 200ms var(--ease-standard);
+  }
+
+  .levelCard__cta:hover {
+    background-color: var(--level-btn-hover-bg);
+  }
+
+  @media (min-width: 48rem) {
+    .levelCard__cta {
+      font-size: var(--text-sm);
+    }
+  }
+
+  /* Enlace estirado: toda la tarjeta es clickeable sin duplicar enlaces
+     ni romper lectores de pantalla. El ancla conserva su nombre accesible
+     ("Explorar nivel: Preescolar") mediante el span .uVisuallyHidden. */
+  .levelCard__cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-2xl);
+  }
+
+  .levelCard__cta:focus-visible {
+    outline: none; /* el anillo se dibuja sobre el pseudo que cubre la tarjeta */
+  }
+
+  .levelCard__cta:focus-visible::after {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .levelCard__arrow {
+    flex: 0 0 auto;
+    transition: transform 200ms var(--ease-standard);
+  }
+
+  /* Elevación dinámica en hover: borde al color del nivel + traslación -4px. */
+  @media (prefers-reduced-motion: no-preference) {
+    @media (hover: hover) {
+      .levelCard:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--level-hover-border);
+      }
+
+      .levelCard__cta:hover .levelCard__arrow {
+        transform: translateX(3px);
+      }
+    }
+
+    .levelCard:focus-within {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--level-hover-border);
+    }
+  }
+
+  /* Sin animación, pero conservamos la elevación para usuarios con
+     prefers-reduced-motion (solo sombra y borde, sin traslación). */
+  @media (prefers-reduced-motion: reduce) {
+    .levelCard__arrow {
+      transition: none;
+    }
+
+    @media (hover: hover) {
+      .levelCard:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--level-hover-border);
+      }
+    }
+
+    .levelCard:focus-within {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--level-hover-border);
+    }
+  }
+
+  /* Paginación "dot" solo móvil: indicador de posición del carrusel. */
+  .levelCards__pagination {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+  }
+
+  @media (max-width: 48rem) {
+    .levelCards__pagination {
+      display: flex;
+    }
+  }
+
+  /* Dot inactivo: círculo pequeño gris, área táctil ampliada vía ::after. */
+  .levelCards__dot {
+    position: relative;
+    width: 0.625rem;
+    height: 0.625rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-strong);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+
+  /* Área táctil mínima de 44×44px sin alterar el tamaño visual del dot. */
+  .levelCards__dot::after {
+    content: "";
+    position: absolute;
+    inset: -17px;
+  }
+
+  .levelCards__dot--active {
+    background-color: var(--color-text);
+    transform: scale(1.25);
+  }
+
+  .levelCards__dot:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .levelCards__dot {
+      transition: none;
+    }
+  }
+}

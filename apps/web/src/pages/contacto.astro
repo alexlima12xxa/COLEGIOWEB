@@ -3,6 +3,7 @@ import BaseLayout from "../shared/layouts/BaseLayout.astro";
 import Section from "../shared/ui/Section/Section.astro";
 import Button from "../shared/ui/Button/Button.astro";
 import Card from "../shared/ui/Card/Card.astro";
+import Input from "../shared/ui/Input/Input.astro";
 import { Phone, Mail, Clock, MapPin } from "@lucide/astro";
 import { siteConfig } from "../site.config";
 import { getContacto } from "../shared/db/contenido";
@@ -29,7 +30,27 @@ interface FormField {
   required: boolean;
 }
 
-const formFields = contact.formFields as FormField[];
+const formFields = (contact.formFields as FormField[]) ?? [];
+
+const supabaseUrl =
+  import.meta.env.PUBLIC_SUPABASE_URL || siteConfig.supabase.url;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const tenantId = import.meta.env.PUBLIC_TENANT_ID;
+
+const AUTOCOMPLETE_BY_FIELD: Record<string, string> = {
+  name: "name",
+  email: "email",
+  phone: "tel",
+  subject: "off",
+};
+
+const PLACEHOLDERS_BY_FIELD: Record<string, string> = {
+  name: "Ej. María Gómez",
+  email: "Ej. maria@email.com",
+  phone: "Ej. +57 310 123 4567",
+  subject: "Ej. Duda sobre el proceso de admisiones",
+  message: "Cuéntanos cómo podemos ayudarte...",
+};
 ---
 
 <BaseLayout title={title} description={description}>
@@ -49,35 +70,37 @@ const formFields = contact.formFields as FormField[];
         <h2 class="contactDirectory__title">Directorio por departamento</h2>
         <ul class="contactDirectory__list" role="list">
           {
-            contact.departments.map((dept) => (
-              <li class="contactDirectory__item">
-                <Card variant="bordered" class="contactDirectory__card">
-                  <h3 class="contactDirectory__name">{dept.name}</h3>
-                  <div class="contactDirectory__row">
-                    <Phone aria-hidden="true" size={18} />
-                    <a
-                      href={`tel:${dept.phone.replace(/\s/g, "")}`}
-                      class="contactDirectory__link"
-                    >
-                      {dept.phone}
-                    </a>
-                  </div>
-                  <div class="contactDirectory__row">
-                    <Mail aria-hidden="true" size={18} />
-                    <a
-                      href={`mailto:${dept.email}`}
-                      class="contactDirectory__link"
-                    >
-                      {dept.email}
-                    </a>
-                  </div>
-                  <div class="contactDirectory__row">
-                    <Clock aria-hidden="true" size={18} />
-                    <span class="contactDirectory__meta">{dept.hours}</span>
-                  </div>
-                </Card>
-              </li>
-            ))
+            contact.departments
+              .filter((dept) => !dept.hidden)
+              .map((dept) => (
+                <li class="contactDirectory__item">
+                  <Card variant="bordered" class="contactDirectory__card">
+                    <h3 class="contactDirectory__name">{dept.name}</h3>
+                    <div class="contactDirectory__row">
+                      <Phone aria-hidden="true" size={18} />
+                      <a
+                        href={`tel:${dept.phone.replace(/\s/g, "")}`}
+                        class="contactDirectory__link"
+                      >
+                        {dept.phone}
+                      </a>
+                    </div>
+                    <div class="contactDirectory__row">
+                      <Mail aria-hidden="true" size={18} />
+                      <a
+                        href={`mailto:${dept.email}`}
+                        class="contactDirectory__link"
+                      >
+                        {dept.email}
+                      </a>
+                    </div>
+                    <div class="contactDirectory__row">
+                      <Clock aria-hidden="true" size={18} />
+                      <span class="contactDirectory__meta">{dept.hours}</span>
+                    </div>
+                  </Card>
+                </li>
+              ))
           }
         </ul>
       </div>
@@ -87,35 +110,75 @@ const formFields = contact.formFields as FormField[];
         <p class="contactForm__lead">
           Completa el formulario y te responderemos lo antes posible.
         </p>
-        <form class="contactForm__form" aria-label="Formulario de contacto">
+        <form
+          id="contact-form"
+          class="contactForm__form"
+          aria-label="Formulario de contacto"
+          action="#"
+          method="post"
+          novalidate
+          data-supabase-url={supabaseUrl}
+          data-supabase-anon-key={supabaseAnonKey}
+          data-tenant-id={tenantId}
+        >
+          <div
+            id="contact-form-errors"
+            class="contactForm__globalError"
+            role="alert"
+            aria-live="assertive"
+            hidden
+          >
+          </div>
+
           {
             formFields.map((field) => (
-              <div class="contactForm__field">
-                <label for={`contact-${field.id}`} class="contactForm__label">
-                  {field.label}
-                  {field.required && <span aria-hidden="true"> *</span>}
-                </label>
-                {field.type === "textarea" ? (
-                  <textarea
-                    id={`contact-${field.id}`}
-                    name={field.id}
-                    rows={4}
-                    required={field.required}
-                    class="contactForm__input contactForm__input--textarea"
-                  />
-                ) : (
-                  <input
-                    id={`contact-${field.id}`}
-                    name={field.id}
-                    type={field.type}
-                    required={field.required}
-                    class="contactForm__input"
-                  />
-                )}
-              </div>
+              <Input
+                id={`contact-${field.id}`}
+                name={field.id}
+                label={field.label}
+                type={field.type}
+                required={field.required}
+                placeholder={PLACEHOLDERS_BY_FIELD[field.id]}
+                autocomplete={AUTOCOMPLETE_BY_FIELD[field.id]}
+                class="contactForm__field"
+              />
             ))
           }
-          <Button type="submit" size="lg" class="contactForm__submit">
+
+          {
+            /* Honeypot: campo invisible para bots. No enfocable, sin
+              aria-hidden (un input enfocable dentro de aria-hidden es una
+              violación de accesibilidad). */
+          }
+          <div class="contactForm__honeypot">
+            <label for="contact-website">No completar este campo</label>
+            <input
+              id="contact-website"
+              name="website"
+              type="text"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
+
+          <div
+            id="contact-form-success"
+            class="contactForm__success"
+            role="status"
+            aria-live="polite"
+            hidden
+          >
+            <strong>Mensaje enviado.</strong> Te responderemos a tu correo lo antes
+            posible.
+          </div>
+
+          <Button
+            id="contact-submit"
+            type="submit"
+            variant="primary"
+            size="lg"
+            class="contactForm__submit"
+          >
             Enviar mensaje
           </Button>
         </form>
@@ -156,6 +219,246 @@ const formFields = contact.formFields as FormField[];
     </div>
   </Section>
 </BaseLayout>
+
+<script>
+  import { createBrowserClient } from "../shared/db/browserClient";
+  import {
+    isRateLimited,
+    markSubmitted,
+    secondsUntilNext,
+  } from "../shared/lib/rateLimit";
+
+  interface FieldError {
+    field: string;
+    message: string;
+  }
+
+  function initContactForm(): void {
+    const form = document.getElementById(
+      "contact-form",
+    ) as HTMLFormElement | null;
+    if (!form || form.hasAttribute("data-initialized")) return;
+    form.setAttribute("data-initialized", "");
+    const formEl: HTMLFormElement = form;
+
+    const errorContainer = document.getElementById("contact-form-errors");
+    const successContainer = document.getElementById("contact-form-success");
+    const submitButton = document.getElementById(
+      "contact-submit",
+    ) as HTMLButtonElement | null;
+
+    const dataset = form.dataset;
+    const supabaseUrl = dataset.supabaseUrl ?? "";
+    const supabaseAnonKey = dataset.supabaseAnonKey ?? "";
+    const tenantId = dataset.tenantId ?? "";
+
+    function showGlobalError(message: string): void {
+      if (!errorContainer) return;
+      errorContainer.textContent = message;
+      errorContainer.hidden = false;
+    }
+
+    function clearGlobalError(): void {
+      if (!errorContainer) return;
+      errorContainer.textContent = "";
+      errorContainer.hidden = true;
+    }
+
+    function setFieldError(fieldName: string, message: string): void {
+      const control = formEl.querySelector<HTMLElement>(
+        `[name="${fieldName}"]`,
+      );
+      const errorId = control?.id ? `${control.id}-error` : null;
+      const errorEl = errorId ? document.getElementById(errorId) : null;
+
+      if (control) {
+        control.setAttribute("aria-invalid", message ? "true" : "false");
+        if (message && errorId) {
+          control.setAttribute("aria-describedby", errorId);
+        } else {
+          control.removeAttribute("aria-describedby");
+        }
+      }
+
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.hidden = !message;
+      }
+    }
+
+    function clearFieldErrors(): void {
+      const fields =
+        formEl.querySelectorAll<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >("[name]") ?? [];
+      fields.forEach((field) => {
+        setFieldError(field.name, "");
+        field.setAttribute("aria-invalid", "false");
+      });
+    }
+
+    function validate(): FieldError[] {
+      const errors: FieldError[] = [];
+      const formData = new FormData(formEl);
+
+      // Honeypot: si tiene valor, es un bot. Se simula éxito sin persistir.
+      if (formData.get("website")) {
+        return [{ field: "website", message: "honeypot" }];
+      }
+
+      for (const [name, value] of formData.entries()) {
+        if (name === "website" || typeof value !== "string") continue;
+        const control = formEl.querySelector<HTMLElement>(`[name="${name}"]`);
+        if (!control) continue;
+
+        const isRequired = control.hasAttribute("required");
+        const trimmed = value.trim();
+
+        if (isRequired && !trimmed) {
+          const label = formEl.querySelector<HTMLElement>(
+            `label[for="${control.id}"]`,
+          );
+          errors.push({
+            field: name,
+            message: `Ingresa ${label?.textContent?.replace("*", "").trim().toLowerCase() ?? "este campo"}.`,
+          });
+          continue;
+        }
+
+        if (
+          isRequired &&
+          trimmed &&
+          (control as HTMLInputElement).type === "email" &&
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
+        ) {
+          errors.push({
+            field: name,
+            message: "Ingresa un correo electrónico válido.",
+          });
+        }
+      }
+
+      return errors;
+    }
+
+    function focusFirstError(errors: FieldError[]): void {
+      const first = errors[0];
+      if (!first) return;
+      const control = formEl.querySelector<HTMLElement>(
+        `[name="${first.field}"]`,
+      );
+      control?.focus();
+    }
+
+    formEl.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearGlobalError();
+      clearFieldErrors();
+
+      if (isRateLimited(2, "contact")) {
+        showGlobalError(
+          `Por favor espera ${secondsUntilNext(2, "contact")} segundos antes de enviar otro mensaje.`,
+        );
+        return;
+      }
+
+      const errors = validate();
+      const isBot = errors.length === 1 && errors[0].message === "honeypot";
+
+      if (isBot) {
+        // Bot detectado: fingir éxito sin enviar nada.
+        if (successContainer) successContainer.hidden = false;
+        return;
+      }
+
+      if (errors.length > 0) {
+        errors.forEach(({ field, message }) => setFieldError(field, message));
+        showGlobalError("Por favor revisa los campos marcados.");
+        focusFirstError(errors);
+        return;
+      }
+
+      const nameField =
+        formEl.querySelector<HTMLInputElement>('[name="name"]')?.value.trim() ??
+        "";
+      const emailField =
+        formEl
+          .querySelector<HTMLInputElement>('[name="email"]')
+          ?.value.trim() ?? "";
+      const phoneField =
+        formEl
+          .querySelector<HTMLInputElement>('[name="phone"]')
+          ?.value.trim() ?? null;
+      const subjectField =
+        formEl
+          .querySelector<HTMLInputElement>('[name="subject"]')
+          ?.value.trim() ?? "";
+      const messageField =
+        formEl
+          .querySelector<HTMLTextAreaElement>('[name="message"]')
+          ?.value.trim() ?? "";
+
+      // Estados de envío: deshabilitar + label honesto mientras persiste.
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Enviando...";
+      }
+
+      let persisted = false;
+
+      if (supabaseUrl && supabaseAnonKey) {
+        try {
+          const client = createBrowserClient({
+            url: supabaseUrl,
+            anonKey: supabaseAnonKey,
+            tenantId,
+          });
+          const { error } = await client.from("leads").insert({
+            tenant_id: tenantId,
+            nombre: nameField,
+            email: emailField,
+            telefono: phoneField,
+            nivel_interes: null,
+            mensaje: subjectField
+              ? `[${subjectField}] ${messageField}`
+              : messageField,
+            origen: "contacto-web",
+            estado: "nuevo",
+          });
+          persisted = !error;
+          if (error) {
+            console.error("[ContactForm] Supabase error:", error);
+          }
+        } catch (error) {
+          console.error("[ContactForm] Supabase exception:", error);
+        }
+      }
+
+      if (persisted) {
+        markSubmitted("contact");
+        formEl.reset();
+        if (successContainer) successContainer.hidden = false;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Enviar mensaje";
+        }
+      } else {
+        // Sin persistencia: no fingir éxito. El mensaje no se pierde: el
+        // form conserva los datos y se ofrece la vía directa (WhatsApp).
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Enviar mensaje";
+        }
+        showGlobalError(
+          "No pudimos enviar tu mensaje. Inténtalo de nuevo en unos minutos o escríbenos por WhatsApp.",
+        );
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", initContactForm);
+  if (document.readyState !== "loading") initContactForm();
+</script>
 
 <style>
   .contactHero__content {
@@ -273,41 +576,40 @@ const formFields = contact.formFields as FormField[];
     gap: var(--space-md);
   }
 
-  .contactForm__field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    min-width: 0;
-  }
-
-  .contactForm__label {
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text);
-  }
-
-  .contactForm__input {
-    width: 100%;
-    min-height: 2.75rem;
+  .contactForm__globalError {
     padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-md);
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    transition:
-      border-color var(--duration-fast) var(--ease-standard),
-      box-shadow var(--duration-fast) var(--ease-standard);
+    background-color: var(--color-danger-soft);
+    color: var(--color-danger);
+    font-size: var(--text-sm);
   }
 
-  .contactForm__input:focus-visible {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-primary-soft);
+  .contactForm__success {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    background-color: var(--color-success-soft);
+    color: var(--color-success-active);
+    font-size: var(--text-sm);
   }
 
-  .contactForm__input--textarea {
-    min-height: 8rem;
-    resize: vertical;
+  .contactForm__success strong {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .contactForm__honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .contactForm__submit {
+    align-self: flex-start;
   }
 
   .contactMap {

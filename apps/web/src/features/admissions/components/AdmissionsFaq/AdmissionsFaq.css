@@ -1,0 +1,141 @@
+@layer features {
+  .admissionsFaq {
+    --adm-blue: #1d4ed8;
+  }
+
+  .admissionsFaq__header {
+    max-width: 60ch;
+    margin-inline: auto;
+    margin-bottom: var(--space-2xl);
+    text-align: center;
+  }
+
+  .admissionsFaq__overline {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--adm-blue);
+  }
+
+  .admissionsFaq__title {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  @media (min-width: 48rem) {
+    .admissionsFaq__title {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .admissionsFaq__intro {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .admissionsFaq__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: var(--container-md);
+    margin-inline: auto;
+  }
+
+  .admissionsFaq__card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+  }
+
+  .admissionsFaq__heading {
+    margin: 0;
+    font-size: inherit;
+  }
+
+  .admissionsFaq__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    width: 100%;
+    min-height: 3.5rem;
+    padding: var(--space-md) var(--space-lg);
+    background-color: transparent;
+    border: none;
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+
+  .admissionsFaq__trigger:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--focus-ring-offset));
+  }
+
+  @media (hover: hover) {
+    .admissionsFaq__trigger:hover {
+      background-color: var(--color-surface-muted);
+    }
+  }
+
+  .admissionsFaq__question {
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-words;
+  }
+
+  .admissionsFaq__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--adm-blue);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  .admissionsFaq__trigger[aria-expanded="true"] .admissionsFaq__icon {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admissionsFaq__icon {
+      transition: none;
+    }
+  }
+
+  .admissionsFaq__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-base) var(--ease-standard);
+  }
+
+  .admissionsFaq__panel[data-open="true"] {
+    grid-template-rows: 1fr;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admissionsFaq__panel {
+      transition: none;
+    }
+  }
+
+  .admissionsFaq__content {
+    overflow: hidden;
+  }
+
+  .admissionsFaq__text {
+    margin: 0;
+    padding: 0 var(--space-lg) var(--space-lg);
+    color: var(--color-text-muted);
+    word-break: break-words;
+  }
+}

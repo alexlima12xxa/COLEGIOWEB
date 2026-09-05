@@ -121,8 +121,11 @@ const levelOptions = levels.map((level) => ({
       class="admissionForm__field admissionForm__field--full"
     />
 
-    {/* Honeypot: campo invisible para bots */}
-    <div class="admissionForm__honeypot" aria-hidden="true">
+    {
+      /* Honeypot: campo invisible para bots. El input no es enfocable y
+        vive dentro del wrapper visualmente oculto (no aria-hidden). */
+    }
+    <div class="admissionForm__honeypot">
       <label for="admission-website">No completar este campo</label>
       <input
         id="admission-website"
@@ -164,12 +167,24 @@ const levelOptions = levels.map((level) => ({
     <Button
       id="admission-submit"
       type="submit"
-      variant="success"
+      variant="primary"
       size="lg"
       class="admissionForm__submit"
     >
       Enviar por WhatsApp
     </Button>
+    <p
+      id="admission-form-success"
+      class="admissionForm__success"
+      role="status"
+      aria-live="polite"
+      hidden
+    >
+      Se abrió WhatsApp con tu mensaje listo. Solo presiona <strong
+        >Enviar</strong
+      > en la pestaña que se abrió. Si no la ves, revisa el bloqueador de ventanas
+      emergentes.
+    </p>
     <p class="admissionForm__help">
       Si tienes problemas, escríbenos directamente al{" "}
       <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}>
@@ -210,6 +225,7 @@ const levelOptions = levels.map((level) => ({
     const formEl: HTMLFormElement = form;
 
     const errorContainer = document.getElementById("admission-form-errors");
+    const successContainer = document.getElementById("admission-form-success");
     const submitButton = document.getElementById(
       "admission-submit",
     ) as HTMLButtonElement | null;
@@ -368,7 +384,29 @@ const levelOptions = levels.map((level) => ({
 
       const levelName = getLevelName(data.level);
 
-      // Intento de persistir en Supabase (no bloquea el flujo).
+      // WhatsApp se abre SÍNCRONAMENTE dentro del gesto del usuario: un
+      // `await` antes de window.open consume la activación transitoria y
+      // los bloqueadores de popups (Safari) matan la pestaña silenciosamente.
+      // El lead se persiste después, sin bloquear el handoff.
+      const whatsappMessage = buildWhatsAppMessage({
+        ...data,
+        level: levelName,
+        schoolName,
+      });
+      const whatsappUrl = buildWhatsAppUrl(whatsapp, whatsappMessage);
+
+      markSubmitted();
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+      if (successContainer) {
+        successContainer.hidden = false;
+      }
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Mensaje preparado";
+      }
+
+      // Persistencia del lead (fire-and-forget): no bloquea el envío.
       if (supabaseUrl && supabaseAnonKey) {
         try {
           const client = createBrowserClient({
@@ -393,22 +431,6 @@ const levelOptions = levels.map((level) => ({
         } catch (error) {
           console.error("[AdmissionForm] Supabase exception:", error);
         }
-      }
-
-      // Siempre abrir WhatsApp, incluso si Supabase falló.
-      const whatsappMessage = buildWhatsAppMessage({
-        ...data,
-        level: levelName,
-        schoolName,
-      });
-      const whatsappUrl = buildWhatsAppUrl(whatsapp, whatsappMessage);
-
-      markSubmitted();
-      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.textContent = "Mensaje enviado";
       }
     });
   }

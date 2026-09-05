@@ -10,7 +10,6 @@ export const NIVELES = [
   "Preescolar",
   "Primaria",
   "Secundaria",
-  "Media Técnica",
 ] as const;
 
 export const ESTADO_LABEL: Record<LeadEstado, string> = {

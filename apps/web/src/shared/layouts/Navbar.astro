@@ -12,6 +12,8 @@ export interface Props {
 
 const { class: className } = Astro.props;
 
+const intranetUrl = siteConfig.links?.intranetUrl;
+
 const navLinks = [
   { label: "Inicio", href: "/" },
   { label: "Nosotros", href: "/nosotros" },
@@ -21,6 +23,13 @@ const navLinks = [
   { label: "Circulares", href: "/circulares" },
   { label: "Contacto", href: "/contacto" },
 ];
+
+const currentPath = Astro.url.pathname;
+
+function isCurrentLink(href: string): boolean {
+  if (href === "/") return currentPath === "/" || currentPath === "";
+  return currentPath === href || currentPath === `${href}/`;
+}
 ---
 
 <header
@@ -45,7 +54,15 @@ const navLinks = [
       aria-label={`Inicio - ${siteConfig.identity.name}`}
       transition:name="navbar-logo"
     >
-      <Logo variant="light" size="lg" class="navbar__logo" />
+      <Logo variant="light" iconOnly class="navbar__logo" />
+      <span class="navbar__identity">
+        <span class="navbar__name">{siteConfig.identity.name}</span>
+        {
+          siteConfig.identity.campus && (
+            <span class="navbar__campus">{siteConfig.identity.campus}</span>
+          )
+        }
+      </span>
     </a>
 
     <nav class="navbar__nav" aria-label="Principal">
@@ -53,7 +70,11 @@ const navLinks = [
         {
           navLinks.map((link) => (
             <li class="navbar__item">
-              <a href={link.href} class="navbar__link">
+              <a
+                href={link.href}
+                class="navbar__link"
+                aria-current={isCurrentLink(link.href) ? "page" : undefined}
+              >
                 {link.label}
               </a>
             </li>
@@ -63,15 +84,21 @@ const navLinks = [
     </nav>
 
     <div class="navbar__actions">
-      <Button
-        href="/intranet"
-        variant="secondary"
-        size="sm"
-        class="navbar__intranet"
-      >
-        <Lock aria-hidden="true" size={16} />
-        <span>Intranet</span>
-      </Button>
+      {
+        intranetUrl && (
+          <Button
+            href={intranetUrl}
+            variant="secondary"
+            size="sm"
+            class="navbar__intranet"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Lock aria-hidden="true" size={16} />
+            <span>Intranet</span>
+          </Button>
+        )
+      }
 
       <button
         type="button"

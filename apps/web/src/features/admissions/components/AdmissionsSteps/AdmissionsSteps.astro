@@ -1,0 +1,59 @@
+---
+import Section from "../../../../shared/ui/Section/Section.astro";
+import { Check, Users, Bell, PartyPopper } from "@lucide/astro";
+import "./AdmissionsSteps.css";
+
+export interface Etapa {
+  title: string;
+  description: string;
+  pie: string;
+}
+
+export interface Props {
+  etapas: Etapa[];
+  class?: string;
+}
+
+const { etapas, class: className } = Astro.props;
+
+// Ícono por índice (fijo por diseño): 1 check, 2 usuarios, 3 campana, 4 festivo.
+const FOOTER_ICONS = [Check, Users, Bell, PartyPopper];
+---
+
+<Section padding="lg" class:list={["admissionsSteps", className]}>
+  <header class="admissionsSteps__header">
+    <p class="admissionsSteps__overline">Proceso de selección transparente</p>
+    <h2 class="admissionsSteps__title">
+      Paso a paso hacia el nuevo año escolar
+    </h2>
+    <p class="admissionsSteps__intro">
+      Te acompañamos en cada etapa con plazos claros y comunicación constante,
+      para que el ingreso de tu hijo sea sencillo y confiable.
+    </p>
+  </header>
+
+  <ol class="admissionsSteps__grid" role="list">
+    {
+      etapas.map((etapa, index) => {
+        const FooterIcon = FOOTER_ICONS[index] ?? Check;
+        const etapaNum = String(index + 1).padStart(2, "0");
+        return (
+          <li class="admissionsSteps__card">
+            <div class="admissionsSteps__top">
+              <span class="admissionsSteps__circle" aria-hidden="true">
+                {index + 1}
+              </span>
+              <span class="admissionsSteps__label">Etapa {etapaNum}</span>
+            </div>
+            <h3 class="admissionsSteps__cardTitle">{etapa.title}</h3>
+            <p class="admissionsSteps__cardDesc">{etapa.description}</p>
+            <div class="admissionsSteps__footer">
+              <FooterIcon size={16} aria-hidden="true" />
+              <span>{etapa.pie}</span>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+</Section>

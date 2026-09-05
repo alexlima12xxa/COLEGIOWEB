@@ -44,4 +44,19 @@
   .uTextPretty {
     text-wrap: pretty;
   }
+
+  .uLineClamp-2,
+  .uLineClamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .uLineClamp-2 {
+    -webkit-line-clamp: 2;
+  }
+
+  .uLineClamp-3 {
+    -webkit-line-clamp: 3;
+  }
 }

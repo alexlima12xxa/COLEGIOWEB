@@ -1,51 +1,45 @@
 @layer components {
-  .newsList {
+  .newsGrid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    gap: var(--space-lg);
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: var(--space-2xl) 0 0;
   }
 
   @media (min-width: 48rem) {
-    .newsList {
+    .newsGrid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  @media (min-width: 64rem) {
-    .newsList {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .newsList__item {
+  .newsGrid__item {
     display: flex;
     min-width: 0;
   }
 
-  .newsList__item > :global(.card) {
+  .newsGrid__item > :global(.newsCard) {
     width: 100%;
   }
 
-  .newsList__empty {
+  .newsGrid__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-3xl) var(--space-lg);
     text-align: center;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     background-color: var(--color-surface-muted);
   }
 
-  .newsList__emptyTitle {
+  .newsGrid__emptyTitle {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-semibold);
   }
 
-  .newsList__emptyText {
+  .newsGrid__emptyText {
     color: var(--color-text-muted);
   }
 }

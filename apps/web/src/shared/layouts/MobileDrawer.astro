@@ -10,6 +10,8 @@ export interface Props {
 }
 
 const { id, links } = Astro.props;
+
+const intranetUrl = siteConfig.links?.intranetUrl;
 ---
 
 <div
@@ -29,7 +31,15 @@ const { id, links } = Astro.props;
         class="drawer__brand"
         aria-label={`Inicio - ${siteConfig.identity.name}`}
       >
-        <Logo variant="light" size="sm" class="drawer__logo" />
+        <Logo variant="light" iconOnly class="drawer__logo" />
+        <span class="drawer__identity">
+          <span class="drawer__name">{siteConfig.identity.name}</span>
+          {
+            siteConfig.identity.campus && (
+              <span class="drawer__campus">{siteConfig.identity.campus}</span>
+            )
+          }
+        </span>
       </a>
       <button
         type="button"
@@ -41,7 +51,7 @@ const { id, links } = Astro.props;
       </button>
     </div>
 
-    <nav class="drawer__nav" aria-label="Móvil">
+    <nav class="drawer__nav" aria-label="Navegación">
       <ul class="drawer__list">
         {
           links.map((link) => (
@@ -55,12 +65,21 @@ const { id, links } = Astro.props;
       </ul>
     </nav>
 
-    <div class="drawer__footer">
-      <a href="/intranet" class="drawer__intranet">
-        <Lock aria-hidden="true" size={18} />
-        <span>Intranet</span>
-      </a>
-    </div>
+    {
+      intranetUrl && (
+        <div class="drawer__footer">
+          <a
+            href={intranetUrl}
+            class="drawer__intranet"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Lock aria-hidden="true" size={18} />
+            <span>Intranet</span>
+          </a>
+        </div>
+      )
+    }
   </div>
 </div>
 

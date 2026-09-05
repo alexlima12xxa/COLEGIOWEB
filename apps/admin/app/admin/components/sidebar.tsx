@@ -9,6 +9,7 @@ import {
   GraduationCapIcon,
   ImageIcon,
   InboxIcon,
+  LayersIcon,
   MailIcon,
   NewspaperIcon,
   PenLineIcon,
@@ -18,6 +19,7 @@ import {
 const sections = [
   { href: "/admin", label: "Dashboard", Icon: DashboardIcon },
   { href: "/admin/portada", label: "Portada", Icon: ImageIcon },
+  { href: "/admin/banners", label: "Banners", Icon: LayersIcon },
   { href: "/admin/noticias", label: "Noticias", Icon: NewspaperIcon },
   { href: "/admin/circulares", label: "Circulares", Icon: FileTextIcon },
   { href: "/admin/textos", label: "Textos", Icon: PenLineIcon },

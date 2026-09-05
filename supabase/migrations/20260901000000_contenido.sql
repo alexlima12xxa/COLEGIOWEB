@@ -32,7 +32,8 @@
 --   autoridades  → array [{name, role, image}] directivos (about.authorities).
 --   niveles      → objeto con una entrada por nivel educativo: {preescolar,
 --                  primaria, secundaria, media-tecnica} (fallback levels).
---   admisiones   → {schedule[], requirements[], faq[]} (fallback admissions).
+--   admisiones   → {periodLabel?, fechasClave[], aviso?, etapas[],
+--                  requisitosPorNivel{}, faq[]} (fallback admissions).
 --   galeria      → array [{src, alt, variant}] galería bento (home.bentoGallery).
 --   contacto     → {departments[], formFields[]} (fallback contact).
 --

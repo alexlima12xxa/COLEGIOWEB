@@ -5,10 +5,17 @@ import "./Logo.css";
 export interface Props {
   variant?: "light" | "dark";
   size?: "sm" | "md" | "lg";
+  /** Renderiza solo el isotipo (sin imagen de wordmark ni nombre en texto). */
+  iconOnly?: boolean;
   class?: string;
 }
 
-const { variant = "light", size = "md", class: className } = Astro.props;
+const {
+  variant = "light",
+  size = "md",
+  iconOnly = false,
+  class: className,
+} = Astro.props;
 
 const logoPath =
   variant === "dark"
@@ -19,7 +26,19 @@ const logoClass = ["logo", `logo--${variant}`, `logo--${size}`, className];
 ---
 
 {
-  logoPath ? (
+  iconOnly ? (
+    <span class:list={logoClass}>
+      <svg
+        class="logo__icon"
+        viewBox="0 0 48 48"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <circle class="logo__iconCircle" cx="24" cy="24" r="18" />
+        <path class="logo__iconTriangle" d="M18 30 24 18 30 30H18z" />
+      </svg>
+    </span>
+  ) : logoPath ? (
     <img
       src={logoPath}
       alt={siteConfig.identity.name}

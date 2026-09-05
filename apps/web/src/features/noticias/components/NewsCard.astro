@@ -1,6 +1,7 @@
 ---
-import Card from "../../../shared/ui/Card/Card.astro";
+import { ArrowRight, CalendarDays } from "@lucide/astro";
 import ContentImage from "../../../shared/ui/ContentImage/ContentImage.astro";
+import Logo from "../../../shared/ui/Logo/Logo.astro";
 import { formatShortDate } from "../../../shared/lib/formatDate";
 import type { Noticia } from "../../../shared/db/schema";
 import "./NewsCard.css";
@@ -14,35 +15,48 @@ const { noticia, eager = false } = Astro.props;
 const href = `/noticias/${noticia.slug}`;
 ---
 
-<Card variant="elevated" class="newsCard">
-  <a href={href} class="newsCard__media" tabindex="-1" aria-hidden="true">
-    <ContentImage
-      src={noticia.imagenPath}
-      alt={noticia.imagenAlt}
-      widths={[480, 768, 960]}
-      sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
-      loading={eager ? "eager" : "lazy"}
-      fetchpriority={eager ? "high" : "auto"}
-      class="newsCard__image"
-    />
-  </a>
+<a href={href} class="newsCard">
+  <div class="newsCard__thumb">
+    {
+      noticia.imagenPath ? (
+        <ContentImage
+          src={noticia.imagenPath}
+          alt={noticia.imagenAlt || noticia.titulo}
+          widths={[280, 560]}
+          sizes="(min-width: 48rem) 140px, 100vw"
+          loading={eager ? "eager" : "lazy"}
+          class="newsCard__image"
+        />
+      ) : (
+        <div class="newsCard__fallback" aria-hidden="true">
+          <Logo iconOnly variant="dark" class="newsCard__fallbackLogo" />
+        </div>
+      )
+    }
+  </div>
 
   <div class="newsCard__body">
     <div class="newsCard__meta">
-      <time datetime={noticia.publicadoEn} class="newsCard__date">
-        {formatShortDate(noticia.publicadoEn)}
-      </time>
-      {noticia.autor && <span class="newsCard__author">{noticia.autor}</span>}
+      <span class="newsCard__metaItem">
+        <CalendarDays aria-hidden="true" size={14} />
+        <time datetime={noticia.publicadoEn}>
+          {formatShortDate(noticia.publicadoEn)}
+        </time>
+      </span>
+      {noticia.autor && <span class="newsCard__dept">{noticia.autor}</span>}
     </div>
 
-    <h2 class="newsCard__title">
-      <a href={href} class="newsCard__link">
-        {noticia.titulo}
-      </a>
-    </h2>
+    <h3 class="newsCard__title uLineClamp-2">{noticia.titulo}</h3>
 
-    {noticia.resumen && <p class="newsCard__resumen">{noticia.resumen}</p>}
+    {
+      noticia.resumen && (
+        <p class="newsCard__resumen uLineClamp-2">{noticia.resumen}</p>
+      )
+    }
 
-    <a href={href} class="newsCard__more"> Leer noticia </a>
+    <span class="newsCard__cta">
+      Leer noticia
+      <ArrowRight aria-hidden="true" size={16} />
+    </span>
   </div>
-</Card>
+</a>

@@ -34,6 +34,7 @@ interface Departamento {
   phone: string;
   email: string;
   hours?: string;
+  hidden?: boolean;
 }
 
 export async function guardarContacto(
@@ -88,7 +89,13 @@ export async function guardarContacto(
     if (eP) fieldErrors[`dept_phone-${i}`] = eP;
     if (eE) fieldErrors[`dept_email-${i}`] = eE;
     if (eH) fieldErrors[`dept_hours-${i}`] = eH;
-    departments.push({ name, phone: deptPhone, email: deptEmail, hours: deptHours || undefined });
+    departments.push({
+      name,
+      phone: deptPhone,
+      email: deptEmail,
+      hours: deptHours || undefined,
+      hidden: formData.get(`dept_hidden-${i}`) === "on",
+    });
   }
 
   if (Object.keys(fieldErrors).length > 0) return { fieldErrors };

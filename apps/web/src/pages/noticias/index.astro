@@ -12,33 +12,9 @@ const description = `Últimas noticias y novedades de ${siteConfig.identity.name
 ---
 
 <BaseLayout title={title} description={description} path="/noticias">
-  <Section padding="lg">
-    <header class="noticiasHeader">
-      <h1 class="noticiasHeader__title">Noticias</h1>
-      <p class="noticiasHeader__text">
-        Lo más reciente de nuestra comunidad educativa: actividades, logros y
-        comunicados institucionales.
-      </p>
-    </header>
+  <Section padding="md">
+    <h1 class="uVisuallyHidden">Noticias</h1>
 
     <NewsList items={items} page={page} totalPages={totalPages} />
   </Section>
 </BaseLayout>
-
-<style>
-  .noticiasHeader {
-    max-width: 55ch;
-    margin-bottom: var(--space-2xl);
-  }
-
-  .noticiasHeader__title {
-    font-size: var(--text-4xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-sm);
-  }
-
-  .noticiasHeader__text {
-    color: var(--color-text-muted);
-    font-size: var(--text-lg);
-  }
-</style>

@@ -2,13 +2,14 @@
 import BaseLayout from "../shared/layouts/BaseLayout.astro";
 import Section from "../shared/ui/Section/Section.astro";
 import Button from "../shared/ui/Button/Button.astro";
-import Card from "../shared/ui/Card/Card.astro";
-import Badge from "../shared/ui/Badge/Badge.astro";
-import ResponsiveImage from "../shared/ui/ResponsiveImage/ResponsiveImage.astro";
 import HomeHero from "../features/home/components/HomeHero/HomeHero.astro";
+import BannerSlider from "../features/home/components/HomeBanner/BannerSlider.astro";
+import LevelCards from "../features/levels/components/LevelCards/LevelCards.astro";
+import PillarsEnAccion from "../features/home/components/PillarsEnAccion/PillarsEnAccion.astro";
 import { siteConfig } from "../site.config";
 import homeData from "../data/fallback/home.json";
-import { getHero, getVideoTour, getGaleria } from "../shared/db/contenido";
+import { getHero, getVideoTour } from "../shared/db/contenido";
+import { getBanners } from "../shared/db/banners";
 import { resolveAssetUrl } from "../shared/db/storage";
 
 // Hero y video tour desde Supabase (tabla `contenido`), con fallback a
@@ -16,14 +17,29 @@ import { resolveAssetUrl } from "../shared/db/storage";
 // el rebuild.
 const hero = await getHero();
 const videoTour = await getVideoTour();
-const gallery = await getGaleria();
+const { banners } = await getBanners();
 
 const heroSlogan = hero.data.slogan || siteConfig.identity.slogan;
-const heroDescription =
+const brandName = hero.data.name || siteConfig.identity.name;
+const rawHeroDescription =
   hero.data.description ||
   siteConfig.identity.description ||
   siteConfig.identity.shortDescription ||
   "";
+
+// El copy del hero inicia mencionando el nombre del colegio de forma natural
+// (refuerzo de identidad y SEO), venga del panel o de la config multi-tenant.
+function heroDescriptionWithBrand(description: string, name: string): string {
+  const trimmed = description.trim();
+  if (!trimmed) return trimmed;
+  const lower = trimmed.toLowerCase();
+  if (lower.startsWith(name.toLowerCase())) return trimmed;
+  if (lower.startsWith(`en el ${name.toLowerCase()}`)) return trimmed;
+  const body = trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
+  return `En el ${name}, ${body}`;
+}
+
+const heroDescription = heroDescriptionWithBrand(rawHeroDescription, brandName);
 const heroPhoto =
   hero.data.heroPhoto ||
   siteConfig.branding.assets.heroPhoto ||
@@ -53,12 +69,16 @@ const hasPhoto = Boolean(
 );
 const mediaMode: "photo-video" | "photo-only" | "video-only" =
   hasPhoto && hasVideo ? "photo-video" : hasPhoto ? "photo-only" : "video-only";
-// LCP: la imagen que se preloada depende del modo de media.
-const lcpImage = mediaMode === "video-only" ? tourPosterUrl : heroPhotoUrl;
+// LCP: la imagen que se preloada depende del modo de media. Si hay banners
+// activos, el fondo del primer banner es el LCP y sustituye al hero.
+const hasBanners = banners.length > 0;
+const bannerLcp = hasBanners
+  ? resolveAssetUrl(banners[0].datos.background)
+  : undefined;
+const lcpImage =
+  bannerLcp ?? (mediaMode === "video-only" ? tourPosterUrl : heroPhotoUrl);
 
-const enabledLevels = siteConfig.levels
-  .filter((level) => level.enabled)
-  .slice(0, 3);
+const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
 
 const absoluteUrl = (path: string) =>
   new URL(path, siteConfig.seo.siteUrl).toString();
@@ -106,24 +126,35 @@ const videoJsonLd = {
     )
   }
 
-  <HomeHero
-    badge={hero.data.badge || periodLabel}
-    title={heroSlogan}
-    description={heroDescription}
-    ctaPrimary={{
-      label: siteConfig.admissions.ctaLabel,
-      href: siteConfig.admissions.ctaUrl,
-    }}
-    ctaSecondary={{ label: "Conocer propuesta", href: "#niveles" }}
-    mediaMode={mediaMode}
-    heroPhoto={heroPhotoUrl}
-    heroPhotoAlt={`Estudiantes de ${siteConfig.identity.name} en actividad académica`}
-    videoUrl={hasVideo ? tourVideoUrl : undefined}
-    videoPoster={tourPosterUrl}
-    videoTitle={tourTitle}
-  />
+  {
+    hasBanners ? (
+      <BannerSlider banners={banners} />
+    ) : (
+      <HomeHero
+        badge={hero.data.badge || periodLabel}
+        brandLabel={brandName}
+        title={heroSlogan}
+        description={heroDescription}
+        ctaPrimary={{
+          label: siteConfig.admissions.ctaLabel,
+          href: siteConfig.admissions.ctaUrl,
+        }}
+        ctaSecondary={{ label: "Conocer propuesta", href: "#niveles" }}
+        mediaMode={mediaMode}
+        heroPhoto={heroPhotoUrl}
+        heroPhotoAlt={`Estudiantes de ${siteConfig.identity.name} en actividad académica`}
+        videoUrl={hasVideo ? tourVideoUrl : undefined}
+        videoPoster={tourPosterUrl}
+        videoTitle={tourTitle}
+      />
+    )
+  }
 
-  <Section padding="md" bg="inverse" class="trustStrip">
+  <Section
+    padding="sm"
+    bg="default"
+    class:list={["trustStrip", hasBanners && "trustStrip--peek"]}
+  >
     <ul class="trustStrip__list" role="list">
       {
         homeData.metrics.map((metric) => (
@@ -139,87 +170,17 @@ const videoJsonLd = {
   <Section padding="lg" id="niveles">
     <div class="homeSectionHeader">
       <h2 class="homeSectionHeader__title">Niveles educativos</h2>
-      <p class="homeSectionHeader__text">
-        Ofrecemos una propuesta formativa continua desde la primera infancia
-        hasta la educación media.
-      </p>
     </div>
 
-    <div class="homeLevels">
-      {
-        enabledLevels.map((level) => (
-          <Card variant="bordered" class="homeLevels__card">
-            <Badge variant="primary">{level.shortName}</Badge>
-            <h3 class="homeLevels__name">{level.name}</h3>
-            <p class="homeLevels__description">{level.description}</p>
-            {level.ageRange && <p class="homeLevels__age">{level.ageRange}</p>}
-            <div class="homeLevels__action">
-              <Button href={`/niveles/${level.slug}`} variant="ghost" size="sm">
-                Explorar nivel
-              </Button>
-            </div>
-          </Card>
-        ))
-      }
-    </div>
+    <LevelCards levels={enabledLevels} />
   </Section>
 
-  <Section padding="lg" bg="muted">
+  <Section padding="xl" bg="muted">
     <div class="homeSectionHeader">
-      <h2 class="homeSectionHeader__title">¿Por qué elegirnos?</h2>
-      <p class="homeSectionHeader__text">
-        Cuatro pilares que definen la experiencia educativa de nuestra comunidad
-        escolar.
-      </p>
+      <h2 class="homeSectionHeader__title">Nuestros Pilares en Acción</h2>
     </div>
 
-    <div class="homeDiferentiators">
-      {
-        homeData.differentiators.map((item, index) => (
-          <article class="homeDiferentiators__item">
-            <span class="homeDiferentiators__number" aria-hidden="true">
-              0{index + 1}
-            </span>
-            <h3 class="homeDiferentiators__title">{item.title}</h3>
-            <p class="homeDiferentiators__text">{item.description}</p>
-          </article>
-        ))
-      }
-    </div>
-  </Section>
-
-  <Section padding="lg">
-    <div class="homeSectionHeader">
-      <h2 class="homeSectionHeader__title">Momentos que inspiran</h2>
-      <p class="homeSectionHeader__text">
-        Un vistazo a la vida académica, artística y deportiva de nuestro
-        colegio.
-      </p>
-    </div>
-
-    <div class="homeGallery">
-      {
-        gallery.map((photo) => (
-          <figure
-            class:list={[
-              "homeGallery__figure",
-              photo.variant && `homeGallery__figure--${photo.variant}`,
-            ]}
-          >
-            <ResponsiveImage
-              src={photo.src}
-              alt={photo.alt}
-              width={800}
-              height={800}
-              loading="lazy"
-              sizes="(min-width: 48rem) 33vw, 100vw"
-              class="homeGallery__image"
-            />
-            <figcaption class="uVisuallyHidden">{photo.alt}</figcaption>
-          </figure>
-        ))
-      }
-    </div>
+    <PillarsEnAccion pillars={homeData.pillarsEnAccion} />
   </Section>
 
   <Section padding="xl" bg="inverse" class="homeCta">
@@ -237,13 +198,86 @@ const videoJsonLd = {
       </div>
     </div>
   </Section>
+
+  <script>
+    /* La franja azul solo anima después de que termina la secuencia del hero
+       (título → descripción → media → CTA1 → CTA2, ~1100ms). Si el observer
+       dispara antes, se espera hasta ese momento; si dispara después (el
+       usuario scrolleó lento), anima al instante. El contenido siempre es
+       visible por defecto en CSS: esto solo sincroniza el reveal. */
+    const HERO_SEQUENCE_END = 1100;
+
+    function revealTrustStrip(strip: Element) {
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          strip.classList.add("trustStrip--animate");
+        }),
+      );
+    }
+
+    function initTrustStrip() {
+      const strip = document.querySelector(".trustStrip");
+      if (!strip || strip.classList.contains("trustStrip--js")) return;
+      strip.classList.add("trustStrip--js");
+
+      if (!("IntersectionObserver" in window)) {
+        revealTrustStrip(strip);
+        return;
+      }
+
+      const startTime = performance.now();
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              observer.unobserve(e.target);
+              const elapsed = performance.now() - startTime;
+              const wait = Math.max(0, HERO_SEQUENCE_END - elapsed);
+              setTimeout(() => revealTrustStrip(strip), wait);
+            }
+          });
+        },
+        { threshold: 0.2 },
+      );
+      observer.observe(strip);
+    }
+
+    document.addEventListener("astro:page-load", initTrustStrip);
+    if (document.readyState !== "loading") initTrustStrip();
+  </script>
 </BaseLayout>
 
 <style>
+  :global(.trustStrip) {
+    position: relative;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  :global(.trustStrip)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    opacity: 0.06;
+  }
+
+  /* En móvil la franja de datos va pegada debajo del slider, sin solape sobre
+     el hero: así los dots/scroll-hint del slider quedan dentro del banner y no
+     invaden la zona de datos (mismo comportamiento que en desktop). */
+  @media (max-width: 63.9rem) {
+    :global(.trustStrip--peek) {
+      position: relative;
+    }
+  }
+
   .trustStrip__list {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md) var(--space-lg);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -266,174 +300,84 @@ const videoJsonLd = {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: var(--space-xs);
+    gap: var(--space-2xs);
     min-width: 0;
   }
 
   .trustStrip__value {
     font-size: var(--text-3xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-inverse);
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 48rem) {
+    .trustStrip__value {
+      font-size: var(--text-2xl);
+    }
   }
 
   .trustStrip__label {
     font-size: var(--text-sm);
-    color: var(--color-text-inverse);
-    opacity: 0.85;
+    color: var(--color-text-muted);
+  }
+
+  /* La animación es progresiva y segura: el contenido es visible por
+     defecto. Solo cuando JS ya confirmó la intersección se oculta un frame
+     para animar de 0 → 1 (animation-fill-mode backwards). Si el observer
+     nunca dispara, los textos NUNCA quedan invisibles. */
+  @keyframes trustStripRise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* El <section class="trustStrip"> lo renderiza Section.astro, por lo que NO
+     lleva el data-astro-cid de esta página: los selectores scoped de Astro
+     añadirían [data-astro-cid] al section y el selector nunca matchearía.
+     :global() excluye esa parte; .trustStrip__item sigue scoped (sí lo lleva). */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.trustStrip--js.trustStrip--animate) .trustStrip__item {
+      animation: trustStripRise var(--duration-slow) var(--ease-standard) both;
+    }
+
+    :global(.trustStrip--js.trustStrip--animate) .trustStrip__item:first-child {
+      animation-delay: 0ms;
+    }
+
+    :global(.trustStrip--js.trustStrip--animate)
+      .trustStrip__item:nth-child(2) {
+      animation-delay: 150ms;
+    }
+
+    :global(.trustStrip--js.trustStrip--animate)
+      .trustStrip__item:nth-child(3) {
+      animation-delay: 300ms;
+    }
+
+    :global(.trustStrip--js.trustStrip--animate)
+      .trustStrip__item:nth-child(4) {
+      animation-delay: 450ms;
+    }
   }
 
   .homeSectionHeader {
-    max-width: 55ch;
+    max-width: 75ch;
     margin-bottom: var(--space-xl);
   }
 
   .homeSectionHeader__title {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--space-sm);
   }
 
   @media (min-width: 48rem) {
     .homeSectionHeader__title {
       font-size: var(--text-3xl);
-    }
-  }
-
-  .homeSectionHeader__text {
-    color: var(--color-text-muted);
-  }
-
-  .homeLevels {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-
-  @media (min-width: 48rem) {
-    .homeLevels {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .homeLevels__card {
-    min-width: 0;
-  }
-
-  .homeLevels__name {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .homeLevels__description {
-    color: var(--color-text-muted);
-    flex: 1 1 auto;
-  }
-
-  .homeLevels__age {
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-primary);
-  }
-
-  .homeLevels__action {
-    margin-top: auto;
-  }
-
-  .homeDiferentiators {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-xl);
-  }
-
-  @media (min-width: 40rem) {
-    .homeDiferentiators {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .homeDiferentiators {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .homeDiferentiators__item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    min-width: 0;
-  }
-
-  .homeDiferentiators__number {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-  }
-
-  .homeDiferentiators__title {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .homeDiferentiators__text {
-    color: var(--color-text-muted);
-    word-break: break-words;
-  }
-
-  .homeGallery {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  @media (min-width: 48rem) {
-    .homeGallery {
-      grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: minmax(12rem, auto);
-    }
-  }
-
-  .homeGallery__figure {
-    position: relative;
-    margin: 0;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  .homeGallery__figure :global(img) {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    object-fit: cover;
-    aspect-ratio: 4 / 3;
-  }
-
-  @media (min-width: 48rem) {
-    .homeGallery__figure--large {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-
-    .homeGallery__figure--large :global(img) {
-      aspect-ratio: 1 / 1;
-    }
-
-    .homeGallery__figure--tall {
-      grid-row: span 2;
-    }
-
-    .homeGallery__figure--tall :global(img) {
-      aspect-ratio: 3 / 4;
-    }
-
-    .homeGallery__figure--wide {
-      grid-column: span 2;
-    }
-
-    .homeGallery__figure--wide :global(img) {
-      aspect-ratio: 16 / 9;
     }
   }
 

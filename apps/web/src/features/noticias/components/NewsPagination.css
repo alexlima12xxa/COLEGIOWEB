@@ -21,8 +21,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.5rem;
-    height: 2.5rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
     padding-inline: var(--space-sm);
     border-radius: var(--radius-md);
     font-weight: var(--font-weight-medium);
@@ -50,6 +50,7 @@
     color: var(--color-primary);
     font-weight: var(--font-weight-medium);
     text-decoration: none;
+    min-height: 2.75rem;
     padding: var(--space-sm);
     border-radius: var(--radius-md);
   }

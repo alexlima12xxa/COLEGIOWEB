@@ -6,39 +6,49 @@
  * pero reduce envíos accidentales y bots sencillos.
  */
 
-const STORAGE_KEY = "admissions_last_submit";
 const DEFAULT_MINUTES = 2;
+const DEFAULT_FORM = "admissions";
+
+function storageKey(form: string): string {
+  return `${form}_last_submit`;
+}
 
 function isBrowser(): boolean {
   return typeof window !== "undefined" && window.localStorage !== undefined;
 }
 
-export function isRateLimited(minutes = DEFAULT_MINUTES): boolean {
+export function isRateLimited(
+  minutes = DEFAULT_MINUTES,
+  form = DEFAULT_FORM,
+): boolean {
   if (!isBrowser()) return false;
 
-  const last = localStorage.getItem(STORAGE_KEY);
+  const last = localStorage.getItem(storageKey(form));
   if (!last) return false;
 
   const elapsed = Date.now() - Number(last);
   return elapsed >= 0 && elapsed < minutes * 60 * 1000;
 }
 
-export function markSubmitted(): void {
+export function markSubmitted(form = DEFAULT_FORM): void {
   if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEY, String(Date.now()));
+  localStorage.setItem(storageKey(form), String(Date.now()));
 }
 
-export function secondsUntilNext(minutes = DEFAULT_MINUTES): number {
+export function secondsUntilNext(
+  minutes = DEFAULT_MINUTES,
+  form = DEFAULT_FORM,
+): number {
   if (!isBrowser()) return 0;
 
-  const last = localStorage.getItem(STORAGE_KEY);
+  const last = localStorage.getItem(storageKey(form));
   if (!last) return 0;
 
   const remaining = minutes * 60 * 1000 - (Date.now() - Number(last));
   return Math.max(0, Math.ceil(remaining / 1000));
 }
 
-export function clearRateLimit(): void {
+export function clearRateLimit(form = DEFAULT_FORM): void {
   if (!isBrowser()) return;
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(storageKey(form));
 }

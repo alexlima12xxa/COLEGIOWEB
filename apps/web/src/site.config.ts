@@ -43,6 +43,11 @@ const socialSchema = z.object({
   tiktok: z.string().url().optional(),
 });
 
+const linksSchema = z.object({
+  /** Aula virtual / intranet. Sin URL no se muestra el acceso. */
+  intranetUrl: z.string().url().optional(),
+});
+
 const contactSchema = z.object({
   address: z.string().min(5, "La dirección es demasiado corta"),
   city: z.string().min(2, "La ciudad es demasiado corta"),
@@ -67,6 +72,14 @@ const levelSchema = z.object({
   slug: slugSchema,
   description: z.string().max(280).optional(),
   ageRange: z.string().optional(),
+  /** Micro-dato factual de una línea bajo el título de la tarjeta. */
+  subtitle: z.string().max(120).optional(),
+  /**
+   * Foto de la tarjeta del nivel (ruta /branding/ o URL remota).
+   * Se recomienda una imagen de aulas o estudiantes en interacción real
+   * (actividad académica), no paisajes vacíos ni de naturaleza.
+   */
+  image: z.string().optional(),
   enabled: z.boolean().default(true),
 });
 
@@ -165,6 +178,10 @@ export const siteConfigSchema = z.object({
       .string()
       .min(2)
       .max(40, "El nombre de la institución no puede superar 40 caracteres"),
+    campus: z
+      .string()
+      .max(60, "El campus/sede no puede superar 60 caracteres")
+      .optional(),
     slogan: z.string().min(2).max(80, "El lema no puede superar 80 caracteres"),
     shortDescription: z.string().max(160).optional(),
     description: z.string().max(500).optional(),
@@ -172,6 +189,7 @@ export const siteConfigSchema = z.object({
   }),
   contact: contactSchema,
   social: socialSchema,
+  links: linksSchema.default({}),
   levels: z
     .array(levelSchema)
     .min(1, "Debe existir al menos un nivel educativo"),

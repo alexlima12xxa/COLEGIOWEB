@@ -278,24 +278,6 @@ function buildSeed(cliente) {
         },
         cta: "Descubre nuestra secundaria",
       },
-      "media-tecnica": {
-        headline: "Bachillerato con énfasis técnico",
-        description:
-          "Combina la formación de bachiller con competencias técnicas y proyectos de emprendimiento.",
-        image: assets("placeholders/level-secundaria.jpg"),
-        program: [
-          "Bachillerato académico completo",
-          "Énfasis técnico según oferta institucional",
-          "Emprendimiento y desarrollo de proyectos",
-        ],
-        methodology:
-          "Aprendizaje basado en proyectos, rotaciones técnicas y alianzas con empresas.",
-        schedule: {
-          mondayFriday: "7:00 a.m. – 3:00 p.m.",
-          saturday: "Prácticas técnicas y proyectos",
-        },
-        cta: "Conoce la media técnica",
-      },
     },
     admisiones: {
       schedule: [
@@ -332,7 +314,7 @@ function buildSeed(cliente) {
           id: "edades",
           title: "¿Qué edades corresponden a cada nivel?",
           content:
-            "Preescolar recibe niños entre 3 y 5 años, primaria de 6 a 10 años, secundaria de 11 a 14 años y media técnica de 15 a 17 años.",
+            "Preescolar recibe niños entre 3 y 5 años, primaria de 6 a 10 años y secundaria de 11 a 17 años.",
         },
         {
           id: "costos",

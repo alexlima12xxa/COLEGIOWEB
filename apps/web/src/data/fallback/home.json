@@ -17,22 +17,34 @@
       "label": "Aprobación en pruebas estatales"
     }
   ],
-  "differentiators": [
+  "pillarsEnAccion": [
     {
-      "title": "Formación integral",
-      "description": "Desarrollamos competencias académicas, artísticas, deportivas y socioemocionales en cada etapa escolar."
+      "title": "Formación Integral",
+      "description": "Desarrollamos competencias académicas, artísticas, deportivas y socioemocionales en cada etapa escolar.",
+      "image": "/branding/placeholders/gallery-1.jpg",
+      "imageAlt": "Estudiantes en una clase de arte del colegio",
+      "metric": "15+ Disciplinas extracurriculares"
     },
     {
-      "title": "Tecnología educativa",
-      "description": "Aulas equipadas con recursos digitales, plataforma de aprendizaje y conectividad de alta velocidad."
+      "title": "Tecnología Educativa",
+      "description": "Aulas equipadas con recursos digitales, plataforma de aprendizaje y conectividad de alta velocidad.",
+      "image": "/branding/placeholders/gallery-2.jpg",
+      "imageAlt": "Estudiantes en el laboratorio de ciencias",
+      "metric": "Campus 100% digital"
     },
     {
-      "title": "Valores con propósito",
-      "description": "Educamos en respeto, responsabilidad, solidaridad y liderazgo para transformar la sociedad."
+      "title": "Valores con Propósito",
+      "description": "Educamos en respeto, responsabilidad, solidaridad y liderazgo para transformar la sociedad.",
+      "image": "/branding/placeholders/gallery-5.jpg",
+      "imageAlt": "Estudiantes en un evento cultural de la comunidad escolar",
+      "metric": "Programa de liderazgo activo"
     },
     {
-      "title": "Acompañamiento cercano",
-      "description": "Equipo de orientación y bienestar que acompaña a cada estudiante y su familia durante su proceso."
+      "title": "Acompañamiento Cercano",
+      "description": "Equipo de orientación y bienestar que acompaña a cada estudiante y su familia durante su proceso.",
+      "image": "/branding/placeholders/gallery-6.jpg",
+      "imageAlt": "Docente orientando a un estudiante durante una tutoría personalizada",
+      "metric": "Tutoría personalizada 1 a 1"
     }
   ],
   "bentoGallery": [

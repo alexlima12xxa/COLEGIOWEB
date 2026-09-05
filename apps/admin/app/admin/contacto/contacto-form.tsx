@@ -38,6 +38,7 @@ export interface Departamento {
   phone?: string;
   email?: string;
   hours?: string;
+  hidden?: boolean;
 }
 
 export interface ContactoData {
@@ -66,7 +67,7 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
   );
 
   const addDept = () =>
-    setDepartments((prev) => [...prev, { name: "", phone: "", email: "", hours: "" }]);
+    setDepartments((prev) => [...prev, { name: "", phone: "", email: "", hours: "", hidden: false }]);
   const removeDept = (i: number) =>
     setDepartments((prev) => prev.filter((_, idx) => idx !== i));
 
@@ -237,6 +238,15 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
                   <FieldError message={state.fieldErrors?.[`dept_hours-${i}`]} />
                 </div>
               </div>
+              <label className="flex items-center gap-2 text-sm text-zinc-700">
+                <input
+                  type="checkbox"
+                  name={`dept_hidden-${i}`}
+                  defaultChecked={dept.hidden ?? false}
+                  className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-600/40"
+                />
+                Ocultar del directorio
+              </label>
               <button
                 type="button"
                 onClick={() => removeDept(i)}

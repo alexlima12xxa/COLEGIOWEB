@@ -1,0 +1,44 @@
+@layer features {
+  .banner--foto {
+    align-items: center;
+    justify-items: center;
+    min-height: 90dvh;
+    height: 90dvh;
+    padding-block: var(--space-3xl);
+  }
+
+  @media (max-width: 48rem) {
+    .banner--foto {
+      padding-block: var(--space-xl);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .banner--foto {
+      height: 90vh;
+      min-height: 90vh;
+    }
+  }
+
+  .banner__content--foto {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-inline: var(--space-md);
+    max-width: var(--container-md);
+    margin-inline: auto;
+  }
+
+  .banner__content--foto .banner__title,
+  .banner__content--foto .banner__subtitle {
+    margin-inline: auto;
+  }
+
+  .banner__content--foto .banner__kicker {
+    align-self: center;
+  }
+
+  .banner__content--foto .bannerActions {
+    justify-content: center;
+  }
+}

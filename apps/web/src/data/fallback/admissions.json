@@ -1,60 +1,156 @@
 {
-  "schedule": [
+  "periodLabel": "Admisiones 2026 abiertas",
+  "fechasClave": [
     {
-      "title": "Inscripciones abiertas",
-      "date": "Enero – marzo",
-      "description": "Recepción de formularios y documentos de aspirantes a todos los niveles educativos."
+      "title": "Inicio de Postulaciones",
+      "date": "1 de Septiembre, 2025",
+      "estado": "en-curso",
+      "description": "Apertura oficial del proceso para todos los niveles educativos."
     },
     {
-      "title": "Evaluación de admisión",
-      "date": "Abril",
-      "description": "Entrevistas y pruebas de ubicación académica según el nivel al que aspira el estudiante."
+      "title": "Cierre de Convocatoria",
+      "date": "30 de Noviembre, 2025",
+      "estado": "ultimos-cupos",
+      "description": "Fecha límite de recepción de postulaciones completas."
+    },
+    {
+      "title": "Jornada de Inducción",
+      "date": "22 de Enero, 2026",
+      "estado": "familias-admitidas",
+      "description": "Bienvenida y orientación para las familias admitidas."
+    }
+  ],
+  "aviso": "El número de vacantes es limitado por nivel para mantener un ratio máximo de 22 alumnos por aula.",
+  "etapas": [
+    {
+      "title": "Inscripción en línea",
+      "description": "Diligencia el formulario digital y adjunta la documentación requerida sin salir de casa.",
+      "pie": "Formato 100% digital"
+    },
+    {
+      "title": "Entrevista y valoración",
+      "description": "Conoce al equipo docente y realiza la entrevista y la valoración académica según el nivel.",
+      "pie": "Presencial en campus"
     },
     {
       "title": "Publicación de resultados",
-      "date": "Mayo",
-      "description": "Comunicación de resultados y entrega de cartas de aceptación a las familias seleccionadas."
+      "description": "Recibe la confirmación de admisión de forma oficial y con toda la transparencia.",
+      "pie": "Vía portal y correo"
     },
     {
       "title": "Matrícula y bienvenida",
-      "date": "Junio – julio",
-      "description": "Proceso de matrícula, entrega de uniformes e inducción a la comunidad escolar."
+      "description": "Completa la matrícula y participa en la inducción para integrarte a la comunidad escolar.",
+      "pie": "Integración institucional"
     }
   ],
-  "requirements": [
-    "Formulario de inscripción debidamente diligenciado",
-    "Copia del documento de identidad del estudiante",
-    "Copia del documento de identidad del acudiente",
-    "Certificado de notas del año escolar anterior",
-    "Fotografía tamaño 3x4 actualizada",
-    "Paz y salvo o certificación académica de la institución anterior",
-    "Soporte de pago de la inscripción"
-  ],
+  "requisitosPorNivel": {
+    "preescolar": [
+      {
+        "title": "Registro civil de nacimiento",
+        "description": "Copia legible del registro civil del aspirante, vigente y sin enmendaduras.",
+        "formato": "PDF o JPG legible (máx. 5MB)"
+      },
+      {
+        "title": "Documento de identidad de los acudientes",
+        "description": "Copia de la cédula de identidad de padre, madre o acudiente responsable.",
+        "formato": "PDF o JPG legible (máx. 5MB)"
+      },
+      {
+        "title": "Certificado de desarrollo o jardín",
+        "description": "Certificación de la institución o jardín anterior (si aplica) sobre el proceso del menor.",
+        "formato": "Documento oficial sellado (PDF)"
+      },
+      {
+        "title": "Fotografía reciente",
+        "description": "Fotografía tamaño 3x4 con fondo claro y actualizada al periodo vigente.",
+        "formato": "JPG o PNG (máx. 2MB)"
+      },
+      {
+        "title": "Certificado de salud y vacunación",
+        "description": "Esquema de vacunación al día y certificado médico de aptitud para actividad escolar.",
+        "formato": "Documento oficial sellado (PDF)"
+      }
+    ],
+    "primaria": [
+      {
+        "title": "Registro civil de nacimiento",
+        "description": "Copia legible del registro civil del aspirante, vigente y sin enmendaduras.",
+        "formato": "PDF o JPG legible (máx. 5MB)"
+      },
+      {
+        "title": "Documento de identidad de los acudientes",
+        "description": "Copia de la cédula de identidad de padre, madre o acudiente responsable.",
+        "formato": "PDF o JPG legible (máx. 5MB)"
+      },
+      {
+        "title": "Certificado de notas del año anterior",
+        "description": "Informe académico o boletín del grado inmediatamente anterior, debidamente firmado.",
+        "formato": "Documento oficial sellado (PDF)"
+      },
+      {
+        "title": "Paz y salvo de la institución anterior",
+        "description": "Certificación de paz y salvo académico y financiero de la institución de procedencia.",
+        "formato": "Documento oficial sellado (PDF)"
+      },
+      {
+        "title": "Fotografía reciente",
+        "description": "Fotografía tamaño 3x4 con fondo claro y actualizada al periodo vigente.",
+        "formato": "JPG o PNG (máx. 2MB)"
+      }
+    ],
+    "secundaria": [
+      {
+        "title": "Registro civil de nacimiento",
+        "description": "Copia legible del registro civil del aspirante, vigente y sin enmendaduras.",
+        "formato": "PDF o JPG legible (máx. 5MB)"
+      },
+      {
+        "title": "Documento de identidad del estudiante",
+        "description": "Tarjeta de identidad o cédula de ciudadanía del aspirante, según corresponda.",
+        "formato": "PDF o JPG legible (máx. 5MB)"
+      },
+      {
+        "title": "Certificado de notas del año anterior",
+        "description": "Informe académico o boletín del grado inmediatamente anterior, debidamente firmado.",
+        "formato": "Documento oficial sellado (PDF)"
+      },
+      {
+        "title": "Paz y salvo de la institución anterior",
+        "description": "Certificación de paz y salvo académico y financiero de la institución de procedencia.",
+        "formato": "Documento oficial sellado (PDF)"
+      },
+      {
+        "title": "Certificado de conducta y conformidad",
+        "description": "Certificación de buen comportamiento y convivencia expedida por la institución anterior.",
+        "formato": "Documento oficial sellado (PDF)"
+      }
+    ]
+  },
   "faq": [
     {
-      "id": "edades",
-      "title": "¿Qué edades corresponden a cada nivel?",
-      "content": "Preescolar recibe niños entre 3 y 5 años, primaria de 6 a 10 años, secundaria de 11 a 14 años y media técnica de 15 a 17 años."
+      "id": "criterios",
+      "title": "¿Cuáles son los criterios de selección?",
+      "content": "Evaluamos el desempeño académico, la entrevista con la familia y la disponibilidad de cupos por nivel, manteniendo un proceso transparente con criterios publicados y comunicados a cada familia."
+    },
+    {
+      "id": "hermanos",
+      "title": "¿Tienen prioridad los hermanos de estudiantes actuales?",
+      "content": "Sí. Las familias con hijos matriculados activos tienen prioridad de cupo para nuevos hermanos, siempre que cumplan los requisitos y se postulen dentro del periodo oficial."
     },
     {
       "id": "costos",
-      "title": "¿Cuáles son los costos de matrícula y pensión?",
-      "content": "Los valores se definen anualmente y se informan en la oficina de admisiones. Ofrecemos facilidades de pago y descuentos por pronto pago."
+      "title": "¿Cuáles son los costos de inscripción?",
+      "content": "El valor de inscripción y matrícula se informa en la oficina de admisiones. Ofrecemos facilidades de pago y descuentos por pronto pago descritos en la circular de costos del periodo."
     },
     {
-      "id": "uniforme",
-      "title": "¿El colegio tiene uniforme?",
-      "content": "Sí, contamos con uniforme institucional diario y de educación física. Los detalles se entregan durante el proceso de inducción."
+      "id": "resultados",
+      "title": "¿Cómo y cuándo me notifican los resultados?",
+      "content": "Los resultados se publican vía portal de admisiones y correo electrónico registrado en la postulación, dentro del cronograma oficial señalado en la sección de fechas clave."
     },
     {
-      "id": "ingreso-mitad-ano",
-      "title": "¿Pueden ingresar estudiantes a mitad de año?",
-      "content": "Las vacantes disponibles a mitad de año dependen de cada grado. Te invitamos a consultar directamente con la oficina de admisiones."
-    },
-    {
-      "id": "transporte",
-      "title": "¿Ofrecen servicio de transporte escolar?",
-      "content": "Contamos con rutas de transporte escolar en convenio con empresas certificadas. Las rutas y tarifas se confirman antes del inicio de clases."
+      "id": "becas",
+      "title": "¿Existen becas o alivios económicos?",
+      "content": "Contamos con un programa de becas y alivios por mérito académico y por situación socioeconómica. La solicitud se gestiona directamente con la oficina de admisiones al momento de postular."
     }
   ]
 }

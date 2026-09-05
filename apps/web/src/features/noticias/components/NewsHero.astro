@@ -1,0 +1,73 @@
+---
+import { ArrowRight, CalendarDays, Clock } from "@lucide/astro";
+import ContentImage from "../../../shared/ui/ContentImage/ContentImage.astro";
+import Logo from "../../../shared/ui/Logo/Logo.astro";
+import { formatShortDate } from "../../../shared/lib/formatDate";
+import {
+  readingTimeMin,
+  formatReadingTime,
+} from "../../../shared/lib/readingTime";
+import type { Noticia } from "../../../shared/db/schema";
+import "./NewsHero.css";
+
+export interface Props {
+  noticia: Noticia;
+}
+
+const { noticia } = Astro.props;
+const href = `/noticias/${noticia.slug}`;
+const badgeLabel = noticia.autor || "Destacada";
+const readingLabel = formatReadingTime(readingTimeMin(noticia.contenido));
+---
+
+<a href={href} class="newsHero">
+  <div class="newsHero__media">
+    {
+      noticia.imagenPath ? (
+        <ContentImage
+          src={noticia.imagenPath}
+          alt={noticia.imagenAlt || noticia.titulo}
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 64rem) 50vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="newsHero__image"
+        />
+      ) : (
+        <div class="newsHero__fallback" aria-hidden="true">
+          <Logo iconOnly variant="dark" class="newsHero__fallbackLogo" />
+        </div>
+      )
+    }
+  </div>
+
+  <div class="newsHero__body">
+    <span class="newsHero__badge">{badgeLabel}</span>
+
+    <div class="newsHero__meta">
+      <span class="newsHero__metaItem">
+        <CalendarDays aria-hidden="true" size={16} />
+        <time datetime={noticia.publicadoEn}>
+          {formatShortDate(noticia.publicadoEn)}
+        </time>
+      </span>
+      <span class="newsHero__metaItem">
+        <Clock aria-hidden="true" size={16} />
+        <span>{readingLabel}</span>
+      </span>
+    </div>
+
+    <h2 class="newsHero__title uLineClamp-3">{noticia.titulo}</h2>
+
+    {
+      noticia.resumen && (
+        <p class="newsHero__excerpt uLineClamp-3">{noticia.resumen}</p>
+      )
+    }
+
+    <span class="newsHero__cta">
+      Leer noticia
+      <ArrowRight aria-hidden="true" size={18} />
+    </span>
+  </div>
+</a>

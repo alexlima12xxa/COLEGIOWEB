@@ -6,7 +6,6 @@ export const NIVELES = [
   { clave: "preescolar", label: "Preescolar" },
   { clave: "primaria", label: "Primaria" },
   { clave: "secundaria", label: "Secundaria" },
-  { clave: "media-tecnica", label: "Media Técnica" },
 ] as const;
 
 export type NivelClave = (typeof NIVELES)[number]["clave"];

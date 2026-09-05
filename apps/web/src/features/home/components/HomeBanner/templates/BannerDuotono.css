@@ -1,0 +1,55 @@
+@layer features {
+  .banner--duotono {
+    align-items: center;
+    justify-items: center;
+    min-height: 90dvh;
+    height: 90dvh;
+    padding-block: var(--space-3xl);
+  }
+
+  @media (max-width: 48rem) {
+    .banner--duotono {
+      padding-block: var(--space-xl);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .banner--duotono {
+      height: 90vh;
+      min-height: 90vh;
+    }
+  }
+
+  .banner__duotonoBg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      135deg,
+      var(--duotono-1, #1e2a44) 0%,
+      var(--duotono-2, #0f5c5c) 100%
+    );
+  }
+
+  .banner__content--duotono {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-inline: var(--space-md);
+    max-width: var(--container-md);
+    margin-inline: auto;
+  }
+
+  .banner__content--duotono .banner__title,
+  .banner__content--duotono .banner__subtitle {
+    margin-inline: auto;
+  }
+
+  .banner__content--duotono .banner__kicker {
+    align-self: center;
+  }
+
+  .banner__content--duotono .bannerActions {
+    justify-content: center;
+  }
+}

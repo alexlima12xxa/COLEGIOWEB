@@ -245,7 +245,7 @@ export async function getGaleria(): Promise<GaleriaItem[]> {
 }
 
 // ── Niveles (clave `niveles`) ───────────────────────────────────────────────
-// Objeto {preescolar, primaria, secundaria, media-tecnica} con el detalle de
+// Objeto {preescolar, primaria, secundaria} con el detalle de
 // cada nivel. Fallback levels.json.
 
 export async function getNiveles(): Promise<Niveles> {
@@ -269,7 +269,7 @@ export async function getNiveles(): Promise<Niveles> {
 export async function getAdmisiones(): Promise<Admisiones> {
   const raw = await getContenido<unknown>("admisiones", () => admissionsData);
   const parsed = admisionesSchema.safeParse(raw);
-  if (!parsed.success) return admissionsData;
+  if (!parsed.success) return admissionsData as Admisiones;
   return parsed.data;
 }
 

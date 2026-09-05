@@ -29,7 +29,7 @@ export default async function ContactoPage() {
             mapUrl?: string;
             mapEmbedUrl?: string;
           };
-          departments?: { name?: string; phone?: string; email?: string; hours?: string }[];
+          departments?: { name?: string; phone?: string; email?: string; hours?: string; hidden?: boolean }[];
         })
       : {};
 

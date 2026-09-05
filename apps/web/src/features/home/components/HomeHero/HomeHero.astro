@@ -33,6 +33,8 @@ export interface Props {
   videoUrl?: string;
   videoPoster?: string;
   videoTitle?: string;
+  /** Etiqueta de identidad de marca (ej. nombre del colegio) junto al badge. */
+  brandLabel?: string;
   class?: string;
 }
 
@@ -48,21 +50,41 @@ const {
   videoUrl = "",
   videoPoster,
   videoTitle = "Ver video institucional",
+  brandLabel = "",
   class: className,
 } = Astro.props;
+
+// La descripción se compone en la página para iniciar con el nombre del
+// colegio (refuerzo de identidad y SEO). Aquí solo se resalta el nombre en
+// negrita cuando encabeza el texto.
+const hasBrandLead = brandLabel.length > 0 && description.includes(brandLabel);
+const brandNameIndex = hasBrandLead ? description.indexOf(brandLabel) : -1;
+const descriptionLead = hasBrandLead
+  ? description.slice(0, brandNameIndex)
+  : "";
+const descriptionRest = hasBrandLead
+  ? description.slice(brandNameIndex + brandLabel.length)
+  : description;
 ---
 
 <Section padding="xl" class:list={["homeHero", className]}>
   <div class="homeHero__grid">
     <div class="homeHero__content">
-      <Badge variant="success" class="homeHero__badge">
-        <span class="homeHero__badgeDot" aria-hidden="true"></span>
-        {badge}
-      </Badge>
-
       <h1 class="homeHero__title">{title}</h1>
 
-      <p class="homeHero__description">{description}</p>
+      <p class="homeHero__description">
+        {
+          hasBrandLead ? (
+            <>
+              {descriptionLead}
+              <strong>{brandLabel}</strong>
+              {descriptionRest}
+            </>
+          ) : (
+            description
+          )
+        }
+      </p>
 
       <div class="homeHero__actions">
         <Button href={ctaPrimary.href} size="lg">
@@ -77,6 +99,20 @@ const {
 
     <div class="homeHero__media">
       {
+        badge && (
+          <a
+            href={ctaPrimary.href}
+            class="homeHero__mediaBadge"
+            aria-label="Ver el proceso de admisiones"
+          >
+            <Badge variant="accent" class="homeHero__badge">
+              <span class="homeHero__badgeDot" aria-hidden="true" />
+              {badge}
+            </Badge>
+          </a>
+        )
+      }
+      {
         mediaMode === "photo-only" ? (
           <figure class="homeHero__frame">
             <ResponsiveImage
@@ -86,7 +122,7 @@ const {
               height={675}
               loading="eager"
               fetchpriority="high"
-              sizes="(min-width: 48rem) 45vw, 100vw"
+              sizes="(min-width: 48rem) 60vw, 100vw"
               class="homeHero__frameImage"
             />
           </figure>

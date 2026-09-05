@@ -1,0 +1,198 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import type { SiteConfig } from "../../../../site.config";
+import { siteConfig } from "../../../../site.config";
+import ContentImage from "../../../../shared/ui/ContentImage/ContentImage.astro";
+import "./LevelCards.css";
+
+export interface Props {
+  /** Niveles habilitados del colegio (siteConfig.levels ya filtrados). */
+  levels: SiteConfig["levels"];
+  /** Nivel de headings de las tarjetas según el contexto de página. */
+  headingLevel?: "h2" | "h3";
+  /** Texto del enlace de cada tarjeta. */
+  ctaLabel?: string;
+  /** Columnas explícitas (p. ej. 3 para /niveles) o grid automático. */
+  columns?: "auto" | 2 | 3;
+}
+
+type AccentTheme = "honey" | "mint" | "blue" | "slate";
+
+const {
+  levels,
+  headingLevel = "h3",
+  ctaLabel = "Explorar nivel",
+  columns = "auto",
+} = Astro.props;
+
+/** Acento cromático funcional por nivel (ids comunes; desconocidos → ciclo). */
+const ACCENT_BY_ID: Record<string, AccentTheme> = {
+  guarderia: "honey",
+  preescolar: "honey",
+  primaria: "mint",
+  secundaria: "blue",
+};
+const ACCENT_CYCLE: AccentTheme[] = ["honey", "mint", "blue", "slate"];
+
+/** "3-5 años" → "3 a 5 años" (solo transforma el rango numérico). */
+function formatAgeRange(ageRange?: string): string {
+  if (!ageRange) return "";
+  return ageRange.replace(/(\d+)\s*[-–]\s*(\d+)/, "$1 a $2");
+}
+
+/**
+ * levelsData: contenido desacoplado de la maqueta. Un colegio agrega o
+ * quita niveles en su config (configs/<slug>.ts) y esta sección se adapta
+ * sin tocar el HTML.
+ *
+ * Nota sobre imágenes: se recomienda usar fotografías que representen
+ * aulas o estudiantes reales en interacción (actividad académica, trabajo
+ * en grupo, laboratorio), no paisajes de naturaleza o geografía vacía.
+ */
+const levelsData = levels.map((level, index) => {
+  const accentTheme =
+    ACCENT_BY_ID[level.id] ?? ACCENT_CYCLE[index % ACCENT_CYCLE.length];
+  return {
+    title: level.name,
+    ageRange: formatAgeRange(level.ageRange),
+    description: level.description,
+    image: level.image,
+    imageAlt: `Estudiantes de ${level.name} en ${siteConfig.identity.name}`,
+    href: `/niveles/${level.slug}`,
+    accentTheme,
+  };
+});
+
+const Heading = headingLevel;
+---
+
+<ul
+  class:list={["levelCards", columns !== "auto" && `levelCards--${columns}`]}
+  role="list"
+  data-level-cards
+>
+  {
+    levelsData.map((card) => {
+      return (
+        <li
+          class:list={["levelCard", `levelCard--${card.accentTheme}`]}
+          data-level-card
+        >
+          <div class="levelCard__media">
+            {card.image && (
+              <ContentImage
+                src={card.image}
+                alt={card.imageAlt}
+                sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+                loading="lazy"
+                class="levelCard__image"
+              />
+            )}
+            {card.ageRange && (
+              <span class="levelCard__badge">{card.ageRange}</span>
+            )}
+          </div>
+
+          <div class="levelCard__body">
+            <Heading class="levelCard__title">{card.title}</Heading>
+          </div>
+
+          <footer class="levelCard__footer">
+            <a class="levelCard__cta" href={card.href}>
+              {ctaLabel}
+              <span class="uVisuallyHidden">: {card.title}</span>
+              <ArrowRight
+                aria-hidden="true"
+                size={18}
+                class="levelCard__arrow"
+              />
+            </a>
+          </footer>
+        </li>
+      );
+    })
+  }
+</ul>
+
+{
+  levelsData.length > 1 && (
+    <nav
+      class="levelCards__pagination"
+      aria-label="Seleccionar nivel"
+      data-level-pagination
+    >
+      {levelsData.map((card, index) => (
+        <button
+          type="button"
+          class:list={[
+            "levelCards__dot",
+            index === 0 && "levelCards__dot--active",
+          ]}
+          aria-current={index === 0 ? "true" : "false"}
+          aria-label={`Ir a ${card.title}`}
+          data-level-dot={index}
+        >
+          <span class="uVisuallyHidden">{card.title}</span>
+        </button>
+      ))}
+    </nav>
+  )
+}
+
+<script>
+  function initLevelCards() {
+    const track = document.querySelector("[data-level-cards]");
+    if (!track || track.hasAttribute("data-level-init")) return;
+    track.setAttribute("data-level-init", "");
+
+    const cards = Array.from(
+      track.querySelectorAll<HTMLElement>("[data-level-card]"),
+    );
+    const dots = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("[data-level-dot]"),
+    );
+    if (cards.length < 2 || dots.length === 0) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    let activeIndex = 0;
+
+    function setActive(index: number) {
+      if (index === activeIndex || index < 0 || index >= cards.length) return;
+      activeIndex = index;
+      dots.forEach((dot, i) => {
+        dot.setAttribute("aria-current", i === index ? "true" : "false");
+        dot.classList.toggle("levelCards__dot--active", i === index);
+      });
+    }
+
+    // Tap en dot → desplazamiento suave a la tarjeta correspondiente.
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        cards[index].scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      });
+    });
+
+    // Swipe → dot activo: la tarjeta más visible (centrada) gobierna el dot.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const index = cards.indexOf(entry.target as HTMLElement);
+          if (index !== -1) setActive(index);
+        });
+      },
+      { root: track, threshold: 0.6 },
+    );
+    cards.forEach((card) => observer.observe(card));
+  }
+
+  document.addEventListener("astro:page-load", initLevelCards);
+  if (document.readyState !== "loading") initLevelCards();
+</script>

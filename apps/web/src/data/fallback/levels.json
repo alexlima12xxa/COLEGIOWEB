@@ -52,23 +52,5 @@
       "saturday": "Clubes académicos y deportivos"
     },
     "cta": "Descubre nuestra secundaria"
-  },
-  "media-tecnica": {
-    "headline": "Bachillerato con énfasis técnico",
-    "description": "La media técnica combina la formación de bachiller con competencias técnicas y proyectos de emprendimiento que preparan a los jóvenes para la educación superior y el mundo laboral.",
-    "image": "/branding/placeholders/level-secundaria.jpg",
-    "program": [
-      "Bachillerato académico completo",
-      "Énfasis técnico según oferta institucional",
-      "Emprendimiento y desarrollo de proyectos",
-      "Orientación vocacional y profesional",
-      "Prácticas empresariales y articulación con la zona"
-    ],
-    "methodology": "Aprendizaje basado en proyectos, rotaciones técnicas y alianzas con empresas e instituciones de educación superior para una formación con sentido de realidad.",
-    "schedule": {
-      "mondayFriday": "7:00 a.m. – 3:00 p.m.",
-      "saturday": "Prácticas técnicas y proyectos"
-    },
-    "cta": "Conoce la media técnica"
   }
 }

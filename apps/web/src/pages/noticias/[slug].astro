@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft } from "@lucide/astro";
+import { ArrowLeft, Clock } from "@lucide/astro";
 import BaseLayout from "../../shared/layouts/BaseLayout.astro";
 import Section from "../../shared/ui/Section/Section.astro";
 import Badge from "../../shared/ui/Badge/Badge.astro";
@@ -7,6 +7,10 @@ import ContentImage from "../../shared/ui/ContentImage/ContentImage.astro";
 import { getAllNoticias } from "../../shared/db/content";
 import { resolveAssetUrl } from "../../shared/db/storage";
 import { formatLongDate } from "../../shared/lib/formatDate";
+import {
+  readingTimeMin,
+  formatReadingTime,
+} from "../../shared/lib/readingTime";
 import { renderMarkdown } from "../../shared/lib/markdown";
 import { siteConfig } from "../../site.config";
 import type { Noticia } from "../../shared/db/schema";
@@ -28,6 +32,7 @@ const { noticia } = Astro.props;
 const title = noticia.titulo;
 const description =
   noticia.resumen ?? `Noticia publicada por ${siteConfig.identity.name}.`;
+const readingLabel = formatReadingTime(readingTimeMin(noticia.contenido));
 const contentHtml = renderMarkdown(noticia.contenido);
 const imageUrl = resolveAssetUrl(noticia.imagenPath);
 const ogImage = imageUrl
@@ -136,6 +141,10 @@ const jsonLd = {
               <span class="newsDetail__author">Por {noticia.autor}</span>
             )
           }
+          <span class="newsDetail__reading">
+            <Clock aria-hidden="true" size={14} />
+            {readingLabel}
+          </span>
         </div>
         <h1 class="newsDetail__title">{noticia.titulo}</h1>
       </header>
@@ -207,6 +216,14 @@ const jsonLd = {
   }
 
   .newsDetail__author {
+    font-size: var(--text-sm);
+    color: var(--color-text-subtle);
+  }
+
+  .newsDetail__reading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
     font-size: var(--text-sm);
     color: var(--color-text-subtle);
   }

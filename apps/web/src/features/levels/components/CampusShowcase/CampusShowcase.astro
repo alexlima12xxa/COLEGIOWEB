@@ -1,0 +1,206 @@
+---
+import { Play, X } from "@lucide/astro";
+import { resolveAssetUrl } from "../../../../shared/db/storage";
+import "./CampusShowcase.css";
+
+/**
+ * Campus Showcase Card — banner interactivo de video de instalaciones.
+ *
+ * Muestra un póster panorámico (16:9) con overlay de gradiente, badge y
+ * encabezado descriptivo. Un clic en cualquier punto del banner (o en el
+ * botón Play central) abre un modal con el video. El <video> se mantiene con
+ * `preload="none"` para que el archivo solo se cargue en memoria al abrir.
+ *
+ * Reutiliza la clave `video_tour` (getVideoTour), cuyos valores ya vienen
+ * resueltos por la página. Este componente es presentacional y data-agnóstico.
+ */
+export interface Props {
+  /** URL del video (mp4) a reproducir en el modal. */
+  videoUrl: string;
+  /** Póster del banner. Sin él no se muestra imagen de fondo. */
+  poster?: string;
+  /** Título del banner (texto sobre la portada). */
+  title?: string;
+  /** Etiqueta del badge superior. */
+  badge?: string;
+  /** Texto accesible del botón Play. */
+  playLabel?: string;
+}
+
+const {
+  videoUrl,
+  poster,
+  title = "Conoce nuestras instalaciones y espacios de aprendizaje",
+  badge = "Tour Virtual",
+  playLabel = "Reproducir recorrido por las instalaciones",
+} = Astro.props;
+
+const posterUrl = resolveAssetUrl(poster) ?? poster;
+---
+
+<div class="campusShowcase">
+  <button
+    type="button"
+    class="campusShowcase__trigger"
+    aria-controls="campus-showcase"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    data-video-trigger
+  >
+    <span class="campusShowcase__media">
+      {
+        posterUrl ? (
+          <img
+            src={posterUrl}
+            alt=""
+            aria-hidden="true"
+            class="campusShowcase__image"
+            width={1600}
+            height={900}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : null
+      }
+      <span class="campusShowcase__overlay" aria-hidden="true"></span>
+
+      <span class="campusShowcase__content">
+        <span class="campusShowcase__badge">{badge}</span>
+        <span class="campusShowcase__title">{title}</span>
+      </span>
+
+      <span class="campusShowcase__play" aria-hidden="true">
+        <Play size={28} />
+      </span>
+      <span class="uVisuallyHidden">{playLabel}</span>
+    </span>
+  </button>
+
+  <div
+    id="campus-showcase"
+    class="campusShowcase__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label={title}
+    hidden
+  >
+    <div class="campusShowcase__backdrop" data-video-backdrop></div>
+    <div class="campusShowcase__dialogContent">
+      <button
+        type="button"
+        class="campusShowcase__close"
+        data-video-close
+        aria-label="Cerrar video"
+      >
+        <X aria-hidden="true" size={24} />
+      </button>
+      <div class="campusShowcase__player">
+        <video controls preload="none" class="campusShowcase__video">
+          <source src={videoUrl} type="video/mp4" />
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initCampusShowcase() {
+    const triggers = document.querySelectorAll("[data-video-trigger]");
+
+    triggers.forEach((trigger) => {
+      if (trigger.hasAttribute("data-initialized")) return;
+      trigger.setAttribute("data-initialized", "");
+
+      const controls = trigger.getAttribute("aria-controls");
+      if (!controls) return;
+
+      const dialog = document.getElementById(controls);
+      if (!dialog) return;
+
+      const dialogEl = dialog;
+      const backdrop = dialogEl.querySelector("[data-video-backdrop]");
+      const closeBtn = dialogEl.querySelector("[data-video-close]");
+      const video = dialogEl.querySelector("video");
+      const focusableSelectors =
+        'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])';
+
+      let lastFocused: Element | null = null;
+      let isOpen = false;
+
+      function getFocusable(): HTMLElement[] {
+        return Array.from(dialogEl.querySelectorAll(focusableSelectors))
+          .filter((el) => (el as HTMLElement).offsetParent !== null)
+          .map((el) => el as HTMLElement);
+      }
+
+      function trapFocus(event: KeyboardEvent) {
+        if (event.key !== "Tab" || !isOpen) return;
+        const focusable = getFocusable();
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+
+      function open() {
+        if (isOpen) return;
+        lastFocused = document.activeElement;
+        dialogEl.hidden = false;
+        dialogEl.setAttribute("data-open", "");
+        document.body.classList.add("video-modal-is-open");
+        trigger.setAttribute("aria-expanded", "true");
+        isOpen = true;
+
+        requestAnimationFrame(() => {
+          (closeBtn as HTMLElement)?.focus();
+          if (video) {
+            video.load();
+            video.play().catch(() => {});
+          }
+        });
+
+        document.addEventListener("keydown", handleKeyDown);
+      }
+
+      function close() {
+        if (!isOpen) return;
+        dialogEl.removeAttribute("data-open");
+        document.body.classList.remove("video-modal-is-open");
+        trigger.setAttribute("aria-expanded", "false");
+        document.removeEventListener("keydown", handleKeyDown);
+        isOpen = false;
+
+        const transitionDuration = 300;
+        setTimeout(() => {
+          dialogEl.hidden = true;
+          if (video) {
+            video.pause();
+            video.currentTime = 0;
+          }
+          if (lastFocused instanceof HTMLElement) {
+            lastFocused.focus();
+          }
+        }, transitionDuration);
+      }
+
+      function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === "Escape") close();
+        trapFocus(event);
+      }
+
+      trigger.addEventListener("click", open);
+      backdrop?.addEventListener("click", close);
+      closeBtn?.addEventListener("click", close);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initCampusShowcase);
+  if (document.readyState !== "loading") initCampusShowcase();
+</script>

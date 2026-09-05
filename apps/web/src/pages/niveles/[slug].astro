@@ -5,7 +5,7 @@ import { siteConfig } from "../../site.config";
 import { getNiveles } from "../../shared/db/contenido";
 
 export function getStaticPaths() {
-  const slugs = ["preescolar", "primaria", "secundaria", "media-tecnica"];
+  const slugs = ["preescolar", "primaria", "secundaria"];
   return slugs.map((slug) => ({ params: { slug } }));
 }
 
@@ -58,7 +58,6 @@ const breadcrumbJsonLd = {
   />
   <NivelLayout
     name={levelConfig.name}
-    shortName={levelConfig.shortName}
     ageRange={levelConfig.ageRange}
     headline={levelContent.headline}
     description={levelContent.description}

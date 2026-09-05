@@ -1,0 +1,166 @@
+---
+import Section from "../../../../shared/ui/Section/Section.astro";
+import { FileDown, Check, Paperclip } from "@lucide/astro";
+import "./AdmissionsRequirements.css";
+
+export interface Requisito {
+  title: string;
+  description: string;
+  formato: string;
+}
+
+export interface NivelRequisitos {
+  id: string;
+  label: string;
+  requisitos: Requisito[];
+}
+
+export interface Props {
+  niveles: NivelRequisitos[];
+  pdfUrl: string;
+  class?: string;
+}
+
+const { niveles, pdfUrl, class: className } = Astro.props;
+
+const primerNivel = niveles[0]?.id ?? "";
+---
+
+<Section
+  padding="lg"
+  bg="muted"
+  class:list={["admissionsRequirements", className]}
+>
+  <header class="admissionsRequirements__header">
+    <div class="admissionsRequirements__headerText">
+      <p class="admissionsRequirements__overline">
+        Documentación oficial requerida
+      </p>
+      <h2 class="admissionsRequirements__title">
+        Documentación y Requisitos por Nivel
+      </h2>
+    </div>
+    <a class="admissionsRequirements__download" href={pdfUrl} download>
+      <FileDown size={18} aria-hidden="true" />
+      Descargar lista de requisitos en PDF
+    </a>
+  </header>
+
+  <div
+    class="admissionsRequirements__tabs"
+    role="tablist"
+    aria-label="Requisitos por nivel"
+    data-requirements-tabs
+  >
+    {
+      niveles.map((nivel) => (
+        <button
+          type="button"
+          role="tab"
+          id={`admissions-tab-${nivel.id}`}
+          aria-controls={`admissions-panel-${nivel.id}`}
+          aria-selected={nivel.id === primerNivel ? "true" : "false"}
+          tabindex={nivel.id === primerNivel ? "0" : "-1"}
+          data-requirements-tab
+          data-tab-target={nivel.id}
+          class:list={[
+            "admissionsRequirements__tab",
+            { "admissionsRequirements__tab--active": nivel.id === primerNivel },
+          ]}
+        >
+          {nivel.label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    niveles.map((nivel) => (
+      <div
+        role="tabpanel"
+        id={`admissions-panel-${nivel.id}`}
+        aria-labelledby={`admissions-tab-${nivel.id}`}
+        data-requirements-panel
+        data-panel-for={nivel.id}
+        hidden={nivel.id !== primerNivel}
+      >
+        <ul class="admissionsRequirements__grid" role="list">
+          {nivel.requisitos.map((req) => (
+            <li class="admissionsRequirements__item">
+              <div class="admissionsRequirements__itemBody">
+                <span
+                  class="admissionsRequirements__itemIcon"
+                  aria-hidden="true"
+                >
+                  <Check size={16} />
+                </span>
+                <div class="admissionsRequirements__itemText">
+                  <h3 class="admissionsRequirements__itemTitle">{req.title}</h3>
+                  <p class="admissionsRequirements__itemDesc">
+                    {req.description}
+                  </p>
+                </div>
+              </div>
+              <span class="admissionsRequirements__itemFormat">
+                <Paperclip size={14} aria-hidden="true" />
+                {req.formato}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</Section>
+
+<script>
+  function initRequirementsTabs(): void {
+    const root = document.querySelector<HTMLElement>(
+      "[data-requirements-tabs]",
+    );
+    if (!root || root.hasAttribute("data-initialized")) return;
+    root.setAttribute("data-initialized", "");
+
+    const tabs = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-requirements-tab]"),
+    );
+
+    function activate(tab: HTMLButtonElement): void {
+      const targetId = tab.getAttribute("data-tab-target");
+      tabs.forEach((t) => {
+        const selected = t === tab;
+        t.setAttribute("aria-selected", selected ? "true" : "false");
+        t.tabIndex = selected ? 0 : -1;
+        t.classList.toggle("admissionsRequirements__tab--active", selected);
+      });
+
+      document
+        .querySelectorAll<HTMLElement>("[data-requirements-panel]")
+        .forEach((panel) => {
+          panel.hidden = panel.getAttribute("data-panel-for") !== targetId;
+        });
+    }
+
+    const keyMap: Record<string, (current: number) => number> = {
+      ArrowRight: (current) => (current + 1) % tabs.length,
+      ArrowLeft: (current) => (current - 1 + tabs.length) % tabs.length,
+      Home: () => 0,
+      End: () => tabs.length - 1,
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => activate(tab));
+      tab.addEventListener("keydown", (event) => {
+        const move = keyMap[event.key];
+        if (!move) return;
+        event.preventDefault();
+        const nextIndex = move(tabs.indexOf(tab));
+        tabs[nextIndex].focus();
+        activate(tabs[nextIndex]);
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initRequirementsTabs);
+  if (document.readyState !== "loading") initRequirementsTabs();
+</script>

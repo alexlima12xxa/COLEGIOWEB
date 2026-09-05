@@ -85,11 +85,41 @@
 
   .drawer__brand {
     display: inline-flex;
+    min-width: 0;
     align-items: center;
+    gap: var(--space-sm);
   }
 
-  .drawer__logo {
-    max-width: 7.5rem;
+  .drawer__identity {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: var(--leading-tight);
+  }
+
+  .drawer__name {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.025em;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .drawer__campus {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .drawer__logo.logo .logo__icon {
+    width: 2.25rem;
+    height: 2.25rem;
   }
 
   .drawer__close {

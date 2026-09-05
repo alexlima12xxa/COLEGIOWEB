@@ -1,0 +1,45 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import ResponsiveImage from "../../../../../shared/ui/ResponsiveImage/ResponsiveImage.astro";
+import BannerActions from "../BannerActions.astro";
+import "../_banner.css";
+import "./BannerFoto.css";
+
+/**
+ * Banner "foto": fondo full-bleed con una imagen (sin scrim), texto y CTA
+ * encima. El director sube la foto y edita textos. Sin velo oscuro: la imagen
+ * luce limpia y el texto se apoya sobre el contraste propio de la foto.
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+---
+
+<article class="banner banner--foto">
+  {
+    datos.background && (
+      <div class="banner__background">
+        <ResponsiveImage
+          src={datos.background}
+          alt=""
+          width={2400}
+          height={1080}
+          loading="eager"
+          fetchpriority="high"
+          sizes="100vw"
+          class="banner__backgroundImage"
+        />
+      </div>
+    )
+  }
+
+  <div class="banner__content banner__content--foto">
+    {datos.kicker && <span class="banner__kicker">{datos.kicker}</span>}
+    <h1 class="banner__title">{datos.title}</h1>
+    {datos.subtitle && <p class="banner__subtitle">{datos.subtitle}</p>}
+    <BannerActions cta={datos.cta} actions={datos.actions} />
+  </div>
+</article>

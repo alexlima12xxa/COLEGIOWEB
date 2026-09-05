@@ -1,0 +1,39 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import BannerActions from "../BannerActions.astro";
+import { parDuotonoPorKey } from "@web-modelo/shared";
+import "../_banner.css";
+import "./BannerDuotono.css";
+
+/**
+ * Banner "duotono": fondo con gradiente de dos colores (sin foto), texto y
+ * CTA encima. El director elige el par de colores entre opciones controladas
+ * (clave `tono` → paleta en packages/shared). Sin scrim: el gradiente ya
+ * garantiza el contraste.
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const duotono = parDuotonoPorKey(String(datos.tono ?? ""));
+---
+
+<article class="banner banner--duotono">
+  <div
+    class="banner__duotonoBg"
+    style={{
+      "--duotono-1": duotono.color1,
+      "--duotono-2": duotono.color2,
+    }}
+  >
+  </div>
+
+  <div class="banner__content banner__content--duotono">
+    {datos.kicker && <span class="banner__kicker">{datos.kicker}</span>}
+    <h1 class="banner__title">{datos.title}</h1>
+    {datos.subtitle && <p class="banner__subtitle">{datos.subtitle}</p>}
+    <BannerActions cta={datos.cta} actions={datos.actions} />
+  </div>
+</article>

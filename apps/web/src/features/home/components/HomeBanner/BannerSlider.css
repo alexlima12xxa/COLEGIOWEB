@@ -1,0 +1,165 @@
+@layer features {
+  .bannerSlider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .bannerSlider__track {
+    display: flex;
+    width: 100%;
+    transition: transform var(--duration-slower) var(--ease-standard);
+  }
+
+  .bannerSlider__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .bannerSlider__controls {
+    position: absolute;
+    inset-inline: 0;
+    bottom: var(--space-lg);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .bannerSlider__dots {
+    display: inline-flex;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    background-color: rgba(0, 0, 0, 0.4);
+    background-color: color-mix(in oklch, oklch(0% 0 0) 35%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    pointer-events: auto;
+  }
+
+  .bannerSlider__dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: rgba(255, 255, 255, 0.9);
+    background-color: color-mix(in oklch, oklch(100% 0 0) 90%, transparent);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .bannerSlider__dot[aria-selected="true"] {
+    background-color: oklch(100% 0 0);
+    transform: scale(1.25);
+  }
+
+  .bannerSlider__dot:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .bannerSlider__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: rgba(0, 0, 0, 0.4);
+    background-color: color-mix(in oklch, oklch(0% 0 0) 35%, transparent);
+    color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .bannerSlider__arrow svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .bannerSlider__arrow--prev {
+    left: var(--space-md);
+  }
+
+  .bannerSlider__arrow--next {
+    right: var(--space-md);
+  }
+
+  @media (hover: hover) {
+    .bannerSlider__arrow:hover {
+      background-color: rgba(0, 0, 0, 0.6);
+      background-color: color-mix(in oklch, oklch(0% 0 0) 55%, transparent);
+    }
+  }
+
+  .bannerSlider__arrow:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .bannerSlider__scrollHint {
+    position: absolute;
+    right: var(--space-lg);
+    bottom: var(--space-md);
+    z-index: 2;
+    display: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .bannerSlider__scrollHint svg {
+    display: block;
+    width: 1.75rem;
+    height: 1.75rem;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.45));
+  }
+
+  @media (max-width: 48rem) {
+    .bannerSlider__scrollHint {
+      display: block;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .bannerSlider__scrollHint svg {
+        animation: scrollHintBob 2s var(--ease-standard) infinite;
+      }
+    }
+  }
+
+  @keyframes scrollHintBob {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.75;
+    }
+    50% {
+      transform: translateY(6px);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .bannerSlider__dots,
+    .bannerSlider__arrow {
+      background-color: oklch(0% 0 0 / 0.5);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+}

@@ -30,16 +30,12 @@ const {
 } = Astro.props;
 
 const describedBy = error ? `${id}-error` : undefined;
-const inputClass = [
-  "input__control",
-  error ? "input__control--error" : "",
-  className,
-]
+const inputClass = ["input__control", error ? "input__control--error" : ""]
   .filter(Boolean)
   .join(" ");
 ---
 
-<div class="input">
+<div class:list={["input", className]}>
   <label for={id} class="input__label">
     {label}
     {

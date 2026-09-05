@@ -16,6 +16,7 @@
 export default {
   identity: {
     name: "Colegio Piloto",
+    campus: "Sede Principal",
     slogan: "Formando líderes para el futuro con excelencia académica",
     shortDescription:
       "Institución educativa comprometida con la excelencia académica y la formación integral.",
@@ -39,6 +40,11 @@ export default {
     instagram: "https://instagram.com/colegiopiloto",
     youtube: "https://youtube.com/@colegiopiloto",
   },
+  links: {
+    // Aula virtual / intranet (Fase 3). Al definir la URL se muestra el
+    // acceso en el header y en el menú móvil; sin URL no se renderiza.
+    // intranetUrl: "https://aula.colegiopiloto.edu.co",
+  },
   levels: [
     {
       id: "preescolar",
@@ -47,6 +53,8 @@ export default {
       slug: "preescolar",
       description: "Primera experiencia escolar con enfoque lúdico y afectivo.",
       ageRange: "3-5 años",
+      subtitle: "Bilingüe · Estimulación temprana",
+      image: "/branding/placeholders/level-preescolar.jpg",
       enabled: true,
     },
     {
@@ -57,6 +65,8 @@ export default {
       description:
         "Formación académica sólida con valores y pensamiento crítico.",
       ageRange: "6-10 años",
+      subtitle: "Grados 1° a 5° · Enfoque STEAM",
+      image: "/branding/placeholders/level-primaria.jpg",
       enabled: true,
     },
     {
@@ -66,17 +76,9 @@ export default {
       slug: "secundaria",
       description:
         "Educación media con orientación hacia la excelencia académica.",
-      ageRange: "11-14 años",
-      enabled: true,
-    },
-    {
-      id: "media",
-      name: "Media Técnica",
-      shortName: "Media",
-      slug: "media-tecnica",
-      description:
-        "Bachillerato con énfasis técnico y preparación para la educación superior.",
-      ageRange: "15-17 años",
+      ageRange: "11-17 años",
+      subtitle: "Grados 6° a 11° · Orientación Vocacional",
+      image: "/branding/placeholders/level-secundaria.jpg",
       enabled: true,
     },
   ],
@@ -94,7 +96,7 @@ export default {
     active: true,
     periodLabel: "Admisiones 2026 abiertas",
     ctaLabel: "Solicitar información",
-    ctaUrl: "#contacto",
+    ctaUrl: "/admisiones#formulario",
     deadline: "2026-11-30",
     requirements: [
       "Formulario de inscripción",
@@ -153,7 +155,7 @@ export default {
     titleTemplate: "%s | Colegio Piloto",
     defaultTitle: "Inicio",
     defaultDescription:
-      "Colegio Piloto: educación integral de calidad para preescolar, primaria, secundaria y media técnica.",
+      "Colegio Piloto: educación integral de calidad para preescolar, primaria y secundaria.",
     keywords: ["colegio", "educación", "primaria", "secundaria", "Bogotá"],
     author: "Colegio Piloto",
     siteUrl: "https://colegioweb.vercel.app",

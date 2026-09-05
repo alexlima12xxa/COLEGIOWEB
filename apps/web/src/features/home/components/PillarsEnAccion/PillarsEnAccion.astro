@@ -1,0 +1,139 @@
+---
+import {
+  Check,
+  ChevronDown,
+  GraduationCap,
+  Laptop,
+  ShieldCheck,
+  Users,
+} from "@lucide/astro";
+import "./PillarsEnAccion.css";
+
+export interface Pillar {
+  /** Título del pilar (p. ej. "Formación Integral"). */
+  title: string;
+  /** Descripción institucional completa, sin recortes. */
+  description: string;
+  /** Métrica de logro destacada (p. ej. "15+ Disciplinas extracurriculares"). */
+  metric: string;
+  /** Ruta de la imagen (conservada por compatibilidad; no se renderiza). */
+  image?: string;
+  /** Texto alternativo descriptivo de la imagen (conservado). */
+  imageAlt?: string;
+}
+
+export interface Props {
+  /** Pilares unificados (icono + título + descripción + métrica). */
+  pillars: Pillar[];
+  /** Nivel de headings de las cabeceras del acordeón. */
+  headingLevel?: "h2" | "h3";
+}
+
+const { pillars, headingLevel = "h3" } = Astro.props;
+
+const Heading = headingLevel;
+
+/** Icono lineal elegante por pilar (orden del array: formación, tecnología,
+    valores, acompañamiento). Lucide con stroke line. */
+const ICONS = [GraduationCap, Laptop, ShieldCheck, Users];
+---
+
+{
+  pillars.length > 0 && (
+    <ul class="pillars__track" role="list" data-pillars>
+      {pillars.map((pillar, index) => {
+        const Icon = ICONS[index % ICONS.length];
+        const number = String(index + 1).padStart(2, "0");
+        const headerId = `pillar-header-${index}`;
+        const panelId = `pillar-panel-${index}`;
+        return (
+          <li class="pillar">
+            <Heading class="pillar__heading">
+              <button
+                type="button"
+                class="pillar__trigger"
+                aria-expanded="false"
+                aria-controls={panelId}
+                id={headerId}
+                data-pillar-trigger
+              >
+                <span class="pillar__identity">
+                  <span class="pillar__icon" aria-hidden="true">
+                    <Icon size={24} stroke-width={1.75} />
+                  </span>
+                  <span class="pillar__number" aria-hidden="true">
+                    {number}
+                  </span>
+                  <span class="pillar__title">{pillar.title}</span>
+                </span>
+                <span class="pillar__chevron" aria-hidden="true">
+                  <ChevronDown size={20} />
+                </span>
+              </button>
+            </Heading>
+
+            <div
+              id={panelId}
+              class="pillar__panel"
+              role="region"
+              aria-labelledby={headerId}
+              hidden
+              data-pillar-panel
+            >
+              <p class="pillar__description">{pillar.description}</p>
+              <p class="pillar__metric">
+                <Check
+                  aria-hidden="true"
+                  size={14}
+                  class="pillar__metricIcon"
+                />
+                <span>{pillar.metric}</span>
+              </p>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
+
+<script>
+  function initPillars() {
+    const list = document.querySelector("[data-pillars]");
+    if (!list || list.hasAttribute("data-pillars-init")) return;
+    list.setAttribute("data-pillars-init", "");
+
+    const items = Array.from(
+      list.querySelectorAll<HTMLElement>("[data-pillar-trigger]"),
+    );
+
+    items.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const isOpen = trigger.getAttribute("aria-expanded") === "true";
+        const controls = trigger.getAttribute("aria-controls");
+        const panel = controls
+          ? (document.getElementById(controls) as HTMLElement | null)
+          : null;
+
+        // Exclusión mutua: cierra todos los paneles antes de decidir el
+        // estado del clicado, asegurando que la sección quede compacta.
+        items.forEach((other) => {
+          if (other === trigger) return;
+          other.setAttribute("aria-expanded", "false");
+          const otherPanelId = other.getAttribute("aria-controls");
+          const otherPanel = otherPanelId
+            ? (document.getElementById(otherPanelId) as HTMLElement | null)
+            : null;
+          if (otherPanel) otherPanel.hidden = true;
+        });
+
+        // Toggle del panel clicado: si estaba abierto, queda todo cerrado.
+        trigger.setAttribute("aria-expanded", String(!isOpen));
+        if (panel) panel.hidden = isOpen;
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initPillars);
+  if (document.readyState !== "loading") initPillars();
+</script>

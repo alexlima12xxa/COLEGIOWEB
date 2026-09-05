@@ -1,16 +1,41 @@
 ---
 import BaseLayout from "../shared/layouts/BaseLayout.astro";
 import Section from "../shared/ui/Section/Section.astro";
-import Button from "../shared/ui/Button/Button.astro";
-import Card from "../shared/ui/Card/Card.astro";
-import Badge from "../shared/ui/Badge/Badge.astro";
+import LevelCards from "../features/levels/components/LevelCards/LevelCards.astro";
+import CampusShowcase from "../features/levels/components/CampusShowcase/CampusShowcase.astro";
 import { siteConfig } from "../site.config";
+import { getVideoTour, getHero } from "../shared/db/contenido";
+import { resolveAssetUrl } from "../shared/db/storage";
 
 const title = "Niveles educativos";
 const description =
-  "Conoce nuestra oferta académica: preescolar, primaria, secundaria y media técnica.";
+  "Conoce nuestra oferta académica: preescolar, primaria y secundaria.";
 
 const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
+
+// Video de instalaciones desde Supabase (clave `video_tour`), con fallback a
+// site.config y placeholder, igual que el hero de inicio.
+const videoTour = await getVideoTour();
+const hero = await getHero();
+
+// Placeholder de muestra (modo "ver cómo se ve") hasta que el colegio cargue
+// un video real en la clave `video_tour`. Se sustituye automáticamente cuando
+// videoTour.data.videoUrl tiene valor.
+const PLACEHOLDER_VIDEO =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
+const PLACEHOLDER_POSTER = "/branding/placeholders/hero-tour-poster.jpg";
+
+const tourVideoUrl = videoTour.data.videoUrl || PLACEHOLDER_VIDEO;
+const tourPoster =
+  videoTour.data.poster ||
+  hero.data.tourPoster ||
+  siteConfig.branding.assets.tourVideoPoster ||
+  PLACEHOLDER_POSTER;
+const tourPosterUrl = resolveAssetUrl(tourPoster) ?? tourPoster;
+const tourTitle =
+  videoTour.data.title ||
+  "Conoce nuestras instalaciones y espacios de aprendizaje";
+const hasTourVideo = true;
 ---
 
 <BaseLayout title={title} description={description}>
@@ -23,22 +48,21 @@ const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
       </p>
     </div>
 
-    <div class="levelsIndex__grid">
-      {
-        enabledLevels.map((level) => (
-          <Card variant="bordered" class="levelsIndex__card">
-            <Badge variant="primary">{level.shortName}</Badge>
-            <h2 class="levelsIndex__name">{level.name}</h2>
-            <p class="levelsIndex__description">{level.description}</p>
-            {level.ageRange && <p class="levelsIndex__age">{level.ageRange}</p>}
-            <Button href={`/niveles/${level.slug}`} variant="primary" size="md">
-              Ver nivel
-            </Button>
-          </Card>
-        ))
-      }
-    </div>
+    <LevelCards levels={enabledLevels} headingLevel="h2" ctaLabel="Ver nivel" />
   </Section>
+
+  {
+    hasTourVideo && (
+      <Section padding="none" class="levelsTour">
+        <CampusShowcase
+          videoUrl={tourVideoUrl}
+          poster={tourPosterUrl}
+          title={tourTitle}
+          badge="Tour Virtual"
+        />
+      </Section>
+    )
+  }
 </BaseLayout>
 
 <style>
@@ -64,35 +88,23 @@ const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
     color: var(--color-text-muted);
   }
 
-  .levelsIndex__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
+  /* Espaciado vertical alrededor del banner de instalaciones.
+     :global() porque los <section> los renderiza Section.astro, que no lleva el
+     data-astro-cid de esta página (mismo caso que .trustStrip en index.astro).
+     - .levelsIndex sin padding inferior (las cards pegan justo antes del banner).
+     - .levelsTour: 24px arriba (cards↔video) y 64px abajo (video↔footer). */
+  :global(.levelsIndex) {
+    padding-block-end: 0;
+  }
+
+  :global(.levelsTour) {
+    padding-block-start: var(--space-lg);
+    padding-block-end: var(--space-3xl);
   }
 
   @media (min-width: 48rem) {
-    .levelsIndex__grid {
-      grid-template-columns: repeat(2, 1fr);
+    :global(.levelsTour) {
+      padding-block-start: var(--space-lg);
     }
-  }
-
-  .levelsIndex__card {
-    min-width: 0;
-  }
-
-  .levelsIndex__name {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .levelsIndex__description {
-    color: var(--color-text-muted);
-    flex: 1 1 auto;
-  }
-
-  .levelsIndex__age {
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-primary);
   }
 </style>

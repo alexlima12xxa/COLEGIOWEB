@@ -4,7 +4,8 @@
   }
 
   .videoModal {
-    display: inline-block;
+    display: block;
+    width: 100%;
   }
 
   .videoModal__trigger {
@@ -16,14 +17,22 @@
     min-width: 2.75rem;
     min-height: 2.75rem;
     padding: 0;
-    border: 0;
+    border: 1px solid color-mix(in oklch, var(--color-border) 80%, transparent);
     background: none;
     cursor: pointer;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-2xl);
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
-    /* Reserva el espacio 16:9 desde el primer layout (evita CLS del poster) */
-    aspect-ratio: 16 / 9;
+    /* Reserva el espacio 4:3 desde el primer layout (evita CLS del poster) */
+    aspect-ratio: 4 / 3;
+    min-height: 380px;
+  }
+
+  @media (min-width: 64rem) {
+    .videoModal__trigger {
+      min-height: 440px;
+    }
   }
 
   .videoModal__trigger:focus-visible {

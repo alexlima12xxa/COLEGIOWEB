@@ -178,6 +178,45 @@ function validateAssets(errors: string[]): void {
   }
 }
 
+/**
+ * Valida que los enlaces internos de la config apunten a páginas reales.
+ * Evita CTAs muertos como `ctaUrl: "#contacto"` (ancla inexistente en la
+ * mayoría de páginas) o rutas a páginas no creadas.
+ */
+function validateInternalLinks(errors: string[]): void {
+  const ctaUrl = siteConfig.admissions.ctaUrl;
+
+  if (ctaUrl.startsWith("#")) {
+    errors.push(
+      `admissions.ctaUrl es solo un ancla ("${ctaUrl}"): el ancla no existe en todas las páginas. ` +
+        `Usa una ruta interna completa, ej. "/admisiones#formulario".`,
+    );
+    return;
+  }
+
+  if (!ctaUrl.startsWith("/")) return; // Externa: fuera de alcance local.
+
+  const pathname = ctaUrl.split("#")[0].split("?")[0];
+  if (pathname === "/") return; // Home: src/pages/index.astro siempre existe.
+  if (pathname.includes("[")) return; // Ruta dinámica: no verificable en build.
+
+  // El path relativo no puede empezar con "/": resolve() interpretaría
+  // "/admisiones.astro" como absoluto y descartaría pagesDir.
+  const normalized = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+  const pagesDir = resolve(process.cwd(), "src", "pages");
+  const candidates = [
+    resolve(pagesDir, `${normalized}.astro`),
+    resolve(pagesDir, normalized, "index.astro"),
+  ];
+
+  if (!candidates.some((candidate) => existsSync(candidate))) {
+    errors.push(
+      `admissions.ctaUrl apunta a una página inexistente: "${ctaUrl}" ` +
+        `(se buscó src/pages${normalized}.astro).`,
+    );
+  }
+}
+
 function validateContrast(errors: string[]): void {
   for (const pair of REQUIRED_CONTRAST_PAIRS) {
     const foreground = siteConfig.branding.colors[pair.foreground] as HexColor;
@@ -201,6 +240,7 @@ export function validateConfig(): void {
   validateWhatsApp(errors);
   validateAssets(errors);
   validateContrast(errors);
+  validateInternalLinks(errors);
 
   if (errors.length > 0) {
     console.error("\n❌ Validación de site.config.ts falló:\n");
@@ -214,6 +254,6 @@ export function validateConfig(): void {
   }
 
   console.log(
-    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos).",
+    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos, enlaces).",
   );
 }

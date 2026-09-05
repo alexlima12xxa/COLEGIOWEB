@@ -1,5 +1,6 @@
 ---
 import type { Noticia } from "../../../shared/db/schema";
+import NewsHero from "./NewsHero.astro";
 import NewsCard from "./NewsCard.astro";
 import NewsPagination from "./NewsPagination.astro";
 import "./NewsList.css";
@@ -11,15 +12,21 @@ export interface Props {
 }
 
 const { items, page, totalPages } = Astro.props;
+
+const [featured, ...rest] = items;
+const showFeatured = page === 1 && Boolean(featured);
+const gridItems = showFeatured ? rest : items;
 ---
 
 {
   items.length > 0 ? (
     <>
-      <ul class="newsList">
-        {items.map((noticia, index) => (
-          <li class="newsList__item">
-            <NewsCard noticia={noticia} eager={index === 0} />
+      {showFeatured && <NewsHero noticia={featured} />}
+
+      <ul class="newsGrid">
+        {gridItems.map((noticia, index) => (
+          <li class="newsGrid__item">
+            <NewsCard noticia={noticia} eager={index === 0 && !showFeatured} />
           </li>
         ))}
       </ul>
@@ -27,9 +34,9 @@ const { items, page, totalPages } = Astro.props;
       <NewsPagination page={page} totalPages={totalPages} />
     </>
   ) : (
-    <div class="newsList__empty">
-      <h2 class="newsList__emptyTitle">Aún no hay noticias publicadas</h2>
-      <p class="newsList__emptyText">
+    <div class="newsGrid__empty">
+      <h2 class="newsGrid__emptyTitle">Aún no hay noticias publicadas</h2>
+      <p class="newsGrid__emptyText">
         Pronto compartiremos novedades de nuestra institución.
       </p>
     </div>

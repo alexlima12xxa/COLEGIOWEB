@@ -2,14 +2,12 @@
 import Section from "../../../shared/ui/Section/Section.astro";
 import Button from "../../../shared/ui/Button/Button.astro";
 import Card from "../../../shared/ui/Card/Card.astro";
-import Badge from "../../../shared/ui/Badge/Badge.astro";
 import ResponsiveImage from "../../../shared/ui/ResponsiveImage/ResponsiveImage.astro";
 import { Check, Clock, BookOpen } from "@lucide/astro";
 import "./NivelLayout.css";
 
 export interface Props {
   name: string;
-  shortName: string;
   ageRange?: string;
   headline: string;
   description: string;
@@ -25,7 +23,6 @@ export interface Props {
 
 const {
   name,
-  shortName,
   ageRange,
   headline,
   description,
@@ -41,7 +38,6 @@ const {
   <Section padding="xl" class="levelLayout__hero">
     <div class="levelLayout__grid">
       <div class="levelLayout__content">
-        <Badge variant="primary">{shortName}</Badge>
         <h1 class="levelLayout__title">{headline}</h1>
         <p class="levelLayout__description">{description}</p>
         {ageRange && <p class="levelLayout__age">Edades: {ageRange}</p>}

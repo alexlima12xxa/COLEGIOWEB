@@ -2,9 +2,10 @@
 import BaseLayout from "../shared/layouts/BaseLayout.astro";
 import Section from "../shared/ui/Section/Section.astro";
 import Button from "../shared/ui/Button/Button.astro";
-import Card from "../shared/ui/Card/Card.astro";
-import Timeline from "../shared/ui/Timeline/Timeline.astro";
-import Accordion from "../shared/ui/Accordion/Accordion.astro";
+import AdmissionsHero from "../features/admissions/components/AdmissionsHero/AdmissionsHero.astro";
+import AdmissionsSteps from "../features/admissions/components/AdmissionsSteps/AdmissionsSteps.astro";
+import AdmissionsRequirements from "../features/admissions/components/AdmissionsRequirements/AdmissionsRequirements.astro";
+import AdmissionsFaq from "../features/admissions/components/AdmissionsFaq/AdmissionsFaq.astro";
 import AdmissionForm from "../features/admissions/components/AdmissionForm/AdmissionForm.astro";
 import { siteConfig } from "../site.config";
 import { getAdmisiones } from "../shared/db/contenido";
@@ -17,12 +18,34 @@ const tenantId = import.meta.env.PUBLIC_TENANT_ID;
 
 const title = "Admisiones";
 const description =
-  "Proceso de admisiones 2026 del Colegio Piloto: cronograma, requisitos y preguntas frecuentes.";
+  "Proceso de admisiones 2026 del Colegio Piloto: fechas clave, etapas, requisitos por nivel y preguntas frecuentes.";
 
-// Cronograma, requisitos y FAQ desde Supabase (tabla `contenido`), con
-// fallback local. Se resuelven en build-time: un cambio del panel aparece
-// tras el rebuild.
+// Contenido editorial desde Supabase (tabla `contenido`), con fallback local.
+// Se resuelve en build-time: un cambio del panel aparece tras el rebuild.
 const admissions = await getAdmisiones();
+
+const whatsappNumber = siteConfig.contact.whatsapp.replace(/\D/g, "");
+
+// El año del proceso se deriva del deadline/periodLabel de la config, no
+// de la fecha de build: un build en diciembre no puede anunciar "Admisiones
+// {año pasado}" junto a "Admisiones 2026 abiertas".
+const admissionsYear = siteConfig.admissions.deadline
+  ? new Date(siteConfig.admissions.deadline).getFullYear()
+  : Number(
+      siteConfig.admissions.periodLabel.match(/\d{4}/)?.[0] ??
+        new Date().getFullYear(),
+    );
+
+// Niveles para las tabs de requisitos: se derivan de siteConfig.levels para
+// respetar la config del colegio (orden y etiquetas). Cada nivel mapea a su
+// clave en `requisitosPorNivel` (preescolar / primaria / secundaria).
+const nivelRequisitos = activeLevels.map((level) => ({
+  id: level.id,
+  label: level.ageRange ? `${level.name} (${level.ageRange})` : level.name,
+  requisitos: admissions.requisitosPorNivel[level.id] ?? [],
+}));
+
+const fechaBadge = `Convocatoria ${admissionsYear} Abierta`;
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -45,43 +68,31 @@ const faqJsonLd = {
     is:inline
   />
 
-  <Section padding="xl" class="admissionsHero">
-    <div class="admissionsHero__content">
-      <h1 class="admissionsHero__title">
-        Admisiones {new Date().getFullYear()}
-      </h1>
-      <p class="admissionsHero__lead">{siteConfig.admissions.periodLabel}</p>
-      <p class="admissionsHero__description">
-        Inicia el proceso de admisión para que tu hijo o hija haga parte de
-        nuestra comunidad educativa. Te acompañamos en cada etapa.
-      </p>
-      {
-        siteConfig.admissions.deadline && (
-          <p class="admissionsHero__deadline">
-            Fecha límite de inscripción:{" "}
-            <time datetime={siteConfig.admissions.deadline}>
-              {new Date(siteConfig.admissions.deadline).toLocaleDateString(
-                "es-CO",
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                },
-              )}
-            </time>
-          </p>
-        )
-      }
-      <div class="admissionsHero__actions">
-        <Button href="/contacto" size="lg">
-          {siteConfig.admissions.ctaLabel}
-        </Button>
-        <Button href="#requisitos" variant="secondary" size="lg">
-          Ver requisitos
-        </Button>
-      </div>
-    </div>
-  </Section>
+  <AdmissionsHero
+    badge={fechaBadge}
+    titlePre="El futuro de tus hijos comienza aquí: "
+    titleHighlight={`Admisiones ${admissionsYear}`}
+    description="Inicia el proceso de admisión para que tu hijo o hija haga parte de nuestra comunidad educativa. Te acompañamos en cada etapa, con un proceso claro, cercano y completamente en línea."
+    ctaPrimary={{
+      label: "Iniciar Postulación",
+      href: siteConfig.admissions.ctaUrl,
+    }}
+    ctaSecondary={{
+      label: "Consultar por WhatsApp",
+      href: `https://wa.me/${whatsappNumber}`,
+    }}
+    fechasClave={admissions.fechasClave}
+    aviso={admissions.aviso}
+  />
+
+  <AdmissionsSteps etapas={admissions.etapas} />
+
+  <AdmissionsRequirements
+    niveles={nivelRequisitos}
+    pdfUrl="/requisitos-admisiones-2026.pdf"
+  />
+
+  <AdmissionsFaq items={admissions.faq} />
 
   <Section padding="xl" bg="muted" id="formulario">
     <AdmissionForm
@@ -95,45 +106,6 @@ const faqJsonLd = {
     />
   </Section>
 
-  <Section padding="lg" bg="muted">
-    <div class="admissionsSectionHeader">
-      <h2 class="admissionsSectionHeader__title">Cronograma</h2>
-      <p class="admissionsSectionHeader__text">
-        Estas son las fechas clave del proceso de admisiones.
-      </p>
-    </div>
-    <Timeline items={admissions.schedule} />
-  </Section>
-
-  <Section padding="lg" id="requisitos">
-    <div class="admissionsSectionHeader">
-      <h2 class="admissionsSectionHeader__title">Requisitos</h2>
-      <p class="admissionsSectionHeader__text">
-        Documentos necesarios para completar la inscripción.
-      </p>
-    </div>
-
-    <Card variant="bordered" class="admissionsRequirements">
-      <ul class="admissionsRequirements__list" role="list">
-        {
-          admissions.requirements.map((req) => (
-            <li class="admissionsRequirements__item">{req}</li>
-          ))
-        }
-      </ul>
-    </Card>
-  </Section>
-
-  <Section padding="lg" bg="muted">
-    <div class="admissionsSectionHeader">
-      <h2 class="admissionsSectionHeader__title">Preguntas frecuentes</h2>
-      <p class="admissionsSectionHeader__text">
-        Resolvemos las dudas más comunes sobre el proceso de admisión.
-      </p>
-    </div>
-    <Accordion items={admissions.faq} />
-  </Section>
-
   <Section padding="xl" bg="inverse" class="admissionsCta">
     <div class="admissionsCta__content">
       <h2 class="admissionsCta__title">¿Tienes dudas sobre el proceso?</h2>
@@ -141,11 +113,13 @@ const faqJsonLd = {
         Nuestro equipo de admisiones está listo para ayudarte.
       </p>
       <div class="admissionsCta__actions">
-        <Button href="/contacto" size="lg"> Contactar admisiones </Button>
+        <Button href="#formulario" size="lg"> Solicitar información </Button>
         <Button
-          href={`https://wa.me/${siteConfig.contact.whatsapp}`}
+          href={`https://wa.me/${whatsappNumber}`}
           variant="secondary"
           size="lg"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Escribir por WhatsApp
         </Button>
@@ -155,103 +129,6 @@ const faqJsonLd = {
 </BaseLayout>
 
 <style>
-  .admissionsHero__content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
-    max-width: 70ch;
-  }
-
-  .admissionsHero__title {
-    font-size: var(--text-4xl);
-    font-weight: var(--font-weight-bold);
-  }
-
-  @media (min-width: 48rem) {
-    .admissionsHero__title {
-      font-size: var(--text-5xl);
-    }
-  }
-
-  .admissionsHero__lead {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-primary);
-  }
-
-  .admissionsHero__description {
-    color: var(--color-text-muted);
-    word-break: break-words;
-  }
-
-  .admissionsHero__deadline {
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    background-color: var(--color-accent-soft);
-    color: var(--color-accent);
-    font-weight: var(--font-weight-medium);
-  }
-
-  .admissionsHero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-md);
-    margin-top: var(--space-sm);
-  }
-
-  .admissionsSectionHeader {
-    max-width: 55ch;
-    margin-bottom: var(--space-xl);
-  }
-
-  .admissionsSectionHeader__title {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--space-sm);
-  }
-
-  @media (min-width: 48rem) {
-    .admissionsSectionHeader__title {
-      font-size: var(--text-3xl);
-    }
-  }
-
-  .admissionsSectionHeader__text {
-    color: var(--color-text-muted);
-  }
-
-  .admissionsRequirements {
-    max-width: var(--container-md);
-  }
-
-  .admissionsRequirements__list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .admissionsRequirements__item {
-    position: relative;
-    padding-left: calc(var(--space-md) + 0.75rem);
-    color: var(--color-text);
-    word-break: break-words;
-  }
-
-  .admissionsRequirements__item::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.6rem;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: var(--radius-full);
-    background-color: var(--color-primary);
-  }
-
   .admissionsCta__content {
     display: flex;
     flex-direction: column;

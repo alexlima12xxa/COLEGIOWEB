@@ -1,0 +1,63 @@
+@layer features {
+  .banner--granulado {
+    align-items: center;
+    justify-items: center;
+    min-height: 90dvh;
+    height: 90dvh;
+    padding-block: var(--space-3xl);
+  }
+
+  @media (max-width: 48rem) {
+    .banner--granulado {
+      padding-block: var(--space-xl);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .banner--granulado {
+      height: 90vh;
+      min-height: 90vh;
+    }
+  }
+
+  .banner__granoBg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-color: var(--grano-color, #16264a);
+  }
+
+  /* Ruido procedural (feTurbulence) superpuesto como textura granulada. */
+  .banner__granoNoise {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+
+  .banner__content--granulado {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-inline: var(--space-md);
+    max-width: var(--container-md);
+    margin-inline: auto;
+  }
+
+  .banner__content--granulado .banner__title,
+  .banner__content--granulado .banner__subtitle {
+    margin-inline: auto;
+  }
+
+  .banner__content--granulado .banner__kicker {
+    align-self: center;
+  }
+
+  .banner__content--granulado .bannerActions {
+    justify-content: center;
+  }
+}
