@@ -4,7 +4,12 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./banners/css/base.css": "./src/banners/css/_banner.css",
+    "./banners/css/duotono.css": "./src/banners/css/BannerDuotono.css",
+    "./banners/css/granulado.css": "./src/banners/css/BannerGranulado.css",
+    "./banners/css/foto.css": "./src/banners/css/BannerFoto.css",
+    "./banners/css/corte-diagonal.css": "./src/banners/css/BannerCorteDiagonal.css"
   },
   "scripts": {
     "gen:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" > src/types.ts"

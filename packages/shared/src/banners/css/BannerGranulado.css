@@ -1,15 +1,15 @@
-@layer features {
+@layer components {
   .banner--granulado {
     align-items: center;
     justify-items: center;
     min-height: 90dvh;
     height: 90dvh;
-    padding-block: var(--space-3xl);
+    padding-block: var(--space-3xl, 4rem);
   }
 
   @media (max-width: 48rem) {
     .banner--granulado {
-      padding-block: var(--space-xl);
+      padding-block: var(--space-xl, 2rem);
     }
   }
 
@@ -43,8 +43,8 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-inline: var(--space-md);
-    max-width: var(--container-md);
+    padding-inline: var(--space-md, 1rem);
+    max-width: var(--container-md, 48rem);
     margin-inline: auto;
   }
 

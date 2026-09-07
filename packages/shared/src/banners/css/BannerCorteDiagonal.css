@@ -1,0 +1,147 @@
+@layer components {
+  /* Banner "corte-diagonal": panel izquierdo de color sólido con corte
+     diagonal en su borde derecho (línea de acento), y foto a la derecha.
+     El director elige el color del panel entre tonos predefinidos y edita
+     textos + foto + botones. Sin reposicionamiento: posiciones fijas. */
+
+  .banner--corte-diagonal {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    min-height: 90dvh;
+    height: 90dvh;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .banner--corte-diagonal {
+      height: 90vh;
+      min-height: 90vh;
+    }
+  }
+
+  /* Panel izquierdo: fondo sólido + corte diagonal derecho. */
+  .banner__corte-panel {
+    --corte-corte: clamp(60px, 14%, 140px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--space-2xl, 3rem);
+    padding-block: var(--space-3xl, 4rem);
+    background-color: var(--corte-color, #b12513);
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      calc(100% - var(--corte-corte)) 100%,
+      0 100%
+    );
+  }
+
+  /* Línea de acento fina sobre el corte diagonal. */
+  .banner__corte-acento {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--corte-corte, 90px);
+    height: 100%;
+    background: var(--corte-acento, #00a3e0);
+    clip-path: polygon(
+      calc(100% - 6px) 0,
+      100% 0,
+      6px 100%,
+      0 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Zona de la foto (derecha): full-bleed cubriendo la columna. */
+  .banner__corte-foto {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .banner__corte-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* Fallback visual cuando aún no hay foto cargada. */
+  .banner__corte-fotoFallback {
+    width: 100%;
+    height: 100%;
+    background: var(--color-surface-inverse, #1e1e2e);
+  }
+
+  /* Contenido del panel izquierdo (textos + CTA centrados en la columna). */
+  .banner__corte-contenido {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md, 1rem);
+    max-width: var(--container-md, 48rem);
+  }
+
+  .banner__corte-contenido .banner__kicker {
+    align-self: flex-start;
+  }
+
+  .banner__corte-contenido .banner__title {
+    max-width: 18ch;
+  }
+
+  .banner__corte-contenido .banner__subtitle {
+    max-width: 42ch;
+  }
+
+  .banner__corte-contenido .bannerActions {
+    justify-content: flex-start;
+  }
+
+  /* Responsive: en pantallas angostas la foto pasa debajo y el panel ocupa
+     el ancho completo sin corte lateral exagerado. */
+  @media (max-width: 48rem) {
+    .banner--corte-diagonal {
+      grid-template-columns: 1fr;
+      height: auto;
+      min-height: 0;
+    }
+
+    .banner__corte-panel {
+      --corte-corte: 48px;
+      padding-block: var(--space-2xl, 3rem);
+      padding-inline: var(--space-lg, 1.5rem);
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        100% calc(100% - var(--corte-corte)),
+        0 100%
+      );
+    }
+
+    .banner__corte-acento {
+      top: auto;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: var(--corte-corte, 48px);
+      clip-path: polygon(
+        0 calc(100% - 6px),
+        100% calc(100% - 6px),
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .banner__corte-foto {
+      height: 260px;
+    }
+  }
+}

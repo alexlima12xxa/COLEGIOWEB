@@ -12,8 +12,11 @@ export type BannersState = {
   fieldErrors?: Record<string, string>;
 };
 
-const PLANTILLAS = ["duotono", "granulado", "foto"] as const;
+const PLANTILLAS = ["duotono", "granulado", "foto", "corte-diagonal"] as const;
 
+// Los máximos de title/subtitle/kicker deben coincidir con `maxLength` del
+// contrato en packages/shared/src/banners/catalogo.ts (fuente de verdad del
+// formulario y del contador). Mantenerlos sincronizados al agregar plantillas.
 const LIMITS = {
   title: { min: 1, max: 160 },
   subtitle: { min: 0, max: 300 },
@@ -50,6 +53,45 @@ async function uploadOrKeep(
     return { path: current, error: `No se pudo subir la imagen: ${error.message}` };
   }
   return { path: uploadPath };
+}
+
+// Convierte una imagen en data-URL (edición inline) en un archivo subido.
+// Devuelve la ruta de storage; si no puede, devuelve la cadena original para
+// no perder el dato. Evita persistir base64 gigante en `datos jsonb`.
+async function uploadDataUrl(
+  dataUrl: string,
+  folder: string,
+): Promise<string> {
+  const match = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
+  if (!match) return dataUrl;
+  const mime = match[1];
+  try {
+    const file = dataUrlToFile(dataUrl, mime, "banner");
+    const { supabase } = await requireAdmin();
+    const uploadPath = `${folder}/banner-${Date.now()}.${extFromMime(mime)}`;
+    const { error } = await supabase.storage
+      .from("media")
+      .upload(uploadPath, file, { upsert: true, contentType: mime });
+    if (error) return dataUrl;
+    return uploadPath;
+  } catch {
+    return dataUrl;
+  }
+}
+
+function extFromMime(mime: string): string {
+  if (mime.includes("png")) return "png";
+  if (mime.includes("webp")) return "webp";
+  if (mime.includes("avif")) return "avif";
+  return "jpg";
+}
+
+function dataUrlToFile(dataUrl: string, mime: string, name: string): File {
+  const b64 = dataUrl.split(",")[1] ?? "";
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new File([arr], name, { type: mime });
 }
 
 export async function guardarBanner(
@@ -107,10 +149,17 @@ export async function guardarBanner(
   const prevBackground = typeof prevDatos.background === "string" ? prevDatos.background : "";
   const prevImage = typeof prevDatos.image === "string" ? prevDatos.image : "";
 
-  const background = await uploadOrKeep(backgroundFile, "banners", prevBackground);
+  let background = await uploadOrKeep(backgroundFile, "banners", prevBackground);
   if (background.error) return { error: background.error };
-  const image = await uploadOrKeep(imageFile, "banners", prevImage);
+  if (!backgroundFile && prevBackground.startsWith("data:")) {
+    background = { path: await uploadDataUrl(prevBackground, "banners") };
+  }
+
+  let image = await uploadOrKeep(imageFile, "banners", prevImage);
   if (image.error) return { error: image.error };
+  if (!imageFile && prevImage.startsWith("data:")) {
+    image = { path: await uploadDataUrl(prevImage, "banners") };
+  }
 
   // Solo la plantilla "foto" exige imagen de fondo. Duotono/granulado usan
   // color/gradiente controlado y pueden no tener imagen.
@@ -118,6 +167,23 @@ export async function guardarBanner(
     fieldErrors.background = "Sube una imagen de fondo para el banner.";
   }
   if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
+
+  // CTA y botones secundarios: fuente de verdad es `datos_json` (donde el
+  // preview inline también escribe). Como fallback, si vienen ctaLabel/ctaHref
+  // por formData (edición por formulario), se construyen sobre eso.
+  const prevCta = prevDatos.cta as
+    | { label?: string; href?: string; variant?: string }
+    | undefined;
+  const cta: Record<string, unknown> | undefined =
+    ctaLabel && ctaHref
+      ? { label: ctaLabel, href: ctaHref, variant: "primary" }
+      : prevCta?.label && prevCta?.href
+        ? prevCta
+        : undefined;
+
+  const prevActions = Array.isArray(prevDatos.actions)
+    ? (prevDatos.actions as Record<string, unknown>[])
+    : [];
 
   const datos: Record<string, unknown> = {
     ...prevDatos,
@@ -127,10 +193,8 @@ export async function guardarBanner(
     subtitle: subtitle || undefined,
     kicker: kicker || undefined,
     tono: tono || undefined,
-    cta:
-      ctaLabel && ctaHref
-        ? { label: ctaLabel, href: ctaHref, variant: "primary" }
-        : undefined,
+    cta,
+    actions: prevActions,
   };
 
   const { supabase, tenantId } = await requireAdmin();
@@ -159,6 +223,28 @@ export async function guardarBanner(
   await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/banners");
   return { ok: true };
+}
+
+// Subida inmediata de imagen desde el editor (antes de guardar el banner).
+// Devuelve la ruta relativa del bucket "media" para que el preview híbrido
+// pueda mostrarlo en el iframe sin transportar data-URL gigante por query.
+export async function subirImagenBanner(
+  formData: FormData,
+): Promise<{ path: string; error?: string }> {
+  const file = formData.get("file") as File | null;
+  if (!file || file.size === 0) return { path: "", error: "Archivo vacío." };
+  const ext = slugify(file.name.split(".").pop() ?? "jpg") || "jpg";
+  const uploadPath = `banners/temp-${Date.now()}.${ext.toLowerCase()}`;
+
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase.storage
+    .from("media")
+    .upload(uploadPath, file, { upsert: true, contentType: file.type });
+
+  if (error) {
+    return { path: "", error: `No se pudo subir la imagen: ${error.message}` };
+  }
+  return { path: uploadPath };
 }
 
 export async function eliminarBanner(formData: FormData) {

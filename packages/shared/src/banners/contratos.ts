@@ -25,6 +25,17 @@ export interface EditableCampo {
   opcional?: boolean;
   /** Ayuda/instrcciones bajo el campo. */
   ayuda?: string;
+  /**
+   * Tope de caracteres de la zona. El formulario muestra un contador y la
+   * validación server lo hace cumplir. Debe coincidir con el límite de
+   * `bannerSchema` y de `actions.ts`.
+   */
+  maxLength?: number;
+  /**
+   * Valor inicial para `opciones`/`tono`: la opción que toma la zona por
+   * defecto cuando el director no ha elegido. Se usa para el primer render.
+   */
+  default?: string;
 }
 
 export interface EditableSchema {

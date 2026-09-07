@@ -1,17 +1,20 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import {
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 import type { BannersState } from "./actions";
-import { guardarBanner } from "./actions";
-import { mediaUrl } from "@/lib/storage";
+import { guardarBanner, subirImagenBanner } from "./actions";
 import {
   CATALOGO_BANNERS,
   catalogoPorSlug,
-  parDuotonoPorKey,
-  tonoGranuladoPorKey,
   type EditableCampo,
   type OpcionCampo,
 } from "@web-modelo/shared";
+
+type OnEdit = (key: string, value: unknown) => void;
 
 const inputClass =
   "mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20";
@@ -60,69 +63,64 @@ export interface BannerInitial {
   datos: Record<string, unknown>;
 }
 
-function LivePreview({
+function buildPreviewUrl(
+  plantillaId: string,
+  datos: Record<string, unknown>,
+  previewToken: string | null,
+): string | null {
+  const base = process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
+  if (!base || !previewToken) return null;
+
+  const payload: Record<string, unknown> = {
+    plantillaId,
+    datos,
+  };
+  const encoded = encodeURIComponent(JSON.stringify(payload));
+  return `${base}/preview-admin?token=${encodeURIComponent(previewToken)}&datos=${encoded}`;
+}
+
+function BannerPreviewIframe({
   plantillaId,
   datos,
+  previewToken,
 }: {
   plantillaId: string;
   datos: Record<string, unknown>;
+  previewToken: string | null;
 }) {
-  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const url = buildPreviewUrl(plantillaId, datos, previewToken);
 
-  let backgroundStyle: React.CSSProperties = { backgroundColor: "#1e1e2e" };
-
-  if (plantillaId === "duotono") {
-    const par = parDuotonoPorKey(str(datos.tono));
-    backgroundStyle = {
-      backgroundImage: `linear-gradient(135deg, ${par.color1} 0%, ${par.color2} 100%)`,
-    };
-  } else if (plantillaId === "granulado") {
-    const tono = tonoGranuladoPorKey(str(datos.tono));
-    backgroundStyle = { backgroundColor: tono.color };
-  } else {
-    const bg = str(datos.background);
-    const bgUrl = bg.startsWith("data:") ? bg : mediaUrl(bg);
-    backgroundStyle = {
-      backgroundImage: bgUrl ? `url(${bgUrl})` : undefined,
-      backgroundColor: bgUrl ? undefined : "#1e1e2e",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    };
+  if (!url) {
+    return (
+      <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-sm text-zinc-500">
+        Vista previa desactivada: define{" "}
+        <code className="text-zinc-700">NEXT_PUBLIC_WEB_URL</code> y{" "}
+        <code className="text-zinc-700">PREVIEW_SIGNING_KEY</code> para
+        previsualizar el banner con el diseño real.
+      </div>
+    );
   }
 
   return (
-    <div
-      className="relative h-56 w-full overflow-hidden rounded-xl border border-zinc-200"
-      style={backgroundStyle}
-    >
-      {plantillaId === "granulado" && (
-        <div
-          className="absolute inset-0 opacity-30 mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            backgroundSize: "160px 160px",
-          }}
-        />
-      )}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-4 text-center text-white">
-        {str(datos.kicker) && (
-          <span className="text-[10px] font-semibold uppercase tracking-widest opacity-85">
-            {str(datos.kicker)}
-          </span>
-        )}
-        {str(datos.title) && (
-          <span className="text-xl font-bold leading-tight">{str(datos.title)}</span>
-        )}
-        {str(datos.subtitle) && (
-          <span className="text-xs opacity-90">{str(datos.subtitle)}</span>
-        )}
-      </div>
+    <div className="banner-preview">
+      <iframe
+        key={url}
+        src={url}
+        title="Vista previa del banner"
+        className="h-full w-full border-0"
+        loading="lazy"
+      />
     </div>
   );
 }
 
-export function BannerForm({ initial }: { initial: BannerInitial }) {
+export function BannerForm({
+  initial,
+  previewToken,
+}: {
+  initial: BannerInitial;
+  previewToken?: string | null;
+}) {
   const [state, formAction, pending] = useActionState<BannersState, FormData>(
     guardarBanner,
     {},
@@ -132,16 +130,66 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
   const str = (v: unknown): string => (typeof v === "string" ? v : "");
 
   const [plantillaId, setPlantillaId] = useState(initial.plantilla_id);
-  const [campos, setCampos] = useState<Record<string, string>>({
-    title: str(datos.title),
-    subtitle: str(datos.subtitle),
-    kicker: str(datos.kicker),
-    tono: str(datos.tono),
-  });
-  const [previewDatos, setPreviewDatos] = useState<Record<string, unknown>>(datos);
 
   const contrato = catalogoPorSlug(plantillaId);
-  const ctaObj = datos.cta as { label?: string; href?: string } | undefined;
+  const camposContrato = contrato?.contrato.campos ?? [];
+
+  // Inicialización dinámica desde el contrato: cada campo parte de su valor en
+  // `datos` o de su `default`, de modo que plantillas con campos arbitrarios
+  // (fotoDerecha, colorFranja, etc.) funcionen sin tocar código por campo.
+  const [campos, setCampos] = useState<Record<string, string>>(() => {
+    const inicial: Record<string, string> = {};
+    for (const c of camposContrato) {
+      inicial[c.key] = str(datos[c.key]) || c.default || "";
+    }
+    return inicial;
+  });
+  const [previewDatos, setPreviewDatos] = useState<Record<string, unknown>>(() => {
+    const inicial: Record<string, unknown> = { ...datos };
+    for (const c of camposContrato) {
+      if (inicial[c.key] === undefined && c.default) inicial[c.key] = c.default;
+    }
+    return inicial;
+  });
+
+  const ctaObj = previewDatos.cta as { label?: string; href?: string } | undefined;
+  const [imageErrors, setImageErrors] = useState<Record<string, string>>({});
+  const setImageError = (key: string, error?: string) =>
+    setImageErrors((prev) => {
+      const next = { ...prev };
+      if (error) next[key] = error;
+      else delete next[key];
+      return next;
+    });
+
+  // Callback del CTA: escribe el objeto cta en previewDatos (fuente de verdad
+  // del borrador que alimenta el iframe y el `datos_json` al guardar).
+  const onEdit: OnEdit = (key, value) => {
+    if (key === "cta") {
+      const { label, href } = value as { label?: string; href?: string };
+      setPreviewDatos((prev) => ({
+        ...prev,
+        cta: label && href ? { label, href, variant: "primary" } : undefined,
+      }));
+    }
+  };
+
+  // Al cambiar de plantilla, re-inicializa campos y preview con el contrato
+  // nuevo (nombres/valores de campos distintos) y repone los defaults.
+  useEffect(() => {
+    const inicialCampos: Record<string, string> = {};
+    const inicialDatos: Record<string, unknown> = { ...datos };
+    for (const c of camposContrato) {
+      const actual = str(datos[c.key]);
+      inicialCampos[c.key] = actual || c.default || "";
+      if (inicialDatos[c.key] === undefined && c.default) {
+        inicialDatos[c.key] = c.default;
+      }
+    }
+    setCampos(inicialCampos);
+    setPreviewDatos(inicialDatos);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plantillaId]);
 
   function renderCampo(campo: EditableCampo) {
     const value = campos[campo.key] ?? "";
@@ -171,34 +219,52 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
 
     if (campo.tipo === "imagen") {
       return (
-        <input
-          id={campo.key}
-          name={campo.key}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () =>
-              setPreviewDatos((prev) => ({ ...prev, [campo.key]: reader.result as string }));
-            reader.readAsDataURL(file);
-          }}
-          className="mt-1.5 block w-full text-sm text-zinc-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-700 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-800"
-        />
+        <>
+          <input
+            id={campo.key}
+            name={campo.key}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const fd = new FormData();
+              fd.append("file", file);
+              const res = await subirImagenBanner(fd);
+              if (res.error) {
+                setImageError(campo.key, res.error);
+                return;
+              }
+              setImageError(campo.key, undefined);
+              setPreviewDatos((prev) => ({ ...prev, [campo.key]: res.path }));
+            }}
+            className="mt-1.5 block w-full text-sm text-zinc-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-700 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-800"
+          />
+          {imageErrors[campo.key] ? (
+            <p className="mt-1 text-sm text-red-600">{imageErrors[campo.key]}</p>
+          ) : null}
+        </>
       );
     }
 
     if (campo.tipo === "texto-largo") {
       return (
-        <textarea
-          id={campo.key}
-          name={campo.key}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          rows={3}
-          className={inputClass}
-        />
+        <>
+          <textarea
+            id={campo.key}
+            name={campo.key}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            rows={3}
+            maxLength={campo.maxLength}
+            className={inputClass}
+          />
+          {campo.maxLength ? (
+            <p className="mt-1 text-xs text-zinc-500">
+              {value.length} / {campo.maxLength}
+            </p>
+          ) : null}
+        </>
       );
     }
 
@@ -215,21 +281,29 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
     }
 
     return (
-      <input
-        id={campo.key}
-        name={campo.key}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={inputClass}
-      />
+      <>
+        <input
+          id={campo.key}
+          name={campo.key}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          maxLength={campo.maxLength}
+          className={inputClass}
+        />
+        {campo.maxLength ? (
+          <p className="mt-1 text-xs text-zinc-500">
+            {value.length} / {campo.maxLength}
+          </p>
+        ) : null}
+      </>
     );
   }
 
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="id" value={initial.id ?? ""} />
-      <input type="hidden" name="datos_json" value={JSON.stringify(datos)} />
+      <input type="hidden" name="datos_json" value={JSON.stringify(previewDatos)} />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
@@ -253,16 +327,18 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
         </div>
       </div>
 
-      {contrato?.contrato.campos.map((campo) => (
-        <div key={campo.key}>
-          <label htmlFor={campo.key} className={labelClass}>
-            {campo.label}
-            {!campo.opcional && <span className="text-red-600"> *</span>}
-          </label>
-          {renderCampo(campo)}
-          {campo.ayuda && <p className="mt-1 text-xs text-zinc-500">{campo.ayuda}</p>}
-        </div>
-      ))}
+      {contrato?.contrato.campos
+        .filter((campo) => campo.key !== "actions")
+        .map((campo) => (
+          <div key={campo.key}>
+            <label htmlFor={campo.key} className={labelClass}>
+              {campo.label}
+              {!campo.opcional && <span className="text-red-600"> *</span>}
+            </label>
+            {renderCampo(campo)}
+            {campo.ayuda && <p className="mt-1 text-xs text-zinc-500">{campo.ayuda}</p>}
+          </div>
+        ))}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
@@ -273,7 +349,10 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
             id="ctaLabel"
             name="ctaLabel"
             type="text"
-            defaultValue={ctaObj?.label ?? ""}
+            value={ctaObj?.label ?? ""}
+            onChange={(e) =>
+              onEdit("cta", { label: e.target.value, href: ctaObj?.href ?? "" })
+            }
             placeholder="Iniciar admisión"
             className={inputClass}
           />
@@ -288,7 +367,10 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
             id="ctaHref"
             name="ctaHref"
             type="text"
-            defaultValue={ctaObj?.href ?? ""}
+            value={ctaObj?.href ?? ""}
+            onChange={(e) =>
+              onEdit("cta", { label: ctaObj?.label ?? "", href: e.target.value })
+            }
             placeholder="/admisiones"
             className={inputClass}
           />
@@ -326,7 +408,11 @@ export function BannerForm({ initial }: { initial: BannerInitial }) {
         </div>
       </div>
 
-      <LivePreview plantillaId={plantillaId} datos={previewDatos} />
+      <BannerPreviewIframe
+        plantillaId={plantillaId}
+        datos={previewDatos}
+        previewToken={previewToken ?? null}
+      />
 
       <Status ok={state.ok} />
       {state.error ? <FormError message={state.error} /> : null}

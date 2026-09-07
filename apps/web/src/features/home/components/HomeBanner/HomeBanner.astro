@@ -3,6 +3,7 @@ import type { Banner } from "../../../../shared/db/schema";
 import BannerDuotono from "./templates/BannerDuotono.astro";
 import BannerGranulado from "./templates/BannerGranulado.astro";
 import BannerFoto from "./templates/BannerFoto.astro";
+import BannerCorteDiagonal from "./templates/BannerCorteDiagonal.astro";
 
 /**
  * Despachador de plantillas de banner. Recibe un `Banner` ya resuelto por el
@@ -25,6 +26,7 @@ const COMPONENTES = {
   duotono: BannerDuotono,
   granulado: BannerGranulado,
   foto: BannerFoto,
+  "corte-diagonal": BannerCorteDiagonal,
 } as const;
 
 const Plantilla =

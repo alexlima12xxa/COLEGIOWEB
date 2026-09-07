@@ -264,7 +264,7 @@ export const bannerAssetSchema = z.object({
 
 export const bannerSchema = z.object({
   id: z.uuid().optional(),
-  plantillaId: z.enum(["duotono", "granulado", "foto"]),
+  plantillaId: z.enum(["duotono", "granulado", "foto", "corte-diagonal"]),
   orden: z.number().int().default(0),
   activo: z.boolean().default(true),
   datos: z

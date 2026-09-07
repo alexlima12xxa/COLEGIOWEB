@@ -36,3 +36,19 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Frame de previsualización de banners (iframe → motor real de Astro) ──
+   El banner real es full-screen (90dvh). En el panel se muestra dentro de un
+   marco 16/9; el iframe interno escala el diseño original sin replicarlo. */
+
+.banner-preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-height: 480px;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border, #e4e4e7);
+  isolation: isolate;
+  background: #18181b;
+}

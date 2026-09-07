@@ -3,6 +3,7 @@ import { ModuleCard } from "@/app/admin/components/module-card";
 import { BannerForm } from "./banners-form";
 import { DeleteBannerButton } from "./delete-button";
 import { CATALOGO_BANNERS } from "@web-modelo/shared";
+import { signPreviewToken } from "@/lib/preview-token";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,10 @@ export default async function BannersPage() {
 
   const str = (v: unknown) => (typeof v === "string" ? v : "");
 
+  // Token firmado (TTL 5 min) para autorizar la carga de /preview-admin.
+  // Se emite una vez al renderizar la página, no por keystroke.
+  const previewToken = signPreviewToken();
+
   return (
     <div className="space-y-6">
       <div>
@@ -72,6 +77,7 @@ export default async function BannersPage() {
               activo: banner.activo,
               datos: banner.datos,
             }}
+            previewToken={previewToken}
           />
         </ModuleCard>
       ))}
@@ -84,6 +90,7 @@ export default async function BannersPage() {
             activo: true,
             datos: {},
           }}
+          previewToken={previewToken}
         />
       </ModuleCard>
     </div>

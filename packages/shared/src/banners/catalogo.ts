@@ -1,5 +1,5 @@
-import type { EditableSchema } from "./contratos";
-import { DUOTONO_PARES, GRANULADO_TONOS } from "./palettes";
+﻿import type { EditableSchema } from "./contratos";
+import { DIAGONAL_TONOS, DUOTONO_PARES, GRANULADO_TONOS } from "./palettes";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -19,7 +19,7 @@ export interface EntradaCatalogo {
   contrato: EditableSchema;
 }
 
-export const BANNERS_SLUGS = ["duotono", "granulado", "foto"] as const;
+export const BANNERS_SLUGS = ["duotono", "granulado", "foto", "corte-diagonal"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -30,15 +30,17 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       slug: "duotono",
       nombre: "Duotono",
       campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true },
-        { key: "title", label: "Título", tipo: "texto" },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true },
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
         {
           key: "tono",
           label: "Par de colores",
           tipo: "opciones",
+          default: DUOTONO_PARES[0].key,
           opciones: DUOTONO_PARES.map((p) => ({ label: p.label, value: p.key })),
         },
+        { key: "actions", label: "Botones", tipo: "booleano" },
       ],
     },
   },
@@ -49,15 +51,17 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       slug: "granulado",
       nombre: "Granulado",
       campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true },
-        { key: "title", label: "Título", tipo: "texto" },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true },
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
         {
           key: "tono",
           label: "Tono base",
           tipo: "opciones",
+          default: GRANULADO_TONOS[0].key,
           opciones: GRANULADO_TONOS.map((t) => ({ label: t.label, value: t.key })),
         },
+        { key: "actions", label: "Botones", tipo: "booleano" },
       ],
     },
   },
@@ -68,10 +72,33 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       slug: "foto",
       nombre: "Foto",
       campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true },
-        { key: "title", label: "Título", tipo: "texto" },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true },
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
         { key: "background", label: "Imagen de fondo", tipo: "imagen", ayuda: "Al menos 1920×1080." },
+        { key: "actions", label: "Botones", tipo: "booleano" },
+      ],
+    },
+  },
+  {
+    slug: "corte-diagonal",
+    nombre: "Corte diagonal con foto",
+    contrato: {
+      slug: "corte-diagonal",
+      nombre: "Corte diagonal",
+      campos: [
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
+        {
+          key: "tono",
+          label: "Color del panel",
+          tipo: "opciones",
+          default: DIAGONAL_TONOS[0].key,
+          opciones: DIAGONAL_TONOS.map((t) => ({ label: t.label, value: t.key })),
+        },
+        { key: "background", label: "Imagen de la derecha", tipo: "imagen", ayuda: "Al menos 1920×1080." },
+        { key: "actions", label: "Botones", tipo: "booleano" },
       ],
     },
   },

@@ -1,0 +1,100 @@
+---
+import HomeBanner from "../features/home/components/HomeBanner/HomeBanner.astro";
+import { bannerSchema, type Banner } from "../shared/db/schema";
+import { getDbContext } from "../shared/db/client";
+import { resolveAssetUrl } from "../shared/db/storage";
+import { verifyPreviewToken } from "../shared/lib/preview-token";
+
+/**
+ * Ruta híbrida SSR (prerender = false) usada como vista previa del editor de
+ * banners del panel admin. Carga el motor de diseño REAL de la web (el
+ * despachador HomeBanner + los .astro de plantilla + su CSS), evitando
+ * maquetas duplicadas en React/Tailwind.
+ *
+ * Fuentes de datos (por query param):
+ *  - `?datos=<uri-encoded JSON>` → fuente de verdad del BORRADOR en vivo que el
+ *    admin envía en cada tecla. Prioritaria.
+ *  - `?id=<uuid>` → fallback de conveniencia (modo edición inicial): carga el
+ *    banner persistido desde Supabase.
+ *
+ * Seguridad (guard "seguro por defecto"): requiere `?token=` firmado y vigente
+ * (HMAC con `PREVIEW_SIGNING_KEY`, TTL corto). Si falta o es inválido, devuelve
+ * 404 en runtime (no falla el build; invisible para bots/escáner).
+ */
+export const prerender = false;
+
+const token = Astro.url.searchParams.get("token");
+
+let banner: Banner | null = null;
+
+if (!verifyPreviewToken(token)) {
+  Astro.response.status = 404;
+} else {
+  const datosParam = Astro.url.searchParams.get("datos");
+  const idParam = Astro.url.searchParams.get("id");
+
+  if (datosParam) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(datosParam));
+      const result = bannerSchema.safeParse(parsed);
+      if (result.success) banner = result.data;
+    } catch {
+      banner = null;
+    }
+  } else if (idParam) {
+    const ctx = getDbContext();
+    if (ctx) {
+      try {
+        const { data } = await ctx.client
+          .from("banners")
+          .select("id, plantillaId:plantilla_id, orden, activo, datos")
+          .eq("id", idParam)
+          .maybeSingle();
+
+        if (data) {
+          const result = bannerSchema.safeParse(data);
+          if (result.success) {
+            const d = result.data.datos;
+            banner = {
+              ...result.data,
+              datos: {
+                ...d,
+                background: resolveAssetUrl(d.background) ?? d.background,
+                image: resolveAssetUrl(d.image) ?? d.image,
+              },
+            };
+          }
+        }
+      } catch {
+        banner = null;
+      }
+    }
+  }
+}
+---
+
+{
+  banner ? (
+    <HomeBanner banner={banner} />
+  ) : (
+    <p class="previewAdmin__empty">No hay un banner para previsualizar.</p>
+  )
+}
+
+<style is:global>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .previewAdmin__empty {
+    margin: 0;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    background: #18181b;
+    color: #fafafa;
+    font-family: system-ui, sans-serif;
+  }
+</style>
