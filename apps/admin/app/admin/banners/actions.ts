@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { triggerRebuild } from "@/lib/rebuild";
+import { BANNERS_SLUGS, catalogoPorSlug } from "@web-modelo/shared";
 
 export type BannersState = {
   ok?: boolean;
@@ -12,7 +13,7 @@ export type BannersState = {
   fieldErrors?: Record<string, string>;
 };
 
-const PLANTILLAS = ["duotono", "granulado", "foto", "corte-diagonal"] as const;
+const PLANTILLAS = BANNERS_SLUGS;
 
 // Los máximos de title/subtitle/kicker deben coincidir con `maxLength` del
 // contrato en packages/shared/src/banners/catalogo.ts (fuente de verdad del
@@ -121,6 +122,15 @@ export async function guardarBanner(
   if (eSubtitle) fieldErrors.subtitle = eSubtitle;
   const eKicker = clampLen(kicker, LIMITS.kicker);
   if (eKicker) fieldErrors.kicker = eKicker;
+
+  // Valida que `tono` (si viene) pertenezca a las opciones controladas de la
+  // paleta de la plantilla elegida. Evita persistir claves inválidas.
+  const campoTono = catalogoPorSlug(plantillaId)?.contrato.campos.find(
+    (c) => c.key === "tono" && c.tipo === "opciones",
+  );
+  if (campoTono?.opciones?.length && tono && !campoTono.opciones.some((o) => o.value === tono)) {
+    fieldErrors.tono = "Tono no válido para esta plantilla.";
+  }
   const eCtaLabel = clampLen(ctaLabel, LIMITS.ctaLabel);
   if (eCtaLabel) fieldErrors.ctaLabel = eCtaLabel;
   const eCtaHref = clampLen(ctaHref, LIMITS.ctaHref);
@@ -258,4 +268,54 @@ export async function eliminarBanner(formData: FormData) {
   await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/banners");
   redirect("/admin/banners");
+}
+
+export async function alternarBannerActivo(formData: FormData) {
+  const id = String(formData.get("id") ?? "").trim();
+  const activo = formData.get("activo") === "on";
+  if (!id) return;
+  const { supabase, tenantId } = await requireAdmin();
+  const { error } = await supabase.from("banners").update({ activo }).eq("id", id);
+  if (error) {
+    throw new Error(`No se pudo actualizar el banner: ${error.message}`);
+  }
+  await triggerRebuild(supabase, tenantId);
+  revalidatePath("/admin/banners");
+}
+
+export async function duplicarBanner(formData: FormData) {
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  const { supabase, tenantId } = await requireAdmin();
+
+  const { data: origen } = await supabase
+    .from("banners")
+    .select("id, plantilla_id, orden, activo, datos")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!origen) throw new Error("No se encontró el banner a duplicar.");
+
+  const datos: Record<string, unknown> = {
+    ...(origen.datos && typeof origen.datos === "object" && !Array.isArray(origen.datos)
+      ? origen.datos
+      : {}),
+  };
+  if (typeof datos.title === "string" && datos.title) {
+    datos.title = `${datos.title} (copia)`;
+  }
+
+  const { error } = await supabase.from("banners").insert({
+    tenant_id: tenantId,
+    plantilla_id: origen.plantilla_id,
+    orden: (origen.orden ?? 0) + 1,
+    activo: false,
+    datos,
+  });
+
+  if (error) {
+    throw new Error(`No se pudo duplicar el banner: ${error.message}`);
+  }
+  await triggerRebuild(supabase, tenantId);
+  revalidatePath("/admin/banners");
 }

@@ -1,5 +1,5 @@
 ﻿import type { EditableSchema } from "./contratos";
-import { DIAGONAL_TONOS, DUOTONO_PARES, GRANULADO_TONOS } from "./palettes";
+import { PRUEBA_TONOS } from "./palettes";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -7,11 +7,13 @@ import { DIAGONAL_TONOS, DUOTONO_PARES, GRANULADO_TONOS } from "./palettes";
 // Cada entrada describe:
 //  - slug:  clave en `banners.plantilla_id` (BD) y en el mapa de componentes.
 //  - nombre: etiqueta visible en el panel.
-//  - contratos: campos editables por el director (opciones controladas).
+//  - contrato: campos editables por el director (opciones controladas).
 //
-// Agregar un banner nuevo (importado de Figma) = añadir una entrada aquí y
-// crear su componente .astro en apps/web + registrarlo en HomeBanner.astro.
-// NO requiere cambios en Supabase (el contenido vive en `datos jsonb`).
+// Agregar un banner nuevo = añadir una entrada aquí, crear su componente
+// .astro en apps/web/.../templates/ y su CSS en packages/shared/src/banners/css/
+// con nombre `<slug>.css` (se importa con la ruta real, sin alias en package.json).
+// Hay que registrarlo en el mapa `COMPONENTES` de HomeBanner.astro. NO requiere
+// cambios en Supabase (el contenido vive en `datos jsonb`).
 
 export interface EntradaCatalogo {
   slug: BannerSlug;
@@ -19,85 +21,27 @@ export interface EntradaCatalogo {
   contrato: EditableSchema;
 }
 
-export const BANNERS_SLUGS = ["duotono", "granulado", "foto", "corte-diagonal"] as const;
+export const BANNERS_SLUGS = ["prueba"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
   {
-    slug: "duotono",
-    nombre: "Duotono (gradiente de 2 colores)",
+    slug: "prueba",
+    nombre: "Plantilla de prueba",
     contrato: {
-      slug: "duotono",
-      nombre: "Duotono",
+      slug: "prueba",
+      nombre: "Prueba",
       campos: [
         { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
         { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
         { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
         {
           key: "tono",
-          label: "Par de colores",
+          label: "Tono de colores",
           tipo: "opciones",
-          default: DUOTONO_PARES[0].key,
-          opciones: DUOTONO_PARES.map((p) => ({ label: p.label, value: p.key })),
+          default: PRUEBA_TONOS[0].key,
+          opciones: PRUEBA_TONOS.map((t) => ({ label: t.label, value: t.key })),
         },
-        { key: "actions", label: "Botones", tipo: "booleano" },
-      ],
-    },
-  },
-  {
-    slug: "granulado",
-    nombre: "Fondo sólido granuloso",
-    contrato: {
-      slug: "granulado",
-      nombre: "Granulado",
-      campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
-        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
-        {
-          key: "tono",
-          label: "Tono base",
-          tipo: "opciones",
-          default: GRANULADO_TONOS[0].key,
-          opciones: GRANULADO_TONOS.map((t) => ({ label: t.label, value: t.key })),
-        },
-        { key: "actions", label: "Botones", tipo: "booleano" },
-      ],
-    },
-  },
-  {
-    slug: "foto",
-    nombre: "Foto de fondo",
-    contrato: {
-      slug: "foto",
-      nombre: "Foto",
-      campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
-        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
-        { key: "background", label: "Imagen de fondo", tipo: "imagen", ayuda: "Al menos 1920×1080." },
-        { key: "actions", label: "Botones", tipo: "booleano" },
-      ],
-    },
-  },
-  {
-    slug: "corte-diagonal",
-    nombre: "Corte diagonal con foto",
-    contrato: {
-      slug: "corte-diagonal",
-      nombre: "Corte diagonal",
-      campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
-        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
-        {
-          key: "tono",
-          label: "Color del panel",
-          tipo: "opciones",
-          default: DIAGONAL_TONOS[0].key,
-          opciones: DIAGONAL_TONOS.map((t) => ({ label: t.label, value: t.key })),
-        },
-        { key: "background", label: "Imagen de la derecha", tipo: "imagen", ayuda: "Al menos 1920×1080." },
         { key: "actions", label: "Botones", tipo: "booleano" },
       ],
     },

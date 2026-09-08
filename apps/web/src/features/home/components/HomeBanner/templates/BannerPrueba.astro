@@ -1,0 +1,40 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import BannerActions from "../BannerActions.astro";
+import { tonoPruebaPorKey } from "@web-modelo/shared";
+import "@web-modelo/shared/banners/css/base.css";
+import "@web-modelo/shared/banners/css/prueba.css";
+
+/**
+ * Plantilla "prueba": fondo con gradiente diagonal de dos colores + franja de
+ * acento inferior, texto y CTA encima. El director elige el tono entre opciones
+ * controladas (clave `tono` → paleta en packages/shared).
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const tono = tonoPruebaPorKey(String(datos.tono ?? ""));
+---
+
+<article class="banner banner--prueba">
+  <div
+    class="banner__pruebaBg"
+    style={{
+      "--prueba-1": tono.color1,
+      "--prueba-2": tono.color2,
+    }}
+  >
+  </div>
+  <div class="banner__pruebaAcento" style={{ "--prueba-acento": tono.acento }}>
+  </div>
+
+  <div class="banner__content banner__content--prueba">
+    {datos.kicker && <span class="banner__kicker">{datos.kicker}</span>}
+    <h1 class="banner__title">{datos.title}</h1>
+    {datos.subtitle && <p class="banner__subtitle">{datos.subtitle}</p>}
+    <BannerActions cta={datos.cta} actions={datos.actions} />
+  </div>
+</article>

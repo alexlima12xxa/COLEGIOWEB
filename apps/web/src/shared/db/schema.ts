@@ -1,4 +1,5 @@
 import { z } from "astro/zod";
+import { BANNERS_SLUGS } from "@web-modelo/shared";
 
 /**
  * Contrato de datos compartido (GATE 4).
@@ -264,7 +265,7 @@ export const bannerAssetSchema = z.object({
 
 export const bannerSchema = z.object({
   id: z.uuid().optional(),
-  plantillaId: z.enum(["duotono", "granulado", "foto", "corte-diagonal"]),
+  plantillaId: z.enum(BANNERS_SLUGS),
   orden: z.number().int().default(0),
   activo: z.boolean().default(true),
   datos: z

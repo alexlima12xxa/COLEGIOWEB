@@ -1,7 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { ModuleCard } from "@/app/admin/components/module-card";
-import { BannerForm } from "./banners-form";
-import { DeleteBannerButton } from "./delete-button";
+import { BannersGrid, type BannerCardData } from "./banners-grid";
 import { CATALOGO_BANNERS } from "@web-modelo/shared";
 import { signPreviewToken } from "@/lib/preview-token";
 
@@ -11,14 +9,6 @@ const PLANTILLA_LABEL: Record<string, string> = Object.fromEntries(
   CATALOGO_BANNERS.map((c) => [c.slug, c.nombre]),
 );
 
-interface BannerRow {
-  id: string;
-  plantilla_id: string;
-  orden: number;
-  activo: boolean;
-  datos: Record<string, unknown>;
-}
-
 export default async function BannersPage() {
   const { supabase } = await requireAdmin();
 
@@ -27,21 +17,24 @@ export default async function BannersPage() {
     .select("id, plantilla_id, orden, activo, datos")
     .order("orden", { ascending: true });
 
-  const banners: BannerRow[] = (data ?? []).map((b) => ({
-    id: b.id,
-    plantilla_id: b.plantilla_id,
-    orden: b.orden ?? 0,
-    activo: b.activo ?? true,
-    datos:
+  const banners: BannerCardData[] = (data ?? []).map((b) => {
+    const datos =
       b.datos && typeof b.datos === "object" && !Array.isArray(b.datos)
         ? (b.datos as Record<string, unknown>)
-        : {},
-  }));
+        : {};
+    return {
+      id: b.id,
+      plantilla_id: b.plantilla_id,
+      plantillaLabel: PLANTILLA_LABEL[b.plantilla_id] ?? b.plantilla_id,
+      orden: b.orden ?? 0,
+      activo: b.activo ?? true,
+      title: typeof datos.title === "string" ? datos.title : "",
+      datos,
+    };
+  });
 
-  const str = (v: unknown) => (typeof v === "string" ? v : "");
-
-  // Token firmado (TTL 5 min) para autorizar la carga de /preview-admin.
-  // Se emite una vez al renderizar la página, no por keystroke.
+  // Token firmado (TTL 5 min) para autorizar la carga de /preview-admin. Se
+  // emite una vez al renderizar la página, no por keystroke.
   const previewToken = signPreviewToken();
 
   return (
@@ -57,42 +50,7 @@ export default async function BannersPage() {
         </p>
       </div>
 
-      {banners.map((banner) => (
-        <ModuleCard
-          key={banner.id}
-          id={`banner-${banner.id}`}
-          title={`${PLANTILLA_LABEL[banner.plantilla_id] ?? banner.plantilla_id} · orden ${banner.orden}${banner.activo ? "" : " (inactivo)"}`}
-        >
-          <div className="mb-4 flex justify-end">
-            <DeleteBannerButton
-              id={banner.id}
-              titulo={str(banner.datos.title) || banner.plantilla_id}
-            />
-          </div>
-          <BannerForm
-            initial={{
-              id: banner.id,
-              plantilla_id: banner.plantilla_id,
-              orden: banner.orden,
-              activo: banner.activo,
-              datos: banner.datos,
-            }}
-            previewToken={previewToken}
-          />
-        </ModuleCard>
-      ))}
-
-      <ModuleCard id="banner-nuevo" title="Nuevo banner">
-        <BannerForm
-          initial={{
-            plantilla_id: "duotono",
-            orden: banners.length,
-            activo: true,
-            datos: {},
-          }}
-          previewToken={previewToken}
-        />
-      </ModuleCard>
+      <BannersGrid banners={banners} token={previewToken} />
     </div>
   );
 }

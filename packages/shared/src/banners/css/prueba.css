@@ -1,5 +1,5 @@
 @layer components {
-  .banner--duotono {
+  .banner--prueba {
     align-items: center;
     justify-items: center;
     min-height: 90dvh;
@@ -8,30 +8,40 @@
   }
 
   @media (max-width: 48rem) {
-    .banner--duotono {
+    .banner--prueba {
       padding-block: var(--space-xl, 2rem);
     }
   }
 
   @media (min-width: 64rem) {
-    .banner--duotono {
+    .banner--prueba {
       height: 90vh;
       min-height: 90vh;
     }
   }
 
-  .banner__duotonoBg {
+  .banner__pruebaBg {
     position: absolute;
     inset: 0;
     z-index: -1;
     background: linear-gradient(
       135deg,
-      var(--duotono-1, #1e2a44) 0%,
-      var(--duotono-2, #0f5c5c) 100%
+      var(--prueba-1, #0b1f3a) 0%,
+      var(--prueba-2, #1e3a8a) 100%
     );
   }
 
-  .banner__content--duotono {
+  .banner__pruebaAcento {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--prueba-acento, #38bdf8);
+    z-index: 0;
+  }
+
+  .banner__content--prueba {
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -40,16 +50,16 @@
     margin-inline: auto;
   }
 
-  .banner__content--duotono .banner__title,
-  .banner__content--duotono .banner__subtitle {
+  .banner__content--prueba .banner__title,
+  .banner__content--prueba .banner__subtitle {
     margin-inline: auto;
   }
 
-  .banner__content--duotono .banner__kicker {
+  .banner__content--prueba .banner__kicker {
     align-self: center;
   }
 
-  .banner__content--duotono .bannerActions {
+  .banner__content--prueba .bannerActions {
     justify-content: center;
   }
 }

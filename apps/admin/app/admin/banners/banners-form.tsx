@@ -14,11 +14,11 @@ import {
   type OpcionCampo,
 } from "@web-modelo/shared";
 
-type OnEdit = (key: string, value: unknown) => void;
-
 const inputClass =
   "mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20";
 const labelClass = "block text-sm font-medium text-zinc-700";
+
+const str = (v: unknown): string => (typeof v === "string" ? v : "");
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -63,6 +63,15 @@ export interface BannerInitial {
   datos: Record<string, unknown>;
 }
 
+export function buildPreviewUrlById(
+  id: string,
+  previewToken: string | null,
+): string | null {
+  const base = process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
+  if (!base || !previewToken) return null;
+  return `${base}/preview-admin?token=${encodeURIComponent(previewToken)}&id=${encodeURIComponent(id)}`;
+}
+
 function buildPreviewUrl(
   plantillaId: string,
   datos: Record<string, unknown>,
@@ -73,7 +82,10 @@ function buildPreviewUrl(
 
   const payload: Record<string, unknown> = {
     plantillaId,
-    datos,
+    // Garantiza un `title` no vacío para que `bannerSchema.safeParse` no falle
+    // en el preview (schema exige `datos.title` con min 1). Si aún no hay
+    // título, no se llega a pedir el iframe (ver BannerPreviewIframe).
+    datos: { ...datos, title: str(datos.title) || " " },
   };
   const encoded = encodeURIComponent(JSON.stringify(payload));
   return `${base}/preview-admin?token=${encodeURIComponent(previewToken)}&datos=${encoded}`;
@@ -88,6 +100,29 @@ function BannerPreviewIframe({
   datos: Record<string, unknown>;
   previewToken: string | null;
 }) {
+  const [abierto, setAbierto] = useState(false);
+
+  // Cierre del modal con la tecla Escape.
+  useEffect(() => {
+    if (!abierto) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAbierto(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [abierto]);
+
+  // Estado vacío: sin título todavía no hay nada válido que previsualizar.
+  // Mostramos un placeholder local (claro) en vez del "No hay un banner para
+  // previsualizar" oscuro del remote fallback.
+  if (!str(datos.title).trim()) {
+    return (
+      <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-8 text-center text-sm text-zinc-500">
+        Escribe un título para ver la vista previa del banner.
+      </div>
+    );
+  }
+
   const url = buildPreviewUrl(plantillaId, datos, previewToken);
 
   if (!url) {
@@ -102,14 +137,61 @@ function BannerPreviewIframe({
   }
 
   return (
-    <div className="banner-preview">
-      <iframe
-        key={url}
-        src={url}
-        title="Vista previa del banner"
-        className="h-full w-full border-0"
-        loading="lazy"
-      />
+    <div className="space-y-2">
+      <div className="banner-preview group">
+        <iframe
+          key={url}
+          src={url}
+          title="Vista previa del banner"
+          className="h-full w-full border-0"
+          loading="eager"
+        />
+        <button
+          type="button"
+          onClick={() => setAbierto(true)}
+          aria-label="Ver vista previa en grande"
+          className="absolute right-2 top-2 rounded-lg bg-black/60 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-sm transition group-hover:opacity-100 focus:opacity-100 hover:bg-black/80"
+        >
+          Ver en grande
+        </button>
+      </div>
+
+      {abierto ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Vista previa ampliada del banner"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          onClick={() => setAbierto(false)}
+        >
+          <div
+            className="flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-zinc-900 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+              <h3 className="text-sm font-semibold text-white">
+                Vista previa del banner
+              </h3>
+              <button
+                type="button"
+                onClick={() => setAbierto(false)}
+                aria-label="Cerrar vista previa"
+                className="rounded-lg px-2.5 py-1 text-sm text-zinc-300 transition hover:bg-white/10 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="aspect-[1280/648] w-full overflow-hidden">
+              <iframe
+                src={url}
+                title="Vista previa ampliada del banner"
+                className="h-full w-full border-0"
+                loading="eager"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -127,7 +209,6 @@ export function BannerForm({
   );
 
   const datos = initial.datos ?? {};
-  const str = (v: unknown): string => (typeof v === "string" ? v : "");
 
   const [plantillaId, setPlantillaId] = useState(initial.plantilla_id);
 
@@ -152,7 +233,12 @@ export function BannerForm({
     return inicial;
   });
 
-  const ctaObj = previewDatos.cta as { label?: string; href?: string } | undefined;
+  const ctaInicial = datos.cta as { label?: string; href?: string } | undefined;
+  // `label`/`href` viven en estado propio para que escribir en un campo no se
+  // borre por culpa del otro (antes `onEdit` descartaba el CTA hasta tener los
+  // dos, y el input volvía a quedar vacío al teclear).
+  const [ctaLabel, setCtaLabel] = useState<string>(ctaInicial?.label ?? "");
+  const [ctaHref, setCtaHref] = useState<string>(ctaInicial?.href ?? "");
   const [imageErrors, setImageErrors] = useState<Record<string, string>>({});
   const setImageError = (key: string, error?: string) =>
     setImageErrors((prev) => {
@@ -162,34 +248,50 @@ export function BannerForm({
       return next;
     });
 
-  // Callback del CTA: escribe el objeto cta en previewDatos (fuente de verdad
-  // del borrador que alimenta el iframe y el `datos_json` al guardar).
-  const onEdit: OnEdit = (key, value) => {
-    if (key === "cta") {
-      const { label, href } = value as { label?: string; href?: string };
-      setPreviewDatos((prev) => ({
-        ...prev,
-        cta: label && href ? { label, href, variant: "primary" } : undefined,
-      }));
-    }
-  };
+  // CTA: mantiene `previewDatos.cta` sincronizado con el borrador. Solo se
+  // refleja un botón visible cuando hay texto Y enlace; si falta uno, se quita
+  // el botón del preview (pero los inputs conservan lo tecleado).
+  function actualizarCta(nextLabel: string, nextHref: string) {
+    setCtaLabel(nextLabel);
+    setCtaHref(nextHref);
+    setPreviewDatos((prev) => ({
+      ...prev,
+      cta:
+        nextLabel && nextHref
+          ? { label: nextLabel, href: nextHref, variant: "primary" }
+          : undefined,
+    }));
+  }
 
-  // Al cambiar de plantilla, re-inicializa campos y preview con el contrato
-  // nuevo (nombres/valores de campos distintos) y repone los defaults.
-  useEffect(() => {
+  // Re-inicializa campos y preview al elegir otra plantilla. Conserva el
+  // borrador en vivo de los campos compartidos (title/kicker/subtitle/cta/…)
+  // y reinicia los campos de opciones (tono) específicos de la plantilla a su
+  // default válido si el valor actual no pertenece a la nueva plantilla.
+  function cambiarPlantilla(nueva: string) {
+    const nuevoContrato = catalogoPorSlug(nueva)?.contrato.campos ?? [];
     const inicialCampos: Record<string, string> = {};
-    const inicialDatos: Record<string, unknown> = { ...datos };
-    for (const c of camposContrato) {
-      const actual = str(datos[c.key]);
-      inicialCampos[c.key] = actual || c.default || "";
+    const inicialDatos: Record<string, unknown> = { ...previewDatos };
+
+    for (const c of nuevoContrato) {
+      const actual = str(inicialDatos[c.key]);
+      let valor = actual || c.default || "";
+      if (c.tipo === "opciones" && c.default && c.opciones?.length) {
+        const esValida = c.opciones.some((o) => o.value === actual);
+        if (!esValida) {
+          valor = c.default;
+          inicialDatos[c.key] = c.default;
+        }
+      }
       if (inicialDatos[c.key] === undefined && c.default) {
         inicialDatos[c.key] = c.default;
       }
+      inicialCampos[c.key] = valor;
     }
+
+    setPlantillaId(nueva);
     setCampos(inicialCampos);
     setPreviewDatos(inicialDatos);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plantillaId]);
+  }
 
   function renderCampo(campo: EditableCampo) {
     const value = campos[campo.key] ?? "";
@@ -314,7 +416,7 @@ export function BannerForm({
             id="plantilla_id"
             name="plantilla_id"
             value={plantillaId}
-            onChange={(e) => setPlantillaId(e.target.value)}
+            onChange={(e) => cambiarPlantilla(e.target.value)}
             className={inputClass}
           >
             {CATALOGO_BANNERS.map((c) => (
@@ -349,10 +451,8 @@ export function BannerForm({
             id="ctaLabel"
             name="ctaLabel"
             type="text"
-            value={ctaObj?.label ?? ""}
-            onChange={(e) =>
-              onEdit("cta", { label: e.target.value, href: ctaObj?.href ?? "" })
-            }
+            value={ctaLabel}
+            onChange={(e) => actualizarCta(e.target.value, ctaHref)}
             placeholder="Iniciar admisión"
             className={inputClass}
           />
@@ -367,10 +467,8 @@ export function BannerForm({
             id="ctaHref"
             name="ctaHref"
             type="text"
-            value={ctaObj?.href ?? ""}
-            onChange={(e) =>
-              onEdit("cta", { label: ctaObj?.label ?? "", href: e.target.value })
-            }
+            value={ctaHref}
+            onChange={(e) => actualizarCta(ctaLabel, e.target.value)}
             placeholder="/admisiones"
             className={inputClass}
           />
