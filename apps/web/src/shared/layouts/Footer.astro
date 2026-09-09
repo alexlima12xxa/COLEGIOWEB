@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from "../../site.config";
+import { getFooter } from "../db/contenido";
 import { Phone, Mail, MapPin, Clock } from "@lucide/astro";
 import Logo from "../ui/Logo/Logo.astro";
 import "./Footer.css";
@@ -9,6 +10,22 @@ export interface Props {
 }
 
 const { class: className } = Astro.props;
+
+// Pie de página desde Supabase (clave `footer`), con fallback al config del
+// colegio. Un cambio del panel aparece tras el rebuild.
+const footer = await getFooter();
+
+const contact = {
+  address: footer.contact?.address || siteConfig.contact.address,
+  city: footer.contact?.city || siteConfig.contact.city,
+  phone: footer.contact?.phone || siteConfig.contact.phone,
+  email: footer.contact?.email || siteConfig.contact.email,
+  officeHours: footer.contact?.officeHours || siteConfig.contact.officeHours,
+};
+const social = footer.social ?? {};
+const contactTitle = footer.contactTitle || "Contacto";
+const levelsTitle = footer.levelsTitle || "Niveles educativos";
+const socialTitle = footer.socialTitle || "Síguenos";
 
 const socialIcons: Record<string, string[]> = {
   facebook: [
@@ -41,7 +58,6 @@ const socialLabels: Record<string, string> = {
   tiktok: "TikTok",
 };
 
-const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
 const currentYear = new Date().getFullYear();
 ---
 
@@ -60,44 +76,44 @@ const currentYear = new Date().getFullYear();
       </div>
 
       <div class="footer__contact">
-        <h2 class="footer__title">Contacto</h2>
+        <h2 class="footer__title">{contactTitle}</h2>
         <address class="footer__address">
           <p class="footer__contactItem">
             <MapPin aria-hidden="true" size={18} />
             <span>
-              {siteConfig.contact.address}, {siteConfig.contact.city}
+              {contact.address}, {contact.city}
             </span>
           </p>
           <p class="footer__contactItem">
             <Phone aria-hidden="true" size={18} />
             <a
-              href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+              href={`tel:${contact.phone.replace(/\s/g, "")}`}
               class="footer__link"
             >
-              {siteConfig.contact.phone}
+              {contact.phone}
             </a>
           </p>
           <p class="footer__contactItem">
             <Mail aria-hidden="true" size={18} />
-            <a href={`mailto:${siteConfig.contact.email}`} class="footer__link">
-              {siteConfig.contact.email}
+            <a href={`mailto:${contact.email}`} class="footer__link">
+              {contact.email}
             </a>
           </p>
           <p class="footer__contactItem">
             <Clock aria-hidden="true" size={18} />
-            <span>{siteConfig.contact.officeHours}</span>
+            <span>{contact.officeHours}</span>
           </p>
         </address>
       </div>
 
       <div class="footer__levels">
-        <h2 class="footer__title">Niveles educativos</h2>
+        <h2 class="footer__title">{levelsTitle}</h2>
         <ul class="footer__list">
           {
-            enabledLevels.map((level) => (
+            (footer.levels ?? []).map((nivel) => (
               <li class="footer__item">
-                <a href={`/niveles/${level.slug}`} class="footer__link">
-                  {level.name}
+                <a href={nivel.href} class="footer__link">
+                  {nivel.name}
                 </a>
               </li>
             ))
@@ -106,10 +122,10 @@ const currentYear = new Date().getFullYear();
       </div>
 
       <div class="footer__social">
-        <h2 class="footer__title">Síguenos</h2>
+        <h2 class="footer__title">{socialTitle}</h2>
         <ul class="footer__socialList">
           {
-            Object.entries(siteConfig.social).map(([key, url]) => {
+            Object.entries(social).map(([key, url]) => {
               if (!url) return null;
               const paths = socialIcons[key];
               if (!paths) return null;

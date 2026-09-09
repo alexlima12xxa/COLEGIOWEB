@@ -8,9 +8,13 @@ import AdmissionsRequirements from "../features/admissions/components/Admissions
 import AdmissionsFaq from "../features/admissions/components/AdmissionsFaq/AdmissionsFaq.astro";
 import AdmissionForm from "../features/admissions/components/AdmissionForm/AdmissionForm.astro";
 import { siteConfig } from "../site.config";
-import { getAdmisiones } from "../shared/db/contenido";
+import {
+  getAdmisiones,
+  getWhatsapp,
+  getNivelesResumen,
+} from "../shared/db/contenido";
 
-const activeLevels = siteConfig.levels.filter((level) => level.enabled);
+const activeLevels = (await getNivelesResumen()).filter((l) => l.enabled);
 const supabaseUrl =
   import.meta.env.PUBLIC_SUPABASE_URL || siteConfig.supabase.url;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
@@ -24,7 +28,13 @@ const description =
 // Se resuelve en build-time: un cambio del panel aparece tras el rebuild.
 const admissions = await getAdmisiones();
 
-const whatsappNumber = siteConfig.contact.whatsapp.replace(/\D/g, "");
+// Número de WhatsApp: editable desde el panel (clave `whatsapp`), con fallback
+// a siteConfig.contact.whatsapp. Se limpia antes de construir la URL wa.me.
+const whatsapp = await getWhatsapp();
+const whatsappNumber = (whatsapp.numero || siteConfig.contact.whatsapp).replace(
+  /\D/g,
+  "",
+);
 
 // El año del proceso se deriva del deadline/periodLabel de la config, no
 // de la fecha de build: un build en diciembre no puede anunciar "Admisiones
@@ -45,7 +55,15 @@ const nivelRequisitos = activeLevels.map((level) => ({
   requisitos: admissions.requisitosPorNivel[level.id] ?? [],
 }));
 
-const fechaBadge = `Convocatoria ${admissionsYear} Abierta`;
+const fechaBadge =
+  admissions.heroBadge ?? `Convocatoria ${admissionsYear} Abierta`;
+const heroTitlePre =
+  admissions.heroTitlePre ?? "El futuro de tus hijos comienza aquí: ";
+const heroTitleHighlight =
+  admissions.heroTitleHighlight ?? `Admisiones ${admissionsYear}`;
+const heroDescription =
+  admissions.heroDescription ??
+  "Inicia el proceso de admisión para que tu hijo o hija haga parte de nuestra comunidad educativa. Te acompañamos en cada etapa, con un proceso claro, cercano y completamente en línea.";
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -70,9 +88,9 @@ const faqJsonLd = {
 
   <AdmissionsHero
     badge={fechaBadge}
-    titlePre="El futuro de tus hijos comienza aquí: "
-    titleHighlight={`Admisiones ${admissionsYear}`}
-    description="Inicia el proceso de admisión para que tu hijo o hija haga parte de nuestra comunidad educativa. Te acompañamos en cada etapa, con un proceso claro, cercano y completamente en línea."
+    titlePre={heroTitlePre}
+    titleHighlight={heroTitleHighlight}
+    description={heroDescription}
     ctaPrimary={{
       label: "Iniciar Postulación",
       href: siteConfig.admissions.ctaUrl,
@@ -96,7 +114,7 @@ const faqJsonLd = {
 
   <Section padding="xl" bg="muted" id="formulario">
     <AdmissionForm
-      whatsapp={siteConfig.contact.whatsapp}
+      whatsapp={whatsapp.numero || siteConfig.contact.whatsapp}
       schoolName={siteConfig.identity.name}
       levels={activeLevels}
       supabaseUrl={supabaseUrl}

@@ -14,12 +14,26 @@ const levelConfig = siteConfig.levels.find((l) => l.slug === slug);
 const niveles = await getNiveles();
 const levelContent = slug ? niveles[slug] : undefined;
 
-if (!levelConfig || !levelContent) {
+if (!levelContent) {
   throw new Error(`Nivel no encontrado: ${slug}`);
 }
 
+// El nombre y la edad pueden venir de la DB (contenido["niveles"]), con
+// fallback a la config estática del colegio (colegio-piloto.ts).
+const levelName = levelContent.name?.trim()
+  ? levelContent.name
+  : (levelConfig?.name ?? "");
+const levelAgeRange = levelContent.ageRange ?? levelConfig?.ageRange;
+
+// Meta description: se deriva de la descripción larga de la página de
+// detalle, truncada a ~160 caracteres (límite recomendado de SEO).
+const metaDescription =
+  levelContent.description.length > 160
+    ? `${levelContent.description.slice(0, 157).trimEnd()}…`
+    : levelContent.description;
+
 const levelUrl = new URL(
-  `/niveles/${levelConfig.slug}/`,
+  `/niveles/${slug}/`,
   siteConfig.seo.siteUrl,
 ).toString();
 
@@ -42,14 +56,14 @@ const breadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 3,
-      name: levelConfig.name,
+      name: levelName,
       item: levelUrl,
     },
   ],
 };
 ---
 
-<BaseLayout title={levelConfig.name} description={levelConfig.description}>
+<BaseLayout title={levelName} description={metaDescription}>
   <script
     slot="head"
     type="application/ld+json"
@@ -57,8 +71,8 @@ const breadcrumbJsonLd = {
     is:inline
   />
   <NivelLayout
-    name={levelConfig.name}
-    ageRange={levelConfig.ageRange}
+    name={levelName}
+    ageRange={levelAgeRange}
     headline={levelContent.headline}
     description={levelContent.description}
     image={levelContent.image}
@@ -66,5 +80,6 @@ const breadcrumbJsonLd = {
     methodology={levelContent.methodology}
     schedule={levelContent.schedule}
     cta={levelContent.cta}
+    ctaHref={levelContent.ctaHref}
   />
 </BaseLayout>

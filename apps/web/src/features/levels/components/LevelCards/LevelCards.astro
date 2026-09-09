@@ -1,13 +1,13 @@
 ---
 import { ArrowRight } from "@lucide/astro";
-import type { SiteConfig } from "../../../../site.config";
+import type { NivelResumen } from "../../../../shared/db/contenido";
 import { siteConfig } from "../../../../site.config";
 import ContentImage from "../../../../shared/ui/ContentImage/ContentImage.astro";
 import "./LevelCards.css";
 
 export interface Props {
-  /** Niveles habilitados del colegio (siteConfig.levels ya filtrados). */
-  levels: SiteConfig["levels"];
+  /** Niveles habilitados del colegio (resumen desde la DB, ya filtrados). */
+  levels: NivelResumen[];
   /** Nivel de headings de las tarjetas según el contexto de página. */
   headingLevel?: "h2" | "h3";
   /** Texto del enlace de cada tarjeta. */
@@ -55,7 +55,8 @@ const levelsData = levels.map((level, index) => {
   return {
     title: level.name,
     ageRange: formatAgeRange(level.ageRange),
-    description: level.description,
+    subtitle:
+      level.subtitleVisible && level.subtitle ? level.subtitle : undefined,
     image: level.image,
     imageAlt: `Estudiantes de ${level.name} en ${siteConfig.identity.name}`,
     href: `/niveles/${level.slug}`,
@@ -95,6 +96,9 @@ const Heading = headingLevel;
 
           <div class="levelCard__body">
             <Heading class="levelCard__title">{card.title}</Heading>
+            {card.subtitle && (
+              <p class="levelCard__subtitle">{card.subtitle}</p>
+            )}
           </div>
 
           <footer class="levelCard__footer">

@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { siteConfig } from "../site.config";
 import { getAllNoticias, NEWS_PER_PAGE } from "../shared/db/content";
+import { getNivelesResumen } from "../shared/db/contenido";
 
 /**
  * Sitemap dinámico (GATE 7).
@@ -51,7 +52,7 @@ function renderEntry(entry: SitemapEntry): string {
 
 export const GET: APIRoute = async () => {
   const noticias = await getAllNoticias();
-  const levels = siteConfig.levels.filter((level) => level.enabled);
+  const levels = (await getNivelesResumen()).filter((level) => level.enabled);
   const totalPages = Math.max(1, Math.ceil(noticias.length / NEWS_PER_PAGE));
 
   const entries: SitemapEntry[] = [

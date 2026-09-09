@@ -1,6 +1,6 @@
 -- GATE A1: seed de contenido para el colegio piloto.
 -- ---------------------------------------------------------------------------
--- Inserta las 11 claves de contenido (GATE A1) para el tenant piloto
+-- Inserta las 12 claves de contenido (GATE A1) para el tenant piloto
 -- (slug 'colegio-piloto'), tomando como base los valores actuales de
 -- src/data/fallback/*.json y src/site.config.ts de apps/web.
 --
@@ -26,7 +26,7 @@ values (
 )
 on conflict (slug) do nothing;
 
--- ── 1. Upsert de las 11 claves ──────────────────────────────────────────────
+-- ── 1. Upsert de las 12 claves ──────────────────────────────────────────────
 
 insert into public.contenido (tenant_id, clave, valor)
 values
@@ -80,6 +80,14 @@ values
        "description": "Integramos plataformas digitales, aula virtual y metodologías activas para preparar a los estudiantes ante los retos del futuro."
      }
    ]$json$::jsonb),
+
+  ((select id from public.colegios where slug = 'colegio-piloto'), 'nosotros_hero',
+   $json${
+     "title": "Nuestra historia",
+     "lead": "Desde 1985 construimos una comunidad de aprendizaje centrada en las personas.",
+     "description": "Somos una institución educativa con décadas de trayectoria formando estudiantes íntegros, críticos y preparados para los desafíos del mundo actual.",
+     "image": "/branding/placeholders/about-campus.jpg"
+   }$json$::jsonb),
 
   ((select id from public.colegios where slug = 'colegio-piloto'), 'hero',
    $json${

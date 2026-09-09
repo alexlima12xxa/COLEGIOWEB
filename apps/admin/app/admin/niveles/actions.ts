@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { slugify } from "@/lib/slugify";
 import { triggerRebuild } from "@/lib/rebuild";
-import { NIVELES } from "./niveles-constants";
+import { NIVELES, PAGINAS_CTA } from "./niveles-constants";
 
 export type NivelesState = {
   ok?: boolean;
@@ -12,9 +13,15 @@ export type NivelesState = {
 };
 
 const LIMITS = {
-  descripcion: { min: 10, max: 500 },
+  name: { min: 2, max: 40 },
   edad: { min: 0, max: 40 },
-  cta: { min: 0, max: 200 },
+  subtitle: { min: 0, max: 120 },
+  headline: { min: 3, max: 200 },
+  descripcion: { min: 10, max: 1000 },
+  methodology: { min: 10, max: 2000 },
+  schedule: { min: 1, max: 100 },
+  cta: { min: 3, max: 160 },
+  programItem: { min: 1, max: 300 },
 } as const;
 
 function clamp(value: string, limits: { min: number; max: number }): string | null {
@@ -24,7 +31,35 @@ function clamp(value: string, limits: { min: number; max: number }): string | nu
   return null;
 }
 
-interface NivelShape {
+// Si no hay archivo, conserva la ruta previa.
+async function uploadOrKeep(
+  file: File | null,
+  current: string,
+): Promise<{ path?: string; error?: string }> {
+  if (!file || file.size === 0) return { path: current || undefined };
+
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  const base =
+    slugify(current.split("/").pop()?.split(".")[0] ?? "nivel") || "nivel";
+  const uploadPath = `niveles/${base}-${Date.now()}.${ext}`;
+
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase.storage
+    .from("media")
+    .upload(uploadPath, file, { upsert: true, contentType: file.type });
+
+  if (error) {
+    return { error: `No se pudo subir la imagen: ${error.message}` };
+  }
+  return { path: uploadPath };
+}
+
+export interface NivelShape {
+  name?: string;
+  ageRange?: string;
+  subtitle?: string;
+  subtitleVisible?: boolean;
+  enabled?: boolean;
   headline?: string;
   description?: string;
   image?: string;
@@ -32,7 +67,7 @@ interface NivelShape {
   methodology?: string;
   schedule?: { mondayFriday?: string; saturday?: string };
   cta?: string;
-  ageRange?: string;
+  ctaHref?: string;
 }
 
 export async function guardarNiveles(
@@ -43,21 +78,73 @@ export async function guardarNiveles(
   const valor: Record<string, NivelShape> = {};
 
   for (const nivel of NIVELES) {
-    const description = String(formData.get(`${nivel.clave}_description`) ?? "").trim();
-    const ageRange = String(formData.get(`${nivel.clave}_ageRange`) ?? "").trim();
-    const cta = String(formData.get(`${nivel.clave}_cta`) ?? "").trim();
+    const clave = nivel.clave;
+    const name = String(formData.get(`${clave}_name`) ?? "").trim();
+    const ageRange = String(formData.get(`${clave}_ageRange`) ?? "").trim();
+    const subtitle = String(formData.get(`${clave}_subtitle`) ?? "").trim();
+    const subtitleVisible = formData.get(`${clave}_subtitleVisible`) === "on";
+    const enabled = formData.get(`${clave}_enabled`) === "on";
+    const headline = String(formData.get(`${clave}_headline`) ?? "").trim();
+    const description = String(formData.get(`${clave}_description`) ?? "").trim();
+    const methodology = String(formData.get(`${clave}_methodology`) ?? "").trim();
+    const mondayFriday = String(formData.get(`${clave}_schedule_mondayFriday`) ?? "").trim();
+    const saturday = String(formData.get(`${clave}_schedule_saturday`) ?? "").trim();
+    const cta = String(formData.get(`${clave}_cta`) ?? "").trim();
+    const ctaHref = String(formData.get(`${clave}_ctaHref`) ?? "").trim();
+    const program = (formData.getAll(`${clave}_program`) as string[])
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
 
-    const eDesc = clamp(description, LIMITS.descripcion);
+    const eName = clamp(name, LIMITS.name);
     const eEdad = clamp(ageRange, LIMITS.edad);
+    const eSubtitle = clamp(subtitle, LIMITS.subtitle);
+    const eHeadline = clamp(headline, LIMITS.headline);
+    const eDesc = clamp(description, LIMITS.descripcion);
+    const eMethod = clamp(methodology, LIMITS.methodology);
+    const eLunVie = clamp(mondayFriday, LIMITS.schedule);
+    const eSab = clamp(saturday, LIMITS.schedule);
     const eCta = clamp(cta, LIMITS.cta);
-    if (eDesc) fieldErrors[`${nivel.clave}_description`] = eDesc;
-    if (eEdad) fieldErrors[`${nivel.clave}_ageRange`] = eEdad;
-    if (eCta) fieldErrors[`${nivel.clave}_cta`] = eCta;
+
+    if (eName) fieldErrors[`${clave}_name`] = eName;
+    if (eEdad) fieldErrors[`${clave}_ageRange`] = eEdad;
+    if (eSubtitle) fieldErrors[`${clave}_subtitle`] = eSubtitle;
+    if (eHeadline) fieldErrors[`${clave}_headline`] = eHeadline;
+    if (eDesc) fieldErrors[`${clave}_description`] = eDesc;
+    if (eMethod) fieldErrors[`${clave}_methodology`] = eMethod;
+    if (eLunVie) fieldErrors[`${clave}_schedule_mondayFriday`] = eLunVie;
+    if (eSab) fieldErrors[`${clave}_schedule_saturday`] = eSab;
+    if (eCta) fieldErrors[`${clave}_cta`] = eCta;
+    if (ctaHref && !(PAGINAS_CTA as readonly string[]).includes(ctaHref)) {
+      fieldErrors[`${clave}_ctaHref`] = "Elige una página existente.";
+    }
+
+    for (const [i, item] of program.entries()) {
+      const eItem = clamp(item, LIMITS.programItem);
+      if (eItem) fieldErrors[`${clave}_program_${i}`] = eItem;
+    }
+    if (program.length === 0) {
+      fieldErrors[`${clave}_program`] = "Agrega al menos un área del programa.";
+    }
+
+    const imageFile = formData.get(`${clave}_image`) as File | null;
+    const prevImage = String(formData.get(`${clave}_image_path`) ?? "").trim();
+    const upload = await uploadOrKeep(imageFile, prevImage);
+    if (upload.error) return { error: upload.error };
 
     valor[nivel.clave] = {
-      description,
+      name,
       ageRange: ageRange || undefined,
-      cta: cta || undefined,
+      subtitle: subtitle || undefined,
+      subtitleVisible: subtitleVisible && subtitle.length > 0,
+      enabled,
+      headline,
+      description,
+      image: upload.path,
+      program,
+      methodology,
+      schedule: { mondayFriday, saturday },
+      cta,
+      ctaHref,
     };
   }
 

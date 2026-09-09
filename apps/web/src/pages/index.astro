@@ -7,17 +7,26 @@ import BannerSlider from "../features/home/components/HomeBanner/BannerSlider.as
 import LevelCards from "../features/levels/components/LevelCards/LevelCards.astro";
 import PillarsEnAccion from "../features/home/components/PillarsEnAccion/PillarsEnAccion.astro";
 import { siteConfig } from "../site.config";
-import homeData from "../data/fallback/home.json";
-import { getHero, getVideoTour } from "../shared/db/contenido";
+import {
+  getHero,
+  getMetricas,
+  getPilares,
+  getVideoTour,
+  getNivelesResumen,
+  getAdmisiones,
+} from "../shared/db/contenido";
 import { getBanners } from "../shared/db/banners";
 import { resolveAssetUrl } from "../shared/db/storage";
 
-// Hero y video tour desde Supabase (tabla `contenido`), con fallback a
-// site.config. Se resuelven en build-time: un cambio del panel aparece tras
-// el rebuild.
+// Hero, video tour, métricas y pilares desde Supabase (tabla `contenido`),
+// con fallback a site.config/home.json. Se resuelven en build-time: un
+// cambio del panel aparece tras el rebuild.
 const hero = await getHero();
 const videoTour = await getVideoTour();
+const metricas = await getMetricas();
+const pilares = await getPilares();
 const { banners } = await getBanners();
+const admissions = await getAdmisiones();
 
 const heroSlogan = hero.data.slogan || siteConfig.identity.slogan;
 const brandName = hero.data.name || siteConfig.identity.name;
@@ -56,7 +65,7 @@ const tourPoster =
 const heroPhotoUrl = resolveAssetUrl(heroPhoto) ?? heroPhoto;
 const tourPosterUrl = resolveAssetUrl(tourPoster) ?? tourPoster;
 const tourTitle = videoTour.data.title || "Ver tour virtual";
-const periodLabel = siteConfig.admissions.periodLabel;
+const periodLabel = admissions.periodLabel || siteConfig.admissions.periodLabel;
 
 // Modo de media condicional según lo que el colegio configure en el admin:
 // - Foto + Video → heroPhoto como póster con botón Play encima.
@@ -78,7 +87,7 @@ const bannerLcp = hasBanners
 const lcpImage =
   bannerLcp ?? (mediaMode === "video-only" ? tourPosterUrl : heroPhotoUrl);
 
-const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
+const enabledLevels = (await getNivelesResumen()).filter((l) => l.enabled);
 
 const absoluteUrl = (path: string) =>
   new URL(path, siteConfig.seo.siteUrl).toString();
@@ -157,7 +166,7 @@ const videoJsonLd = {
   >
     <ul class="trustStrip__list" role="list">
       {
-        homeData.metrics.map((metric) => (
+        metricas.map((metric) => (
           <li class="trustStrip__item">
             <span class="trustStrip__value">{metric.value}</span>
             <span class="trustStrip__label">{metric.label}</span>
@@ -177,10 +186,10 @@ const videoJsonLd = {
 
   <Section padding="xl" bg="muted">
     <div class="homeSectionHeader">
-      <h2 class="homeSectionHeader__title">Nuestros Pilares en Acción</h2>
+      <h2 class="homeSectionHeader__title">{pilares.titulo}</h2>
     </div>
 
-    <PillarsEnAccion pillars={homeData.pillarsEnAccion} />
+    <PillarsEnAccion pillars={pilares.items} />
   </Section>
 
   <Section padding="xl" bg="inverse" class="homeCta">

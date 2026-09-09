@@ -19,6 +19,9 @@ const LIMITS = {
   historiaAnio: { min: 1, max: 10 },
   historiaTitulo: { min: 3, max: 120 },
   historiaDesc: { min: 10, max: 1000 },
+  nosotrosTitle: { min: 2, max: 100 },
+  nosotrosLead: { min: 10, max: 300 },
+  nosotrosDesc: { min: 0, max: 500 },
 } as const;
 
 function clamp(value: string, limits: { min: number; max: number }): string | null {
@@ -141,6 +144,56 @@ export async function guardarHistoria(
   if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
 
   const res = await upsertContenido({ clave: "historia", valor: hitos });
+  if (res.error) return res;
+
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
+  revalidatePath("/admin/textos");
+  return { ok: true };
+}
+
+export async function guardarNosotrosHero(
+  _prev: ContenidoState,
+  formData: FormData,
+): Promise<ContenidoState> {
+  const title = String(formData.get("title") ?? "").trim();
+  const lead = String(formData.get("lead") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const currentImage = String(formData.get("image_path") ?? "").trim();
+  const file = (formData.get("image") as File | null) ?? null;
+
+  const fieldErrors: Record<string, string> = {};
+  const eTitle = clamp(title, LIMITS.nosotrosTitle);
+  const eLead = clamp(lead, LIMITS.nosotrosLead);
+  const eDesc = clamp(description, LIMITS.nosotrosDesc);
+  if (eTitle) fieldErrors.title = eTitle;
+  if (eLead) fieldErrors.lead = eLead;
+  if (eDesc) fieldErrors.description = eDesc;
+  if (!currentImage && (!file || file.size === 0)) {
+    fieldErrors.image = "Sube una imagen o indica una URL.";
+  }
+  if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
+
+  // Sube la imagen al bucket "media" bajo nosotros-hero/. Si no hay archivo,
+  // conserva la ruta previa (local, URL absoluta o Storage).
+  let image = currentImage;
+  if (file && file.size > 0) {
+    const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+    const uploadPath = `nosotros-hero/portada-${Date.now()}.${ext}`;
+    const { supabase } = await requireAdmin();
+    const { error } = await supabase.storage
+      .from("media")
+      .upload(uploadPath, file, { upsert: true, contentType: file.type });
+    if (error) {
+      return { error: `No se pudo subir la imagen: ${error.message}` };
+    }
+    image = uploadPath;
+  }
+
+  const res = await upsertContenido({
+    clave: "nosotros_hero",
+    valor: { title, lead, description, image },
+  });
   if (res.error) return res;
 
   const { supabase, tenantId } = await requireAdmin();

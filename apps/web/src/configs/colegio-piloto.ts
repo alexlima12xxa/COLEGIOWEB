@@ -49,7 +49,6 @@ export default {
     {
       id: "preescolar",
       name: "Preescolar",
-      shortName: "Pre",
       slug: "preescolar",
       description: "Primera experiencia escolar con enfoque lúdico y afectivo.",
       ageRange: "3-5 años",
@@ -60,7 +59,6 @@ export default {
     {
       id: "primaria",
       name: "Primaria",
-      shortName: "Pri",
       slug: "primaria",
       description:
         "Formación académica sólida con valores y pensamiento crítico.",
@@ -72,7 +70,6 @@ export default {
     {
       id: "secundaria",
       name: "Secundaria",
-      shortName: "Sec",
       slug: "secundaria",
       description:
         "Educación media con orientación hacia la excelencia académica.",

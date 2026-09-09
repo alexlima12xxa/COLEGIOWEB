@@ -11,10 +11,6 @@ export type ContactoState = {
 };
 
 const LIMITS = {
-  direccion: { min: 5, max: 200 },
-  telefono: { min: 7, max: 40 },
-  email: { min: 5, max: 120 },
-  horario: { min: 5, max: 200 },
   mapa: { min: 0, max: 500 },
   deptNombre: { min: 2, max: 120 },
   deptTelefono: { min: 7, max: 40 },
@@ -22,10 +18,17 @@ const LIMITS = {
   deptHorario: { min: 0, max: 200 },
 } as const;
 
-function clamp(value: string, limits: { min: number; max: number }): string | null {
+const WHATSAPP_REGEX = /^\+[1-9]\d{6,14}$/;
+
+function clamp(
+  value: string,
+  limits: { min: number; max: number },
+): string | null {
   const len = value.length;
-  if (len < limits.min) return `Mínimo ${limits.min} caracteres (actual: ${len}).`;
-  if (len > limits.max) return `Máximo ${limits.max} caracteres (actual: ${len}).`;
+  if (len < limits.min)
+    return `Mínimo ${limits.min} caracteres (actual: ${len}).`;
+  if (len > limits.max)
+    return `Máximo ${limits.max} caracteres (actual: ${len}).`;
   return null;
 }
 
@@ -43,25 +46,19 @@ export async function guardarContacto(
 ): Promise<ContactoState> {
   const fieldErrors: Record<string, string> = {};
 
-  const address = String(formData.get("address") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const hours = String(formData.get("hours") ?? "").trim();
   const mapUrl = String(formData.get("mapUrl") ?? "").trim();
   const mapEmbedUrl = String(formData.get("mapEmbedUrl") ?? "").trim();
+  const whatsapp = String(formData.get("whatsapp") ?? "").trim();
 
-  const eAddress = clamp(address, LIMITS.direccion);
-  const ePhone = clamp(phone, LIMITS.telefono);
-  const eEmail = clamp(email, LIMITS.email);
-  const eHours = clamp(hours, LIMITS.horario);
   const eMap = clamp(mapUrl, LIMITS.mapa);
   const eMapEmbed = clamp(mapEmbedUrl, LIMITS.mapa);
-  if (eAddress) fieldErrors.address = eAddress;
-  if (ePhone) fieldErrors.phone = ePhone;
-  if (eEmail) fieldErrors.email = eEmail;
-  if (eHours) fieldErrors.hours = eHours;
   if (eMap) fieldErrors.mapUrl = eMap;
   if (eMapEmbed) fieldErrors.mapEmbedUrl = eMapEmbed;
+
+  if (!WHATSAPP_REGEX.test(whatsapp)) {
+    fieldErrors.whatsapp =
+      'El número debe comenzar con "+" seguido de 7 a 15 dígitos (sin espacios ni guiones).';
+  }
 
   // Directorio de departamentos
   const deptNombres = formData.getAll("dept_name");
@@ -100,12 +97,12 @@ export async function guardarContacto(
 
   if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
 
+  // La clave `contacto` solo guarda lo específico de la página de contacto:
+  // URLs del mapa y directorio por departamento. Los datos generales de
+  // contacto (dirección, teléfono, email, horario) se guardan en la clave
+  // `footer` (pestaña "Footer").
   const valor = {
     info: {
-      address: address || undefined,
-      phone: phone || undefined,
-      email: email || undefined,
-      hours: hours || undefined,
       mapUrl: mapUrl || undefined,
       mapEmbedUrl: mapEmbedUrl || undefined,
     },
@@ -113,12 +110,26 @@ export async function guardarContacto(
   };
 
   const { supabase, tenantId } = await requireAdmin();
-  const { error } = await supabase.from("contenido").upsert(
-    { tenant_id: tenantId, clave: "contacto", valor },
-    { onConflict: "tenant_id,clave" },
-  );
+  const { error } = await supabase
+    .from("contenido")
+    .upsert(
+      { tenant_id: tenantId, clave: "contacto", valor },
+      { onConflict: "tenant_id,clave" },
+    );
   if (error) {
     return { error: `No se pudo guardar "contacto": ${error.message}` };
+  }
+
+  // WhatsApp se guarda como clave propia (`whatsapp`): la web lo consume con
+  // getWhatsapp() con fallback a siteConfig.contact.whatsapp.
+  const { error: errorWhatsapp } = await supabase
+    .from("contenido")
+    .upsert(
+      { tenant_id: tenantId, clave: "whatsapp", valor: { numero: whatsapp } },
+      { onConflict: "tenant_id,clave" },
+    );
+  if (errorWhatsapp) {
+    return { error: `No se pudo guardar "whatsapp": ${errorWhatsapp.message}` };
   }
 
   await triggerRebuild(supabase, tenantId);

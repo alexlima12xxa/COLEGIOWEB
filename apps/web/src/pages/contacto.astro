@@ -6,7 +6,7 @@ import Card from "../shared/ui/Card/Card.astro";
 import Input from "../shared/ui/Input/Input.astro";
 import { Phone, Mail, Clock, MapPin } from "@lucide/astro";
 import { siteConfig } from "../site.config";
-import { getContacto } from "../shared/db/contenido";
+import { getContacto, getFooter } from "../shared/db/contenido";
 
 const title = "Contacto";
 const description =
@@ -17,9 +17,16 @@ const description =
 // tras el rebuild.
 const contact = await getContacto();
 
+// Dirección/ciudad del pie y del mapa: se editan en la pestaña "Footer".
+const footer = await getFooter();
+const footerContact = footer.contact ?? {};
+
 const mapEmbedUrl =
+  contact.info?.mapEmbedUrl ||
   siteConfig.contact.mapEmbedUrl ||
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.1234567890123!2d-74.08175!3d4.60971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMzYnMzUuMCJOIDc0wrAwNCw1NC4zIg!5e0!3m2!1ses!2sco!4v1600000000000";
+
+const mapUrl = contact.info?.mapUrl || siteConfig.contact.mapUrl;
 
 type FormFieldType = "text" | "email" | "tel" | "textarea";
 
@@ -193,7 +200,7 @@ const PLACEHOLDERS_BY_FIELD: Record<string, string> = {
         <p class="contactMap__address">
           <MapPin aria-hidden="true" size={18} />
           <span>
-            {siteConfig.contact.address}, {siteConfig.contact.city}
+            {footerContact.address}, {footerContact.city}
           </span>
         </p>
       </div>
@@ -208,7 +215,7 @@ const PLACEHOLDERS_BY_FIELD: Record<string, string> = {
       </div>
       <div class="contactMap__actions">
         <Button
-          href={siteConfig.contact.mapUrl}
+          href={mapUrl}
           variant="secondary"
           target="_blank"
           rel="noopener noreferrer"

@@ -1,5 +1,10 @@
 {
   "preescolar": {
+    "name": "Preescolar",
+    "ageRange": "3-5 años",
+    "subtitle": "Bilingüe · Estimulación temprana",
+    "subtitleVisible": false,
+    "enabled": true,
     "headline": "Primera experiencia escolar con alegría",
     "description": "En preescolar acompañamos a los niños en su primer contacto con la escuela mediante juegos, exploración sensorial, arte y rutinas que fortalecen su autonomía y creatividad.",
     "image": "/branding/placeholders/level-preescolar.jpg",
@@ -15,9 +20,15 @@
       "mondayFriday": "7:30 a.m. – 12:30 p.m.",
       "saturday": "Actividades familiares programadas"
     },
-    "cta": "Conoce el proceso de admisión para preescolar"
+    "cta": "Conoce el proceso de admisión para preescolar",
+    "ctaHref": "/admisiones"
   },
   "primaria": {
+    "name": "Primaria",
+    "ageRange": "6-10 años",
+    "subtitle": "Grados 1° a 5° · Enfoque STEAM",
+    "subtitleVisible": false,
+    "enabled": true,
     "headline": "Bases sólidas para aprender a aprender",
     "description": "La primaria fortalece la lectoescritura, el pensamiento matemático, la indagación científica y la formación en valores, preparando a los estudiantes para continuar su trayectoria académica.",
     "image": "/branding/placeholders/level-primaria.jpg",
@@ -33,9 +44,15 @@
       "mondayFriday": "7:00 a.m. – 2:00 p.m.",
       "saturday": "Actividades extracurriculares opcionales"
     },
-    "cta": "Solicita información sobre primaria"
+    "cta": "Solicita información sobre primaria",
+    "ctaHref": "/admisiones"
   },
   "secundaria": {
+    "name": "Secundaria",
+    "ageRange": "11-17 años",
+    "subtitle": "Grados 6° a 11° · Orientación Vocacional",
+    "subtitleVisible": false,
+    "enabled": true,
     "headline": "Pensamiento crítico y preparación para la media",
     "description": "En secundaria profundizamos en áreas disciplinares, desarrollamos habilidades de pensamiento crítico y orientamos a los estudiantes en su proyecto de vida.",
     "image": "/branding/placeholders/level-secundaria.jpg",
@@ -51,6 +68,7 @@
       "mondayFriday": "7:00 a.m. – 2:30 p.m.",
       "saturday": "Clubes académicos y deportivos"
     },
-    "cta": "Descubre nuestra secundaria"
+    "cta": "Descubre nuestra secundaria",
+    "ctaHref": "/admisiones"
   }
 }

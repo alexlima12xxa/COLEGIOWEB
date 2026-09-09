@@ -1,24 +1,36 @@
 import { getDbContext } from "./client";
 import { resolveAssetUrl } from "./storage";
+import { siteConfig } from "../../site.config";
 import {
   admisionesSchema,
   autoridadSchema,
   contactoSchema,
+  footerSchema,
   galeriaItemSchema,
   heroSchema,
   hitoSchema,
+  metricaSchema,
+  navbarSchema,
   nivelesSchema,
+  nosotrosHeroSchema,
   pilarSchema,
+  pilaresSchema,
   videoTourSchema,
+  whatsappSchema,
 } from "./schema";
 import type {
   Admisiones,
   Autoridad,
   Contacto,
+  Footer,
   GaleriaItem,
   Hito,
+  Metrica,
+  NavbarLink,
   Niveles,
+  NosotrosHero,
   Pilar,
+  Pilares,
 } from "./schema";
 import type { z } from "astro/zod";
 import aboutData from "../../data/fallback/about.json";
@@ -41,6 +53,9 @@ import contactData from "../../data/fallback/contact.json";
  *   historia    → [{title, date, description}]
  *   hero        → {badge?, name, slogan, description, heroPhoto, tourPoster, actions?}
  *   video_tour  → {videoUrl, poster, title, description}
+ *   navbar      → {links: [{label, href}]}
+ *   metricas    → [{value, label}]
+ *   pilares     → {titulo, items: [{title, description, metric}]}
  */
 
 type Hero = z.infer<typeof heroSchema>;
@@ -161,6 +176,26 @@ export async function getHistoria(): Promise<Hito[]> {
   return parsed.length > 0 ? parsed : aboutData.history;
 }
 
+// ── Hero de Nosotros (clave `nosotros_hero`) ──────────────────────────────
+// Título, texto introductorio e imagen del hero de la página /nosotros.
+// Fallback: valores hardcodeados en nosotros.astro.
+
+const NOSOTROS_HERO_FALLBACK: NosotrosHero = {
+  title: "Nuestra historia",
+  lead: "Desde 1985 construimos una comunidad de aprendizaje centrada en las personas.",
+  description:
+    "Somos una institución educativa con décadas de trayectoria formando estudiantes íntegros, críticos y preparados para los desafíos del mundo actual.",
+  image: "/branding/placeholders/about-campus.jpg",
+};
+
+export async function getNosotrosHero(): Promise<NosotrosHero> {
+  const raw = await getContenido<unknown>("nosotros_hero", () => undefined);
+  const parsed = nosotrosHeroSchema.safeParse(raw);
+  if (!parsed.success) return NOSOTROS_HERO_FALLBACK;
+  const image = await ensureAccessibleImage(parsed.data.image);
+  return { ...parsed.data, image: image ?? NOSOTROS_HERO_FALLBACK.image };
+}
+
 export async function getHero(): Promise<{ data: Hero; isFromDb: boolean }> {
   const raw = await getContenido<unknown>("hero", () => undefined);
   const parsed = heroSchema.safeParse(raw);
@@ -189,6 +224,60 @@ export async function getVideoTour(): Promise<{
     data: { ...data, poster },
     isFromDb: parsed.success && Boolean(data.videoUrl),
   };
+}
+
+// ── Navbar (clave `navbar`) ─────────────────────────────────────────────────
+// {links: [{label, href}]}. Fallback: enlaces actuales de Navbar.astro.
+
+const NAVBAR_FALLBACK: NavbarLink[] = [
+  { label: "Inicio", href: "/" },
+  { label: "Nosotros", href: "/nosotros" },
+  { label: "Niveles", href: "/niveles" },
+  { label: "Admisiones", href: "/admisiones" },
+  { label: "Noticias", href: "/noticias" },
+  { label: "Circulares", href: "/circulares" },
+  { label: "Contacto", href: "/contacto" },
+];
+
+export async function getNavbar(): Promise<NavbarLink[]> {
+  const raw = await getContenido<unknown>("navbar", () => undefined);
+  const parsed = navbarSchema.safeParse(raw);
+  if (parsed.success && parsed.data.links.length > 0) {
+    return parsed.data.links;
+  }
+  return NAVBAR_FALLBACK;
+}
+
+// ── Métricas (clave `metricas`) ─────────────────────────────────────────────
+// [{value, label}] franja de datos de la portada. Fallback home.metrics.
+
+export async function getMetricas(): Promise<Metrica[]> {
+  const raw = await getContenido<unknown[]>("metricas", () => homeData.metrics);
+  if (!Array.isArray(raw)) return homeData.metrics;
+  const parsed = raw
+    .map((item) => metricaSchema.safeParse(item))
+    .filter((r): r is { success: true; data: Metrica } => r.success)
+    .map((r) => r.data);
+  return parsed.length > 0 ? parsed : homeData.metrics;
+}
+
+// ── Pilares en acción (clave `pilares`) ─────────────────────────────────────
+// {titulo, items}. Fallback: título fijo + home.pillarsEnAccion.
+
+function fallbackPilares(): Pilares {
+  return {
+    titulo: "Nuestros Pilares en Acción",
+    items: homeData.pillarsEnAccion,
+  };
+}
+
+export async function getPilares(): Promise<Pilares> {
+  const raw = await getContenido<unknown>("pilares", () => fallbackPilares());
+  const parsed = pilaresSchema.safeParse(raw);
+  if (!parsed.success || parsed.data.items.length === 0) {
+    return fallbackPilares();
+  }
+  return parsed.data;
 }
 
 // ── Autoridades (clave `autoridades`) ───────────────────────────────────────
@@ -263,6 +352,44 @@ export async function getNiveles(): Promise<Niveles> {
   return Object.fromEntries(entries) as Niveles;
 }
 
+// Resumen de niveles para tarjetas / footer / sitemap (clave `niveles`).
+// Devuelve los campos de tarjeta de cada nivel en el orden del config del
+// colegio (siteConfig.levels). Si la clave no existe o no valida, usa el
+// orden y las etiquetas del config estático como fallback.
+
+export interface NivelResumen {
+  id: string;
+  slug: string;
+  name: string;
+  ageRange?: string;
+  subtitle?: string;
+  subtitleVisible: boolean;
+  image?: string;
+  enabled: boolean;
+  description: string;
+}
+
+export async function getNivelesResumen(): Promise<NivelResumen[]> {
+  const niveles = await getNiveles();
+
+  // Orden y slugs canónicos desde el config estático (SSG: rutas fijas).
+  return siteConfig.levels.map((cfg) => {
+    const detalle = niveles[cfg.slug];
+    const image = detalle ? detalle.image : cfg.image;
+    return {
+      id: cfg.slug,
+      slug: cfg.slug,
+      name: detalle?.name && detalle.name.trim() ? detalle.name : cfg.name,
+      ageRange: detalle?.ageRange ?? cfg.ageRange,
+      subtitle: detalle?.subtitle ?? cfg.subtitle,
+      subtitleVisible: detalle?.subtitleVisible ?? false,
+      image,
+      enabled: detalle?.enabled ?? cfg.enabled,
+      description: detalle ? detalle.description : (cfg.description ?? ""),
+    };
+  });
+}
+
 // ── Admisiones (clave `admisiones`) ─────────────────────────────────────────
 // {schedule[], requirements[], faq[]}. Fallback admissions.json.
 
@@ -274,7 +401,9 @@ export async function getAdmisiones(): Promise<Admisiones> {
 }
 
 // ── Contacto (clave `contacto`) ─────────────────────────────────────────────
-// {departments[], formFields[]}. Fallback contact.json.
+// {info:{mapUrl?,mapEmbedUrl?}, departments[], formFields[]}. Fallback
+// contact.json. La dirección/teléfono/email/horario generales viven en la
+// clave `footer` (ver getFooter).
 
 function fallbackContacto(): Contacto {
   const parsed = contactoSchema.safeParse(contactData);
@@ -287,4 +416,74 @@ export async function getContacto(): Promise<Contacto> {
   const parsed = contactoSchema.safeParse(raw);
   if (!parsed.success) return fallbackContacto();
   return parsed.data;
+}
+
+// ── WhatsApp (clave `whatsapp`) ─────────────────────────────────────────────
+// {numero} en E.164. Si la clave no existe o es inválida, se devuelve `{}` y
+// el consumidor aplica el fallback a siteConfig.contact.whatsapp.
+
+export async function getWhatsapp(): Promise<{ numero?: string }> {
+  const raw = await getContenido<unknown>("whatsapp", () => undefined);
+  const parsed = whatsappSchema.safeParse(raw);
+  return parsed.success ? parsed.data : {};
+}
+
+// ── Footer (clave `footer`) ─────────────────────────────────────────────────
+// Datos del pie de página: contacto general (dirección, ciudad, teléfono,
+// email, horario), títulos de columna editables, redes sociales y bloques de
+// nivel con enlaces.
+//
+// Fallback: se construye desde siteConfig (config por colegio), no de un JSON
+// estático, porque estos valores son los mismos que hoy muestra el footer y
+// deben respetar el colegio activo. Los bloques de nivel del footer son
+// INDEPENDIENTES de la clave `niveles` (las tarjetas del inicio no se ven
+// afectadas).
+
+function buildFooterBase(): Footer {
+  return {
+    contact: {
+      address: siteConfig.contact.address,
+      city: siteConfig.contact.city,
+      phone: siteConfig.contact.phone,
+      email: siteConfig.contact.email,
+      officeHours: siteConfig.contact.officeHours,
+    },
+    contactTitle: "Contacto",
+    levelsTitle: "Niveles educativos",
+    socialTitle: "Síguenos",
+    social: { ...siteConfig.social },
+    levels: siteConfig.levels
+      .filter((l) => l.enabled)
+      .map((l) => ({
+        name: l.name,
+        href: `/niveles/${l.slug}`,
+      })),
+  };
+}
+
+// Base constante de módulo: permite saber si el valor vino de la BD o del
+// fallback (getContenido devuelve este mismo objeto cuando no hay clave).
+const FOOTER_BASE: Footer = buildFooterBase();
+
+export async function getFooter(): Promise<Footer> {
+  const raw = await getContenido<unknown>("footer", FOOTER_BASE);
+  const fromFallback = raw === FOOTER_BASE;
+
+  const parsed = footerSchema.safeParse(raw);
+  if (!parsed.success) return FOOTER_BASE;
+
+  const data = parsed.data;
+  if (fromFallback) return data;
+
+  // La clave existe en BD: la BD manda, pero los campos ausentes se completan
+  // con el config del colegio (p. ej. una ciudad dejada en blanco).
+  return {
+    ...data,
+    contact: { ...FOOTER_BASE.contact, ...data.contact },
+    contactTitle: data.contactTitle || FOOTER_BASE.contactTitle,
+    levelsTitle: data.levelsTitle || FOOTER_BASE.levelsTitle,
+    socialTitle: data.socialTitle || FOOTER_BASE.socialTitle,
+    social: data.social,
+    levels: data.levels.length > 0 ? data.levels : FOOTER_BASE.levels,
+  };
 }

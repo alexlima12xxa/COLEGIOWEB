@@ -1,8 +1,14 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { ContenidoState } from "./actions";
-import { guardarMision, guardarFilosofia, guardarHistoria } from "./actions";
+import {
+  guardarMision,
+  guardarFilosofia,
+  guardarHistoria,
+  guardarNosotrosHero,
+} from "./actions";
+import { mediaUrl } from "@/lib/storage";
 
 const inputClass =
   "mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20";
@@ -223,6 +229,117 @@ export function HistoriaForm({ initial }: { initial: HistoriaItem[] }) {
       {state.error ? <FormError message={state.error} /> : null}
 
       <SubmitButton pending={pending} label="Guardar historia" />
+    </form>
+  );
+}
+
+interface NosotrosHeroData {
+  title?: string;
+  lead?: string;
+  description?: string;
+  image?: string;
+}
+
+export function NosotrosHeroForm({ initial }: { initial: NosotrosHeroData }) {
+  const [state, formAction, pending] = useActionState<ContenidoState, FormData>(
+    guardarNosotrosHero,
+    {},
+  );
+  const [preview, setPreview] = useState<string | undefined>(
+    mediaUrl(initial.image),
+  );
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <form action={formAction} className="space-y-5">
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium text-zinc-700">
+          Título <span className="text-red-600">*</span>
+        </label>
+        <input
+          id="title"
+          name="title"
+          type="text"
+          defaultValue={initial.title ?? ""}
+          className={inputClass}
+        />
+        <p className="mt-1 text-xs text-zinc-500">Entre 2 y 100 caracteres.</p>
+        <FieldError message={state.fieldErrors?.title} />
+      </div>
+
+      <div>
+        <label htmlFor="lead" className="block text-sm font-medium text-zinc-700">
+          Texto destacado <span className="text-red-600">*</span>
+        </label>
+        <textarea
+          id="lead"
+          name="lead"
+          rows={2}
+          defaultValue={initial.lead ?? ""}
+          className={inputClass}
+        />
+        <p className="mt-1 text-xs text-zinc-500">Entre 10 y 300 caracteres.</p>
+        <FieldError message={state.fieldErrors?.lead} />
+      </div>
+
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-zinc-700">
+          Descripción
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          rows={3}
+          defaultValue={initial.description ?? ""}
+          className={inputClass}
+        />
+        <p className="mt-1 text-xs text-zinc-500">Hasta 500 caracteres (opcional).</p>
+        <FieldError message={state.fieldErrors?.description} />
+      </div>
+
+      <div>
+        <span className="block text-sm font-medium text-zinc-700">Foto</span>
+        <input
+          id="image"
+          name="image"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          onChange={handleFile}
+          className="mt-1.5 block w-full text-sm text-zinc-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-700 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-800"
+        />
+        <input type="hidden" name="image_path" value={initial.image ?? ""} />
+        <p className="mt-1 text-xs text-zinc-500">
+          {initial.image ? "Imagen actual: ver previsualización." : "Sube una imagen (JPG, PNG, WebP o AVIF)."}
+        </p>
+        <FieldError message={state.fieldErrors?.image} />
+      </div>
+
+      {preview ? (
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={preview}
+            alt="Vista previa del hero de Nosotros"
+            className="h-48 w-full rounded-lg object-cover ring-1 ring-zinc-200"
+          />
+        </div>
+      ) : null}
+
+      {state.ok ? (
+        <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">
+          Hero de Nosotros guardado. Aparecerá en la web tras el rebuild.
+        </p>
+      ) : null}
+      {state.error ? <FormError message={state.error} /> : null}
+
+      <SubmitButton pending={pending} label="Guardar hero de Nosotros" />
     </form>
   );
 }

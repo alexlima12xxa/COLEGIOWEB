@@ -15,7 +15,10 @@ function FieldError({ message }: { message?: string }) {
 function FormError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+    <p
+      role="alert"
+      className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700"
+    >
       {message}
     </p>
   );
@@ -43,17 +46,20 @@ export interface Departamento {
 
 export interface ContactoData {
   info?: {
-    address?: string;
-    phone?: string;
-    email?: string;
-    hours?: string;
     mapUrl?: string;
     mapEmbedUrl?: string;
   };
   departments?: Departamento[];
+  whatsapp?: string;
 }
 
-export function ContactoForm({ initial }: { initial: ContactoData }) {
+export function ContactoForm({
+  initial,
+  whatsappInicial,
+}: {
+  initial: ContactoData;
+  whatsappInicial?: string;
+}) {
   const [state, formAction, pending] = useActionState<ContactoState, FormData>(
     guardarContacto,
     {},
@@ -67,81 +73,52 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
   );
 
   const addDept = () =>
-    setDepartments((prev) => [...prev, { name: "", phone: "", email: "", hours: "", hidden: false }]);
+    setDepartments((prev) => [
+      ...prev,
+      { name: "", phone: "", email: "", hours: "", hidden: false },
+    ]);
   const removeDept = (i: number) =>
     setDepartments((prev) => prev.filter((_, idx) => idx !== i));
 
   return (
     <form action={formAction} className="space-y-6">
+      <p className="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800">
+        Dirección, ciudad, teléfono, email y horario se editan en la sección
+        &quot;Footer&quot; (derechos de contacto del pie de página).
+      </p>
+
       <fieldset className="space-y-3 rounded-lg border border-zinc-200 p-4">
         <legend className="text-sm font-semibold text-zinc-900">
-          Datos de contacto
+          WhatsApp y mapa
         </legend>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label htmlFor="address" className="block text-sm font-medium text-zinc-700">
-              Dirección
-            </label>
-            <input
-              id="address"
-              name="address"
-              type="text"
-              defaultValue={info.address ?? ""}
-              placeholder="Ej. Calle 123 # 45-67"
-              className={inputClass}
-            />
-            <FieldError message={state.fieldErrors?.address} />
-          </div>
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-zinc-700">
-              Teléfono
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="text"
-              defaultValue={info.phone ?? ""}
-              placeholder="Ej. +57 601 234 5678"
-              className={inputClass}
-            />
-            <FieldError message={state.fieldErrors?.phone} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-zinc-700">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={info.email ?? ""}
-              placeholder="Ej. contacto@colegio.edu.co"
-              className={inputClass}
-            />
-            <FieldError message={state.fieldErrors?.email} />
-          </div>
-          <div>
-            <label htmlFor="hours" className="block text-sm font-medium text-zinc-700">
-              Horario
-            </label>
-            <input
-              id="hours"
-              name="hours"
-              type="text"
-              defaultValue={info.hours ?? ""}
-              placeholder="Ej. Lunes a viernes, 7:00 a.m. – 4:00 p.m."
-              className={inputClass}
-            />
-            <FieldError message={state.fieldErrors?.hours} />
-          </div>
+        <div>
+          <label
+            htmlFor="whatsapp"
+            className="block text-sm font-medium text-zinc-700"
+          >
+            WhatsApp <span className="text-red-600">*</span>
+          </label>
+          <input
+            id="whatsapp"
+            name="whatsapp"
+            type="text"
+            defaultValue={whatsappInicial ?? ""}
+            placeholder="Ej. +573101234567"
+            className={inputClass}
+          />
+          <p className="mt-1 text-xs text-zinc-500">
+            Número internacional sin espacios ni guiones (E.164). Es el número
+            al que se redirige el botón de WhatsApp en la web.
+          </p>
+          <FieldError message={state.fieldErrors?.whatsapp} />
         </div>
 
         <div>
-          <label htmlFor="mapUrl" className="block text-sm font-medium text-zinc-700">
+          <label
+            htmlFor="mapUrl"
+            className="block text-sm font-medium text-zinc-700"
+          >
             URL del mapa (Cómo llegar)
           </label>
           <input
@@ -156,7 +133,10 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
         </div>
 
         <div>
-          <label htmlFor="mapEmbedUrl" className="block text-sm font-medium text-zinc-700">
+          <label
+            htmlFor="mapEmbedUrl"
+            className="block text-sm font-medium text-zinc-700"
+          >
             URL de embed del mapa
           </label>
           <input
@@ -177,10 +157,16 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
         </legend>
         <div className="space-y-4">
           {departments.map((dept, i) => (
-            <div key={i} className="space-y-3 rounded-lg border border-zinc-100 p-3">
+            <div
+              key={i}
+              className="space-y-3 rounded-lg border border-zinc-100 p-3"
+            >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label htmlFor={`dept_name-${i}`} className="block text-sm font-medium text-zinc-700">
+                  <label
+                    htmlFor={`dept_name-${i}`}
+                    className="block text-sm font-medium text-zinc-700"
+                  >
                     Nombre
                   </label>
                   <input
@@ -194,7 +180,10 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
                   <FieldError message={state.fieldErrors?.[`dept_name-${i}`]} />
                 </div>
                 <div>
-                  <label htmlFor={`dept_phone-${i}`} className="block text-sm font-medium text-zinc-700">
+                  <label
+                    htmlFor={`dept_phone-${i}`}
+                    className="block text-sm font-medium text-zinc-700"
+                  >
                     Teléfono
                   </label>
                   <input
@@ -205,12 +194,17 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
                     placeholder="Ej. +57 601 234 5678"
                     className={inputClass}
                   />
-                  <FieldError message={state.fieldErrors?.[`dept_phone-${i}`]} />
+                  <FieldError
+                    message={state.fieldErrors?.[`dept_phone-${i}`]}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label htmlFor={`dept_email-${i}`} className="block text-sm font-medium text-zinc-700">
+                  <label
+                    htmlFor={`dept_email-${i}`}
+                    className="block text-sm font-medium text-zinc-700"
+                  >
                     Email
                   </label>
                   <input
@@ -221,10 +215,15 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
                     placeholder="Ej. recepcion@colegio.edu.co"
                     className={inputClass}
                   />
-                  <FieldError message={state.fieldErrors?.[`dept_email-${i}`]} />
+                  <FieldError
+                    message={state.fieldErrors?.[`dept_email-${i}`]}
+                  />
                 </div>
                 <div>
-                  <label htmlFor={`dept_hours-${i}`} className="block text-sm font-medium text-zinc-700">
+                  <label
+                    htmlFor={`dept_hours-${i}`}
+                    className="block text-sm font-medium text-zinc-700"
+                  >
                     Horario
                   </label>
                   <input
@@ -235,7 +234,9 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
                     placeholder="Ej. Lunes a viernes, 7:00 a.m. – 4:00 p.m."
                     className={inputClass}
                   />
-                  <FieldError message={state.fieldErrors?.[`dept_hours-${i}`]} />
+                  <FieldError
+                    message={state.fieldErrors?.[`dept_hours-${i}`]}
+                  />
                 </div>
               </div>
               <label className="flex items-center gap-2 text-sm text-zinc-700">
@@ -267,7 +268,10 @@ export function ContactoForm({ initial }: { initial: ContactoData }) {
       </fieldset>
 
       {state.ok ? (
-        <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">
+        <p
+          role="status"
+          className="rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700"
+        >
           Contacto guardado. Aparecerá en la web tras el rebuild.
         </p>
       ) : null}

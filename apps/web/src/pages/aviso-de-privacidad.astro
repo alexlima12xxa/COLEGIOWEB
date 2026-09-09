@@ -2,9 +2,14 @@
 import BaseLayout from "../shared/layouts/BaseLayout.astro";
 import Section from "../shared/ui/Section/Section.astro";
 import { siteConfig } from "../site.config";
+import { getFooter } from "../shared/db/contenido";
 
 const title = "Aviso de privacidad";
 const description = `Política de privacidad y tratamiento de datos personales de ${siteConfig.identity.name}.`;
+
+// Contacto desde Supabase (clave `footer`) con fallback al config del colegio.
+const footer = await getFooter();
+const footerContact = footer.contact ?? {};
 ---
 
 <BaseLayout title={title} description={description}>
@@ -18,10 +23,8 @@ const description = `Política de privacidad y tratamiento de datos personales d
 
       <h2 class="privacy__subtitle">1. Responsable del tratamiento</h2>
       <p class="privacy__text">
-        {siteConfig.identity.name}, con dirección en {
-          siteConfig.contact.address
-        },
-        {siteConfig.contact.city}, es responsable del tratamiento de los datos
+        {siteConfig.identity.name}, con dirección en {footerContact.address},
+        {footerContact.city}, es responsable del tratamiento de los datos
         personales recopilados a través de este sitio.
       </p>
 
@@ -43,8 +46,8 @@ const description = `Política de privacidad y tratamiento de datos personales d
       <p class="privacy__text">
         Los titulares de los datos pueden ejercer sus derechos de acceso,
         rectificación, cancelación y oposición escribiendo a{" "}
-        <a href={`mailto:${siteConfig.contact.email}`}>
-          {siteConfig.contact.email}
+        <a href={`mailto:${footerContact.email}`}>
+          {footerContact.email}
         </a>.
       </p>
     </div>

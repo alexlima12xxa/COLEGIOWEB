@@ -123,6 +123,19 @@ export const hitoSchema = z.object({
 
 export type Hito = z.infer<typeof hitoSchema>;
 
+// ── Hero de Nosotros (clave `nosotros_hero`) ──────────────────────────────
+// Título, texto introductorio e imagen del hero de la página /nosotros.
+// Fallback: valores hardcodeados en nosotros.astro.
+
+export const nosotrosHeroSchema = z.object({
+  title: z.string().min(2).max(100).default("Nuestra historia"),
+  lead: z.string().min(10).max(300).default(""),
+  description: z.string().max(500).default(""),
+  image: z.string().min(1).default("/branding/placeholders/about-campus.jpg"),
+});
+
+export type NosotrosHero = z.infer<typeof nosotrosHeroSchema>;
+
 export const heroSchema = z.object({
   badge: z.string().optional(),
   name: z.string().min(2).max(80).optional(),
@@ -147,6 +160,54 @@ export const videoTourSchema = z.object({
   title: z.string().optional(),
   description: z.string().max(500).optional(),
 });
+
+// ── Navbar (clave `navbar`) ─────────────────────────────────────────────────
+// {links: [{label, href}]} enlaces de la navegación principal. Logo y nombre
+// del colegio siguen en site.config (por colegio). Fallback: enlaces actuales.
+
+export const navbarLinkSchema = z.object({
+  label: z.string().min(1).max(60),
+  href: z.string().min(1).max(200),
+});
+
+export type NavbarLink = z.infer<typeof navbarLinkSchema>;
+
+export const navbarSchema = z.object({
+  links: z.array(navbarLinkSchema).default([]),
+});
+
+export type Navbar = z.infer<typeof navbarSchema>;
+
+// ── Métricas (clave `metricas`) ─────────────────────────────────────────────
+// [{value, label}] franja de datos de la portada (4 fijos). Fallback home.metrics.
+
+export const metricaSchema = z.object({
+  value: z.string().min(1).max(40),
+  label: z.string().min(1).max(120),
+});
+
+export type Metrica = z.infer<typeof metricaSchema>;
+
+// ── Pilares en acción (clave `pilares`) ─────────────────────────────────────
+// {titulo, items: [{title, description, metric, image?, imageAlt?}]}.
+// Fallback: título "Nuestros Pilares en Acción" + home.pillarsEnAccion.
+
+export const pilarEnAccionSchema = z.object({
+  title: z.string().min(3).max(80),
+  description: z.string().min(10).max(500),
+  metric: z.string().min(1).max(120),
+  image: z.string().optional(),
+  imageAlt: z.string().optional(),
+});
+
+export type PilarEnAccion = z.infer<typeof pilarEnAccionSchema>;
+
+export const pilaresSchema = z.object({
+  titulo: z.string().min(1).max(120),
+  items: z.array(pilarEnAccionSchema).default([]),
+});
+
+export type Pilares = z.infer<typeof pilaresSchema>;
 
 // ── Autoridades (clave `autoridades`) ───────────────────────────────────────
 // Array [{name, role, image}] directivos del colegio. Fallback about.authorities.
@@ -176,6 +237,13 @@ export type GaleriaItem = z.infer<typeof galeriaItemSchema>;
 // Cada entrada alimenta NivelLayout. Fallback levels.json.
 
 export const nivelDetalleSchema = z.object({
+  // Tarjeta (resumen en el índice de niveles)
+  name: z.string().min(2).max(40),
+  ageRange: z.string().max(40).optional(),
+  subtitle: z.string().max(120).optional(),
+  subtitleVisible: z.boolean().default(false),
+  enabled: z.boolean().default(true),
+  // Detalle (página del nivel)
   headline: z.string().min(3).max(200),
   description: z.string().min(10).max(1000),
   image: z.string().min(1),
@@ -186,6 +254,7 @@ export const nivelDetalleSchema = z.object({
     saturday: z.string().min(1).max(100),
   }),
   cta: z.string().min(3).max(160),
+  ctaHref: z.string().default("/admisiones"),
 });
 
 export type NivelDetalle = z.infer<typeof nivelDetalleSchema>;
@@ -235,6 +304,10 @@ export const admisionFaqSchema = z.object({
 
 export const admisionesSchema = z.object({
   periodLabel: z.string().max(160).optional(),
+  heroBadge: z.string().max(160).optional(),
+  heroTitlePre: z.string().max(160).optional(),
+  heroTitleHighlight: z.string().max(160).optional(),
+  heroDescription: z.string().max(500).optional(),
   fechasClave: z.array(admisionFechaSchema).default([]),
   aviso: z.string().min(5).max(500).optional(),
   etapas: z.array(admisionEtapaSchema).default([]),
@@ -295,8 +368,15 @@ export const bannersFallbackSchema = z.object({
 });
 
 // ── Contacto (clave `contacto`) ─────────────────────────────────────────────
-// {departments[], formFields[]}. Fallback contact.json.
-// departments alimenta el directorio; formFields genera el formulario.
+// {info: {mapUrl?, mapEmbedUrl?}, departments[], formFields[]}.
+// Fallback contact.json. departments alimenta el directorio; formFields genera
+// el formulario; info solo guarda las URLs del mapa (el resto de datos de
+// contacto vive en la clave `footer`).
+
+export const contactoInfoSchema = z.object({
+  mapUrl: z.string().optional(),
+  mapEmbedUrl: z.string().optional(),
+});
 
 export const departamentoSchema = z.object({
   name: z.string().min(2).max(120),
@@ -314,8 +394,64 @@ export const formFieldSchema = z.object({
 });
 
 export const contactoSchema = z.object({
+  info: contactoInfoSchema.default({}),
   departments: z.array(departamentoSchema).default([]),
   formFields: z.array(formFieldSchema).default([]),
 });
 
 export type Contacto = z.infer<typeof contactoSchema>;
+
+// ── WhatsApp (clave `whatsapp`) ─────────────────────────────────────────────
+// {numero} en formato internacional E.164 (ej. +573101234567). Fallback a
+// siteConfig.contact.whatsapp en el punto de uso.
+
+export const whatsappSchema = z.object({
+  numero: z
+    .string()
+    .regex(
+      /^\+[1-9]\d{6,14}$/,
+      "Número de WhatsApp en formato E.164 (ej. +573101234567)",
+    ),
+});
+
+export type Whatsapp = z.infer<typeof whatsappSchema>;
+
+// ── Footer (clave `footer`) ─────────────────────────────────────────────────
+// Datos del pie de página: contacto general (dirección, ciudad, teléfono,
+// email, horario), títulos editables, redes sociales y bloques de nivel con
+// enlaces. Fallback footer.json.
+// Los bloques de nivel son INDEPENDIENTES de la clave `niveles`: renombrar
+// aquí un nivel NO afecta a las tarjetas del inicio (que leen `niveles`).
+
+export const footerContactSchema = z.object({
+  address: z.string().optional(),
+  city: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  officeHours: z.string().optional(),
+});
+
+export const footerSocialSchema = z.object({
+  facebook: z.string().url().optional(),
+  instagram: z.string().url().optional(),
+  youtube: z.string().url().optional(),
+  linkedin: z.string().url().optional(),
+  x: z.string().url().optional(),
+  tiktok: z.string().url().optional(),
+});
+
+export const footerNivelSchema = z.object({
+  name: z.string().min(1).max(80),
+  href: z.string().min(1),
+});
+
+export const footerSchema = z.object({
+  contact: footerContactSchema.default({}),
+  contactTitle: z.string().optional(),
+  levelsTitle: z.string().optional(),
+  socialTitle: z.string().optional(),
+  social: footerSocialSchema.default({}),
+  levels: z.array(footerNivelSchema).default([]),
+});
+
+export type Footer = z.infer<typeof footerSchema>;

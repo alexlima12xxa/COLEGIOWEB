@@ -65,10 +65,6 @@ const levelSchema = z.object({
     .string()
     .min(2)
     .max(40, "El nombre del nivel no puede superar 40 caracteres"),
-  shortName: z
-    .string()
-    .min(2)
-    .max(20, "La abreviatura no puede superar 20 caracteres"),
   slug: slugSchema,
   description: z.string().max(280).optional(),
   ageRange: z.string().optional(),

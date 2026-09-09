@@ -14,14 +14,24 @@ export type PortadaState = {
 const LIMITS = {
   heroTitulo: { min: 2, max: 80 },
   heroSubtitulo: { min: 2, max: 200 },
-  videoUrl: { min: 5, max: 500 },
-  videoPosterAlt: { min: 0, max: 200 },
+  navbarLabel: { min: 1, max: 60 },
+  metricaValue: { min: 1, max: 40 },
+  metricaLabel: { min: 1, max: 120 },
+  pilarTitulo: { min: 3, max: 80 },
+  pilarDescription: { min: 10, max: 500 },
+  pilarMetric: { min: 1, max: 120 },
+  pilaresTitulo: { min: 1, max: 120 },
 } as const;
 
-function clamp(value: string, limits: { min: number; max: number }): string | null {
+function clamp(
+  value: string,
+  limits: { min: number; max: number },
+): string | null {
   const len = value.length;
-  if (len < limits.min) return `Mínimo ${limits.min} caracteres (actual: ${len}).`;
-  if (len > limits.max) return `Máximo ${limits.max} caracteres (actual: ${len}).`;
+  if (len < limits.min)
+    return `Mínimo ${limits.min} caracteres (actual: ${len}).`;
+  if (len > limits.max)
+    return `Máximo ${limits.max} caracteres (actual: ${len}).`;
   return null;
 }
 
@@ -30,10 +40,12 @@ async function upsertContenido(
   valor: unknown,
 ): Promise<PortadaState> {
   const { supabase, tenantId } = await requireAdmin();
-  const { error } = await supabase.from("contenido").upsert(
-    { tenant_id: tenantId, clave, valor },
-    { onConflict: "tenant_id,clave" },
-  );
+  const { error } = await supabase
+    .from("contenido")
+    .upsert(
+      { tenant_id: tenantId, clave, valor },
+      { onConflict: "tenant_id,clave" },
+    );
   if (error) {
     return { error: `No se pudo guardar "${clave}": ${error.message}` };
   }
@@ -50,7 +62,8 @@ async function uploadOrKeep(
   if (!file || file.size === 0) return { path: current };
 
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
-  const base = slugify(current.split("/").pop()?.split(".")[0] ?? "imagen") || "imagen";
+  const base =
+    slugify(current.split("/").pop()?.split(".")[0] ?? "imagen") || "imagen";
   const uploadPath = `${folder}/${base}-${Date.now()}.${ext}`;
 
   const { supabase } = await requireAdmin();
@@ -59,7 +72,10 @@ async function uploadOrKeep(
     .upload(uploadPath, file, { upsert: true, contentType: file.type });
 
   if (error) {
-    return { path: current, error: `No se pudo subir la imagen: ${error.message}` };
+    return {
+      path: current,
+      error: `No se pudo subir la imagen: ${error.message}`,
+    };
   }
   return { path: uploadPath };
 }
@@ -100,7 +116,11 @@ export async function guardarHero(
   }
 
   const heroFile = formData.get("heroPhoto") as File | null;
-  const heroPhoto = await uploadOrKeep(heroFile, "portada", prev.heroPhoto ?? "");
+  const heroPhoto = await uploadOrKeep(
+    heroFile,
+    "portada",
+    prev.heroPhoto ?? "",
+  );
   if (heroPhoto.error) return { error: heroPhoto.error };
 
   const valor: HeroShape = {
@@ -122,47 +142,132 @@ export async function guardarHero(
   return { ok: true };
 }
 
-interface VideoTourShape {
-  videoUrl?: string;
-  poster?: string;
-  title?: string;
-  description?: string;
-}
+// ── Navbar (clave `navbar`) ─────────────────────────────────────────────────
+// Lista fija de enlaces [{label, href}]. Logo y nombre siguen en config.
 
-export async function guardarVideoTour(
+const NAVBAR_COUNT = 7;
+
+const NAVBAR_ROUTES = [
+  "/",
+  "/nosotros",
+  "/niveles",
+  "/admisiones",
+  "/noticias",
+  "/circulares",
+  "/contacto",
+];
+
+export async function guardarNavbar(
   _prev: PortadaState,
   formData: FormData,
 ): Promise<PortadaState> {
-  const videoUrl = String(formData.get("videoUrl") ?? "").trim();
-  const currentPoster = formData.get("poster_json") as string | null;
-  const posterTitle = String(formData.get("posterTitle") ?? "").trim();
-
   const fieldErrors: Record<string, string> = {};
-  const eUrl = clamp(videoUrl, LIMITS.videoUrl);
-  if (eUrl) fieldErrors.videoUrl = eUrl;
-  if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
+  const links: { label: string; href: string }[] = [];
 
-  let prev: VideoTourShape = {};
-  if (currentPoster) {
-    try {
-      prev = JSON.parse(currentPoster) as VideoTourShape;
-    } catch {
-      prev = {};
+  for (let i = 0; i < NAVBAR_COUNT; i++) {
+    const label = String(formData.get(`label_${i}`) ?? "").trim();
+    const href = String(formData.get(`href_${i}`) ?? "").trim();
+    if (!label && !href) continue;
+
+    const eLabel = clamp(label, LIMITS.navbarLabel);
+    if (eLabel) fieldErrors[`label_${i}`] = eLabel;
+
+    if (!NAVBAR_ROUTES.includes(href)) {
+      fieldErrors[`href_${i}`] = "Elige una página existente.";
     }
+    links.push({ label, href });
   }
 
-  const posterFile = formData.get("poster") as File | null;
-  const poster = await uploadOrKeep(posterFile, "portada", prev.poster ?? "");
-  if (poster.error) return { error: poster.error };
+  if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
+  if (links.length === 0) {
+    return { fieldErrors: { _form: "Añade al menos un enlace." } };
+  }
 
-  const valor: VideoTourShape = {
-    ...prev,
-    videoUrl,
-    poster: poster.path,
-    title: posterTitle || prev.title || "Tour virtual",
-  };
+  const res = await upsertContenido("navbar", { links });
+  if (res.error) return res;
 
-  const res = await upsertContenido("video_tour", valor);
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
+  revalidatePath("/admin/portada");
+  return { ok: true };
+}
+
+// ── Métricas (clave `metricas`) ─────────────────────────────────────────────
+// 4 métricas fijas [{value, label}] de la franja de datos.
+
+const METRICAS_COUNT = 4;
+
+export async function guardarMetricas(
+  _prev: PortadaState,
+  formData: FormData,
+): Promise<PortadaState> {
+  const fieldErrors: Record<string, string> = {};
+  const metricas: { value: string; label: string }[] = [];
+
+  for (let i = 0; i < METRICAS_COUNT; i++) {
+    const value = String(formData.get(`value_${i}`) ?? "").trim();
+    const label = String(formData.get(`label_${i}`) ?? "").trim();
+    if (!value && !label) continue;
+
+    const eValue = clamp(value, LIMITS.metricaValue);
+    const eLabel = clamp(label, LIMITS.metricaLabel);
+    if (eValue) fieldErrors[`value_${i}`] = eValue;
+    if (eLabel) fieldErrors[`label_${i}`] = eLabel;
+    metricas.push({ value, label });
+  }
+
+  if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
+  if (metricas.length === 0) {
+    return { fieldErrors: { _form: "Añade al menos una métrica." } };
+  }
+
+  const res = await upsertContenido("metricas", metricas);
+  if (res.error) return res;
+
+  const { supabase, tenantId } = await requireAdmin();
+  await triggerRebuild(supabase, tenantId);
+  revalidatePath("/admin/portada");
+  return { ok: true };
+}
+
+// ── Pilares (clave `pilares`) ────────────────────────────────────────────────
+// {titulo, items: [{title, description, metric}]} — 4 pilares fijos.
+
+const PILARES_COUNT = 4;
+
+export async function guardarPilares(
+  _prev: PortadaState,
+  formData: FormData,
+): Promise<PortadaState> {
+  const titulo = String(formData.get("titulo") ?? "").trim();
+  const fieldErrors: Record<string, string> = {};
+
+  const eTitulo = clamp(titulo, LIMITS.pilaresTitulo);
+  if (eTitulo) fieldErrors.titulo = eTitulo;
+
+  const items: { title: string; description: string; metric: string }[] = [];
+
+  for (let i = 0; i < PILARES_COUNT; i++) {
+    const title = String(formData.get(`title_${i}`) ?? "").trim();
+    const description = String(formData.get(`description_${i}`) ?? "").trim();
+    const metric = String(formData.get(`metric_${i}`) ?? "").trim();
+    if (!title && !description && !metric) continue;
+
+    const eTitle = clamp(title, LIMITS.pilarTitulo);
+    const eDescription = clamp(description, LIMITS.pilarDescription);
+    const eMetric = clamp(metric, LIMITS.pilarMetric);
+    if (eTitle) fieldErrors[`title_${i}`] = eTitle;
+    if (eDescription) fieldErrors[`description_${i}`] = eDescription;
+    if (eMetric) fieldErrors[`metric_${i}`] = eMetric;
+    items.push({ title, description, metric });
+  }
+
+  if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
+  if (items.length === 0) {
+    return { fieldErrors: { _form: "Añade al menos un pilar." } };
+  }
+
+  const res = await upsertContenido("pilares", { titulo, items });
   if (res.error) return res;
 
   const { supabase, tenantId } = await requireAdmin();

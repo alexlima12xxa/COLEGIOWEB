@@ -24,6 +24,15 @@ export function DashboardIcon(props: IconProps) {
   );
 }
 
+export function VideoIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.433L16 10.5" />
+      <rect x="2" y="6" width="14" height="12" rx="2" />
+    </svg>
+  );
+}
+
 export function NewspaperIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>
@@ -124,6 +133,16 @@ export function LayersIcon(props: IconProps) {
       <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
       <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
       <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+    </svg>
+  );
+}
+
+export function FooterIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 4h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+      <path d="M3 8h18" />
+      <path d="M6 12h4" />
     </svg>
   );
 }

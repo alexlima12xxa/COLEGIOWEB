@@ -6,6 +6,7 @@ import {
   ClipboardListIcon,
   DashboardIcon,
   FileTextIcon,
+  FooterIcon,
   GraduationCapIcon,
   ImageIcon,
   InboxIcon,
@@ -14,20 +15,23 @@ import {
   NewspaperIcon,
   PenLineIcon,
   UsersIcon,
+  VideoIcon,
 } from "./icons";
 
 const sections = [
   { href: "/admin", label: "Dashboard", Icon: DashboardIcon },
   { href: "/admin/portada", label: "Portada", Icon: ImageIcon },
+  { href: "/admin/video-tour", label: "Video Tour", Icon: VideoIcon },
   { href: "/admin/banners", label: "Banners", Icon: LayersIcon },
   { href: "/admin/noticias", label: "Noticias", Icon: NewspaperIcon },
   { href: "/admin/circulares", label: "Circulares", Icon: FileTextIcon },
-  { href: "/admin/textos", label: "Textos", Icon: PenLineIcon },
+  { href: "/admin/textos", label: "Nosotros", Icon: PenLineIcon },
   { href: "/admin/autoridades", label: "Autoridades", Icon: UsersIcon },
   { href: "/admin/niveles", label: "Niveles", Icon: GraduationCapIcon },
   { href: "/admin/admisiones", label: "Admisiones", Icon: ClipboardListIcon },
   { href: "/admin/galeria", label: "Galería", Icon: ImageIcon },
   { href: "/admin/contacto", label: "Contacto", Icon: MailIcon },
+  { href: "/admin/footer", label: "Footer", Icon: FooterIcon },
   { href: "/admin/leads", label: "Leads", Icon: InboxIcon },
 ] as const;
 

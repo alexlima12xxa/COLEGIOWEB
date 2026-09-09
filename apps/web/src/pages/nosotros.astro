@@ -5,14 +5,15 @@ import Button from "../shared/ui/Button/Button.astro";
 import Card from "../shared/ui/Card/Card.astro";
 import Timeline from "../shared/ui/Timeline/Timeline.astro";
 import ResponsiveImage from "../shared/ui/ResponsiveImage/ResponsiveImage.astro";
-import { siteConfig } from "../site.config";
 import {
   getMision,
   getVision,
   getFilosofia,
   getHistoria,
   getAutoridades,
+  getNosotrosHero,
 } from "../shared/db/contenido";
+import { resolveAssetUrl } from "../shared/db/storage";
 
 const title = "Nosotros";
 const description =
@@ -25,24 +26,26 @@ const vision = await getVision();
 const philosophy = await getFilosofia();
 const history = await getHistoria();
 const authorities = await getAutoridades();
+const nosotrosHero = await getNosotrosHero();
+
+// Resuelve la imagen del hero: local o URL absoluta tal cual, ruta de Storage
+// a su URL pública.
+const heroImageUrl = resolveAssetUrl(nosotrosHero.image) ?? nosotrosHero.image;
 ---
 
 <BaseLayout title={title} description={description}>
   <Section padding="xl" class="aboutHero">
     <div class="aboutHero__grid">
       <div class="aboutHero__content">
-        <h1 class="aboutHero__title">Nuestra historia</h1>
-        <p class="aboutHero__lead">
-          Desde {siteConfig.identity.founded} construimos una comunidad de aprendizaje
-          centrada en las personas.
-        </p>
+        <h1 class="aboutHero__title">{nosotrosHero.title}</h1>
+        <p class="aboutHero__lead">{nosotrosHero.lead}</p>
         <p class="aboutHero__description">
-          {siteConfig.identity.description}
+          {nosotrosHero.description}
         </p>
       </div>
       <div class="aboutHero__media">
         <ResponsiveImage
-          src="/branding/placeholders/about-campus.jpg"
+          src={heroImageUrl}
           alt="Sede principal del Colegio Piloto"
           width={1200}
           height={800}

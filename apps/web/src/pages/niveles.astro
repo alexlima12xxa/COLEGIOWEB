@@ -4,14 +4,18 @@ import Section from "../shared/ui/Section/Section.astro";
 import LevelCards from "../features/levels/components/LevelCards/LevelCards.astro";
 import CampusShowcase from "../features/levels/components/CampusShowcase/CampusShowcase.astro";
 import { siteConfig } from "../site.config";
-import { getVideoTour, getHero } from "../shared/db/contenido";
+import {
+  getVideoTour,
+  getHero,
+  getNivelesResumen,
+} from "../shared/db/contenido";
 import { resolveAssetUrl } from "../shared/db/storage";
 
 const title = "Niveles educativos";
 const description =
   "Conoce nuestra oferta académica: preescolar, primaria y secundaria.";
 
-const enabledLevels = siteConfig.levels.filter((level) => level.enabled);
+const enabledLevels = (await getNivelesResumen()).filter((l) => l.enabled);
 
 // Video de instalaciones desde Supabase (clave `video_tour`), con fallback a
 // site.config y placeholder, igual que el hero de inicio.

@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from "../../site.config";
+import { getFooter } from "../db/contenido";
 
 export interface Props {
   title?: string;
@@ -8,6 +9,12 @@ export interface Props {
   path?: string;
   noindex?: boolean;
 }
+
+// Contacto y redes desde Supabase (clave `footer`) con fallback al config del
+// colegio. Se resuelven en build-time.
+const footer = await getFooter();
+const footerContact = footer.contact ?? {};
+const footerSocial = footer.social ?? {};
 
 const {
   title = siteConfig.seo.defaultTitle,
@@ -44,21 +51,21 @@ const jsonLd = {
     siteConfig.identity.founded !== undefined
       ? String(siteConfig.identity.founded)
       : undefined,
-  sameAs: Object.values(siteConfig.social).filter(
+  sameAs: Object.values(footerSocial).filter(
     (url): url is string => typeof url === "string" && url.length > 0,
   ),
   address: {
     "@type": "PostalAddress",
-    streetAddress: siteConfig.contact.address,
-    addressLocality: siteConfig.contact.city,
+    streetAddress: footerContact.address,
+    addressLocality: footerContact.city,
   },
-  telephone: siteConfig.contact.phone,
-  email: siteConfig.contact.email,
+  telephone: footerContact.phone,
+  email: footerContact.email,
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "Admisiones",
-    telephone: siteConfig.contact.phone,
-    email: siteConfig.contact.email,
+    telephone: footerContact.phone,
+    email: footerContact.email,
     availableLanguage: "es",
   },
 };

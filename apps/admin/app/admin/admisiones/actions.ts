@@ -12,6 +12,10 @@ export type AdmisionesState = {
 
 const LIMITS = {
   periodo: { min: 0, max: 160 },
+  heroBadge: { min: 0, max: 160 },
+  heroTitlePre: { min: 0, max: 160 },
+  heroTitleHighlight: { min: 0, max: 160 },
+  heroDescription: { min: 0, max: 500 },
   fechaTitulo: { min: 3, max: 120 },
   fechaFecha: { min: 1, max: 80 },
   fechaDesc: { min: 0, max: 500 },
@@ -69,6 +73,22 @@ export async function guardarAdmisiones(
   const periodLabel = String(formData.get("periodLabel") ?? "").trim();
   const ePeriodo = clamp(periodLabel, LIMITS.periodo);
   if (ePeriodo) fieldErrors.periodLabel = ePeriodo;
+
+  const heroBadge = String(formData.get("heroBadge") ?? "").trim();
+  const eHeroBadge = clamp(heroBadge, LIMITS.heroBadge);
+  if (eHeroBadge) fieldErrors.heroBadge = eHeroBadge;
+
+  const heroTitlePre = String(formData.get("heroTitlePre") ?? "").trim();
+  const eHeroTitlePre = clamp(heroTitlePre, LIMITS.heroTitlePre);
+  if (eHeroTitlePre) fieldErrors.heroTitlePre = eHeroTitlePre;
+
+  const heroTitleHighlight = String(formData.get("heroTitleHighlight") ?? "").trim();
+  const eHeroTitleHighlight = clamp(heroTitleHighlight, LIMITS.heroTitleHighlight);
+  if (eHeroTitleHighlight) fieldErrors.heroTitleHighlight = eHeroTitleHighlight;
+
+  const heroDescription = String(formData.get("heroDescription") ?? "").trim();
+  const eHeroDescription = clamp(heroDescription, LIMITS.heroDescription);
+  if (eHeroDescription) fieldErrors.heroDescription = eHeroDescription;
 
   const aviso = String(formData.get("aviso") ?? "").trim();
   const eAviso = clamp(aviso, LIMITS.aviso);
@@ -169,6 +189,10 @@ export async function guardarAdmisiones(
 
   const valor = {
     periodLabel: periodLabel || undefined,
+    heroBadge: heroBadge || undefined,
+    heroTitlePre: heroTitlePre || undefined,
+    heroTitleHighlight: heroTitleHighlight || undefined,
+    heroDescription: heroDescription || undefined,
     fechasClave,
     aviso: aviso || undefined,
     etapas,

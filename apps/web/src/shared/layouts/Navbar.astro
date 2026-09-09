@@ -4,6 +4,7 @@ import { Menu, Lock } from "@lucide/astro";
 import MobileDrawer from "./MobileDrawer.astro";
 import Button from "../ui/Button/Button.astro";
 import Logo from "../ui/Logo/Logo.astro";
+import { getNavbar } from "../db/contenido";
 import "./Navbar.css";
 
 export interface Props {
@@ -14,15 +15,9 @@ const { class: className } = Astro.props;
 
 const intranetUrl = siteConfig.links?.intranetUrl;
 
-const navLinks = [
-  { label: "Inicio", href: "/" },
-  { label: "Nosotros", href: "/nosotros" },
-  { label: "Niveles", href: "/niveles" },
-  { label: "Admisiones", href: "/admisiones" },
-  { label: "Noticias", href: "/noticias" },
-  { label: "Circulares", href: "/circulares" },
-  { label: "Contacto", href: "/contacto" },
-];
+// Enlaces de navegación desde Supabase (clave `navbar`), con fallback a los
+// enlaces por defecto. El getter nunca falla: la web siempre renderiza menú.
+const navLinks = await getNavbar();
 
 const currentPath = Astro.url.pathname;
 

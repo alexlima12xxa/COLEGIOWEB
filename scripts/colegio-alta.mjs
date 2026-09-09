@@ -9,7 +9,7 @@
  *      a. Upsert del colegio en `colegios` (por slug) → tenant_id.
  *      b. Crea el usuario admin en Auth con app_metadata
  *         { role: "admin", tenant_id } (o actualiza si ya existe).
- *      c. Siembra las 11 claves de contenido (plantilla parametrizada).
+ *      c. Siembra las 12 claves de contenido (plantilla parametrizada).
  *   3. Vercel (REST API, token):
  *      a. Crea el proyecto web (rootDirectory apps/web, framework astro).
  *      b. Setea env vars (PUBLIC_TENANT_ID, PUBLIC_SITE_SLUG, Supabase URL/keys).
@@ -50,6 +50,7 @@ const CONTENT_KEYS = [
   "vision",
   "filosofia",
   "historia",
+  "nosotros_hero",
   "hero",
   "video_tour",
   "autoridades",
@@ -198,6 +199,12 @@ function buildSeed(cliente) {
         description: `Nace ${nombre} con la misión de ofrecer una educación de calidad centrada en el estudiante y en valores sólidos.`,
       },
     ],
+    nosotros_hero: {
+      title: "Nuestra historia",
+      lead: `Desde hoy construimos una comunidad de aprendizaje centrada en las personas.`,
+      description: `Somos una institución educativa comprometida con la formación integral de nuestros estudiantes.`,
+      image: assets("placeholders/about-campus.jpg"),
+    },
     hero: {
       badge: "Admisiones abiertas",
       name: nombre,

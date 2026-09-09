@@ -17,28 +17,13 @@
 -- ── README: claves válidas (task 3) ─────────────────────────────────────────
 -- La columna `clave` es un slug libre. Las claves actualmente consumidas por
 -- la web del colegio piloto (ver supabase/seed_contenido.sql):
+--   mision, vision, filosofia, historia, nosotros_hero, hero, video_tour,
+--   autoridades, niveles, admisiones, galeria, contacto, whatsapp, footer
 --
---   mision       → jsonb string  Misión institucional (fallback about.mission).
---   vision       → jsonb string  Visión institucional (fallback about.vision).
---   filosofia    → array [{title, description}] pilares pedagógicos
---                  (fallback about.philosophy).
---   historia     → array [{title, date, description}] hitos del colegio
---                  (fallback about.history).
---   hero         → objeto del hero de portada: {badge, name, slogan,
---                  description, heroPhoto, tourPoster, actions[]}
---                  (site.config + fallback home).
---   video_tour   → {videoUrl, poster, title, description} video del tour
---                  virtual (VideoModal de la portada).
---   autoridades  → array [{name, role, image}] directivos (about.authorities).
---   niveles      → objeto con una entrada por nivel educativo: {preescolar,
---                  primaria, secundaria, media-tecnica} (fallback levels).
---   admisiones   → {periodLabel?, fechasClave[], aviso?, etapas[],
---                  requisitosPorNivel{}, faq[]} (fallback admissions).
---   galeria      → array [{src, alt, variant}] galería bento (home.bentoGallery).
---   contacto     → {departments[], formFields[]} (fallback contact).
---
--- Contrato: una clave que se edite en el panel/admin debe mantener el MISMO
--- shape que consume la web (zod). Documentar aquí toda clave nueva.
+-- El inventario completo (shape, fallback, sección admin, getter web) está
+-- documentado en docs/contrato-contenido.md. Contrato: una clave que se edite
+-- en el panel/admin debe mantener el MISMO shape que consume la web (zod).
+-- Documentar aquí y en docs/contrato-contenido.md toda clave nueva.
 
 create table public.contenido (
   id uuid primary key default gen_random_uuid(),

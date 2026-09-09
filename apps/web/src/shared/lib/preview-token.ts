@@ -11,8 +11,9 @@ function secret(): string | null {
   // `import.meta.env` (NO las copia a `process.env`). En producción (Vercel)
   // las variables llegan por `process.env`. Se leen ambas para que la ruta
   // /preview-admin verifique el token en los dos entornos.
-  const fromImportMeta = (import.meta as { env?: Record<string, string | undefined> })
-    .env?.PREVIEW_SIGNING_KEY;
+  const fromImportMeta = (
+    import.meta as { env?: Record<string, string | undefined> }
+  ).env?.PREVIEW_SIGNING_KEY;
   return fromImportMeta ?? process.env.PREVIEW_SIGNING_KEY ?? null;
 }
 

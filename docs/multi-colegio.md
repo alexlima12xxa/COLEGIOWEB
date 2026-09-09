@@ -2,6 +2,9 @@
 
 > Cómo dar de alta un colegio nuevo en el modelo white-label escalable.
 > Actualizado: 2026-09-02
+>
+> **Contrato de contenido/datos**: el detalle de claves, shapes y fallbacks
+> entre el panel y la web vive en [`contrato-contenido.md`](./contrato-contenido.md).
 
 ## Arquitectura
 
@@ -68,7 +71,7 @@ Flags útiles: `--password <pw>`, `--domain <d>`, `--email <e>`, `--rebuild-hook
 El script:
 1. Upsert del colegio en `colegios` (por slug) → `tenant_id`.
 2. Crea el admin en Supabase Auth con `app_metadata { role: "admin", tenant_id }`.
-3. Siembra las 11 claves de contenido (plantilla parametrizada).
+3. Siembra las 12 claves de contenido (plantilla parametrizada).
 4. Crea el proyecto Vercel `web-<slug>` (rootDirectory `apps/web`, framework astro), setea env vars (`PUBLIC_TENANT_ID`, `PUBLIC_SITE_SLUG`, Supabase URL/keys), agrega el dominio y crea el deploy hook.
 5. Guarda `tenant_settings.rebuild_hook_url`.
 

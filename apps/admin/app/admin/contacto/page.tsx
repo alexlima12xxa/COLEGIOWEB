@@ -5,7 +5,7 @@ import { ContactoForm } from "./contacto-form";
 
 export const dynamic = "force-dynamic";
 
-const CLAVES = ["contacto"] as const;
+const CLAVES = ["contacto", "whatsapp"] as const;
 
 export default async function ContactoPage() {
   const { supabase } = await requireAdmin();
@@ -15,23 +15,35 @@ export default async function ContactoPage() {
     .select("clave, valor")
     .in("clave", [...CLAVES]);
 
-  const porClave = new Map((filas ?? []).map((fila) => [fila.clave, fila.valor]));
+  const porClave = new Map(
+    (filas ?? []).map((fila) => [fila.clave, fila.valor]),
+  );
   const contacto = porClave.get("contacto");
+  const whatsappRaw = porClave.get("whatsapp");
 
   const contactoObj =
     contacto && typeof contacto === "object" && !Array.isArray(contacto)
       ? (contacto as {
           info?: {
-            address?: string;
-            phone?: string;
-            email?: string;
-            hours?: string;
             mapUrl?: string;
             mapEmbedUrl?: string;
           };
-          departments?: { name?: string; phone?: string; email?: string; hours?: string; hidden?: boolean }[];
+          departments?: {
+            name?: string;
+            phone?: string;
+            email?: string;
+            hours?: string;
+            hidden?: boolean;
+          }[];
         })
       : {};
+
+  const whatsappInicial =
+    whatsappRaw &&
+    typeof whatsappRaw === "object" &&
+    !Array.isArray(whatsappRaw)
+      ? (whatsappRaw as { numero?: string }).numero
+      : undefined;
 
   return (
     <div className="space-y-6">
@@ -40,8 +52,10 @@ export default async function ContactoPage() {
           Contacto
         </h1>
         <p className="mt-1 text-sm text-zinc-600">
-          Datos de contacto y directorio por departamento. Los cambios aparecen
-          en la web tras el rebuild automático.
+          WhatsApp, mapa y directorio por departamento de la página de contacto.
+          La dirección, teléfono y horario generales se editan en
+          &quot;Footer&quot;. Los cambios aparecen en la web tras el rebuild
+          automático.
         </p>
       </div>
 
@@ -50,7 +64,7 @@ export default async function ContactoPage() {
       </ModuleCard>
 
       <ModuleCard id="contacto-editor" title="Contacto">
-        <ContactoForm initial={contactoObj} />
+        <ContactoForm initial={contactoObj} whatsappInicial={whatsappInicial} />
       </ModuleCard>
     </div>
   );
