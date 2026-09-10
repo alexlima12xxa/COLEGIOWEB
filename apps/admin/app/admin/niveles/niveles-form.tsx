@@ -75,6 +75,7 @@ function CheckboxRow({
     <label htmlFor={id} className="flex items-start gap-2 text-sm text-zinc-700">
       <input
         id={id}
+        name={id}
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
