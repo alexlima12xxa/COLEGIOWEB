@@ -72,7 +72,10 @@ async function isImageAccessible(url: string): Promise<boolean> {
   if (cached !== undefined) return cached;
   let accessible: boolean;
   try {
-    const res = await fetch(url, { method: "HEAD" });
+    const res = await fetch(url, {
+      method: "HEAD",
+      signal: AbortSignal.timeout(2500),
+    });
     accessible = res.status >= 200 && res.status < 300;
   } catch {
     accessible = false;
@@ -397,7 +400,19 @@ export async function getAdmisiones(): Promise<Admisiones> {
   const raw = await getContenido<unknown>("admisiones", () => admissionsData);
   const parsed = admisionesSchema.safeParse(raw);
   if (!parsed.success) return admissionsData as Admisiones;
-  return parsed.data;
+
+  const fallbackRequisitos = admissionsData.requisitosPorNivel as Record<
+    string,
+    Array<{ title: string; description: string; formato: string }>
+  >;
+
+  return {
+    ...parsed.data,
+    requisitosPorNivel: {
+      ...fallbackRequisitos,
+      ...parsed.data.requisitosPorNivel,
+    },
+  };
 }
 
 // ── Contacto (clave `contacto`) ─────────────────────────────────────────────
@@ -477,13 +492,17 @@ export async function getFooter(): Promise<Footer> {
 
   // La clave existe en BD: la BD manda, pero los campos ausentes se completan
   // con el config del colegio (p. ej. una ciudad dejada en blanco).
+  const hasCustomSocial = data.social && Object.keys(data.social).length > 0;
+
   return {
     ...data,
     contact: { ...FOOTER_BASE.contact, ...data.contact },
     contactTitle: data.contactTitle || FOOTER_BASE.contactTitle,
     levelsTitle: data.levelsTitle || FOOTER_BASE.levelsTitle,
     socialTitle: data.socialTitle || FOOTER_BASE.socialTitle,
-    social: data.social,
+    social: hasCustomSocial
+      ? data.social
+      : { ...FOOTER_BASE.social, ...data.social },
     levels: data.levels.length > 0 ? data.levels : FOOTER_BASE.levels,
   };
 }
