@@ -20,6 +20,16 @@ pnpm --filter @web-modelo/admin build
 pnpm --filter @web-modelo/aula build
 ```
 
+Imágenes locales de marca (`public/branding/`, no las procesa astro:assets):
+
+```
+pnpm --filter @web-modelo/web optimize:images   # recomprime placeholders (sharp) in-place
+pnpm --filter @web-modelo/web optimize:svg      # optimiza SVGs con SVGO in-place
+pnpm --filter @web-modelo/web check:budget      # presupuesto above-fold (post-build; BUDGET_KB=500)
+```
+
+> `check` incluye `check:budget`; si no existe `dist/`, el presupuesto se omite.
+
 Modelo multi-colegio (onboarding de un colegio nuevo):
 
 ```

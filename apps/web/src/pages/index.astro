@@ -168,7 +168,16 @@ const videoJsonLd = {
       {
         metricas.map((metric) => (
           <li class="trustStrip__item">
-            <span class="trustStrip__value">{metric.value}</span>
+            <span class="trustStrip__number">
+              <span class="trustStrip__glow" aria-hidden="true" />
+              <span
+                class="trustStrip__value"
+                data-count={metric.value}
+                aria-label={`${metric.value} ${metric.label}`}
+              >
+                {metric.value}
+              </span>
+            </span>
             <span class="trustStrip__label">{metric.label}</span>
           </li>
         ))
@@ -220,8 +229,95 @@ const videoJsonLd = {
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
           strip.classList.add("trustStrip--animate");
+          animateCountUp(strip);
         }),
       );
+    }
+
+    /* Parsea el texto de una métrica (ej. "40+", "1.200", "1:18", "98%") para
+       extraer el número objetivo, el sufijo y si es un ratio "1:n". */
+    function parseMetric(
+      raw: string,
+    ): { target: number; suffix: string; isRatio: boolean } | null {
+      const value = (raw ?? "").trim();
+      if (!value) return null;
+
+      const ratioMatch = value.match(/^1\s*:\s*(\d+)$/);
+      if (ratioMatch) {
+        return { target: Number(ratioMatch[1]), suffix: "1:", isRatio: true };
+      }
+
+      const suffixMatch =
+        value.match(/^(\d{1,3}(?:\.\d{3})*)(\+|%)$/) ||
+        value.match(/^(\d+)(\+|%)$/);
+      if (suffixMatch) {
+        return {
+          target: Number(suffixMatch[1].replace(/\./g, "")),
+          suffix: suffixMatch[2],
+          isRatio: false,
+        };
+      }
+
+      const numberMatch = value.match(/^(\d{1,3}(?:\.\d{3})*|\d+)/);
+      if (numberMatch) {
+        return {
+          target: Number(numberMatch[1].replace(/\./g, "")),
+          suffix: "",
+          isRatio: false,
+        };
+      }
+
+      return null;
+    }
+
+    function formatDisplay(
+      parsed: { target: number; suffix: string; isRatio: boolean },
+      current: number,
+    ): string {
+      const value = parsed.isRatio
+        ? `${parsed.suffix}${current}`
+        : `${current.toLocaleString("es-ES")}${parsed.suffix}`;
+      return value;
+    }
+
+    /* Easing easeOutExpo: el contador frena suavemente al acercarse al final. */
+    function easeOutExpo(progress: number): number {
+      return progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+    }
+
+    function animateCountUp(strip: Element) {
+      const reduced = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)",
+      )?.matches;
+      const items = Array.from(
+        strip.querySelectorAll<HTMLElement>(".trustStrip__value"),
+      );
+
+      items.forEach((el) => {
+        const parsed = parseMetric(el.dataset.count ?? "");
+        if (!parsed) return;
+
+        const end = parsed.target;
+        const duration = 2000;
+
+        if (reduced) {
+          el.textContent = formatDisplay(parsed, end);
+          return;
+        }
+
+        let startTimestamp: number | null = null;
+
+        const step = (timestamp: number) => {
+          if (startTimestamp === null) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const eased = easeOutExpo(progress);
+          const current = Math.floor(eased * end);
+          el.textContent = formatDisplay(parsed, current);
+          if (progress < 1) window.requestAnimationFrame(step);
+        };
+
+        window.requestAnimationFrame(step);
+      });
     }
 
     function initTrustStrip() {
@@ -305,29 +401,78 @@ const videoJsonLd = {
   }
 
   .trustStrip__item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: var(--space-2xs);
     min-width: 0;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Contenedor del número: bloque con dimensiones reales para que el glow
+     (absoluto) tenga área sobre la que expandirse. */
+  .trustStrip__number {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 6rem;
+    padding: 0.5rem 0;
   }
 
   .trustStrip__value {
-    font-size: var(--text-3xl);
+    position: relative;
+    z-index: 1;
+    font-size: var(--text-4xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-primary);
+    letter-spacing: -0.02em;
+  }
+
+  /* Resplandor difuminado detrás del número. Se centra con translate para no
+     depender del tamaño de un contenedor inline. Sin z-index negativo: queda
+     por encima del fondo de la sección y por debajo del texto (z-index: 1). */
+  .trustStrip__glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 95%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    border-radius: 1.1em / 1.7em;
+    background-color: #f97316;
+    opacity: 0.22;
+    filter: blur(28px);
+    pointer-events: none;
+  }
+
+  .trustStrip__item:nth-child(2) .trustStrip__glow {
+    background-color: #3b82f6;
+  }
+
+  .trustStrip__item:nth-child(3) .trustStrip__glow {
+    background-color: #22c55e;
+  }
+
+  .trustStrip__item:nth-child(4) .trustStrip__glow {
+    background-color: #14b8a6;
   }
 
   @media (max-width: 48rem) {
     .trustStrip__value {
-      font-size: var(--text-2xl);
+      font-size: var(--text-3xl);
     }
   }
 
   .trustStrip__label {
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
   }
 
   /* La animación es progresiva y segura: el contenido es visible por
@@ -345,13 +490,30 @@ const videoJsonLd = {
     }
   }
 
+  /* Entrada elástica (rebote) de cada tarjeta. La curva con salida fuera de
+     rango (overshoot) produce el efecto de resorte al aparecer. */
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
   /* El <section class="trustStrip"> lo renderiza Section.astro, por lo que NO
      lleva el data-astro-cid de esta página: los selectores scoped de Astro
      añadirían [data-astro-cid] al section y el selector nunca matchearía.
      :global() excluye esa parte; .trustStrip__item sigue scoped (sí lo lleva). */
   @media (prefers-reduced-motion: no-preference) {
     :global(.trustStrip--js.trustStrip--animate) .trustStrip__item {
-      animation: trustStripRise var(--duration-slow) var(--ease-standard) both;
+      animation: bounceIn 800ms cubic-bezier(0.68, -0.55, 0.26, 1.55) both;
     }
 
     :global(.trustStrip--js.trustStrip--animate) .trustStrip__item:first-child {

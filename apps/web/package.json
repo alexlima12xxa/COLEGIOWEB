@@ -10,16 +10,19 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check && eslint . && prettier --check .",
+    "check": "astro check && eslint . && prettier --check . && node scripts/check-image-budget.mjs",
+    "check:budget": "node scripts/check-image-budget.mjs",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "optimize:svg": "node scripts/optimize-svg.mjs",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
     "@astrojs/vercel": "^11.0.8",
     "@lucide/astro": "^1.34.0",
-    "@web-modelo/shared": "workspace:*",
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/vite": "^4.3.3",
+    "@web-modelo/shared": "workspace:*",
     "astro": "^7.2.9",
     "marked": "^18.0.11",
     "sharp": "^0.35.4",
@@ -39,6 +42,7 @@
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "supabase": "^2.116.0",
+    "svgo": "^4.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.68.0"
   }

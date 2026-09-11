@@ -52,25 +52,24 @@ function isCurrentLink(href: string): boolean {
       <Logo variant="light" iconOnly class="navbar__logo" />
       <span class="navbar__identity">
         <span class="navbar__name">{siteConfig.identity.name}</span>
-        {
-          siteConfig.identity.campus && (
-            <span class="navbar__campus">{siteConfig.identity.campus}</span>
-          )
-        }
       </span>
     </a>
 
     <nav class="navbar__nav" aria-label="Principal">
       <ul class="navbar__list">
         {
-          navLinks.map((link) => (
+          navLinks.map((link, index) => (
             <li class="navbar__item">
               <a
                 href={link.href}
                 class="navbar__link"
                 aria-current={isCurrentLink(link.href) ? "page" : undefined}
               >
-                {link.label}
+                {index === 0 ? (
+                  <span class="navbar__link-first-word">{link.label}</span>
+                ) : (
+                  link.label
+                )}
               </a>
             </li>
           ))

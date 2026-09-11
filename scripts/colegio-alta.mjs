@@ -94,17 +94,30 @@ function fail(message) {
 
 /* ── Supabase (service role) ─────────────────────────────────────────────── */
 
-function createSupabaseClient() {
+function resolveEnv(skipVercel = false) {
   const url = process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
   const serviceKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-  if (!url || !serviceKey) {
+  const anonKey =
+    process.env.SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY;
+
+  const missing = [];
+  if (!url) missing.push("SUPABASE_URL (o PUBLIC_SUPABASE_URL)");
+  if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY (o SUPABASE_SERVICE_KEY)");
+  if (!skipVercel && !anonKey) missing.push("SUPABASE_ANON_KEY (o PUBLIC_SUPABASE_ANON_KEY)");
+
+  if (missing.length > 0) {
     fail(
-      "Faltan SUPABASE_URL y/o SUPABASE_SERVICE_ROLE_KEY en el entorno. " +
+      `Faltan variables en el entorno: ${missing.join(", ")}. ` +
         "Defínelas antes de ejecutar el script.",
     );
   }
-  return createClient(url, serviceKey, {
+
+  return { url, serviceKey, anonKey };
+}
+
+function createSupabaseClient(env) {
+  return createClient(env.url, env.serviceKey, {
     auth: { persistSession: false },
   });
 }
@@ -146,18 +159,31 @@ async function ensureAdminUser(supabase, tenantId, cliente, password) {
     return;
   }
 
-  // Si el usuario ya existe, actualiza su app_metadata (idempotente).
+  // Si el usuario ya existe, valida su tenancy antes de tocar app_metadata.
   if (error.code === "user_already_exists" || /already registered/i.test(error.message)) {
     const { data: users, error: listError } = await supabase.auth.admin.listUsers();
     if (listError) fail(`No se pudo listar usuarios: ${listError.message}`);
     const existing = users.users.find((u) => u.email === email);
     if (!existing) fail(`El usuario ${email} existe pero no se encontró al listar.`);
+
+    const prevTenant = existing.app_metadata?.tenant_id;
+
+    // Invariante 1:1 — un email pertenece a un único colegio. Si el email ya es
+    // admin de otro tenant, no se sobrescribe: se aborta para evitar acceso cruzado.
+    if (prevTenant !== tenantId) {
+      fail(
+        `El email ${email} ya está registrado para otro colegio (tenant_id ${prevTenant ?? "sin tenant"}). ` +
+          `Regla de negocio: un email = un colegio. Usa otro email para ${cliente.slug}.`,
+      );
+    }
+
+    // Mismo tenant → re-run idempotente (reasegura role y tenant_id).
     const { error: updateError } = await supabase.auth.admin.updateUserById(
       existing.id,
       { app_metadata: { role: "admin", tenant_id: tenantId } },
     );
     if (updateError) fail(`No se pudo actualizar el admin: ${updateError.message}`);
-    console.log(`  ✓ Usuario admin ya existía; app_metadata actualizado: ${email}`);
+    console.log(`  ✓ Usuario admin ya existía en este colegio; app_metadata verificado: ${email}`);
     return;
   }
 
@@ -483,7 +509,8 @@ async function main() {
   console.log(`   Admin:   ${cliente.adminEmail || "(sin email)"}\n`);
 
   // 2. Supabase
-  const supabase = createSupabaseClient();
+  const env = resolveEnv(args["skip-vercel"]);
+  const supabase = createSupabaseClient(env);
   const tenantId = await upsertColegio(supabase, cliente);
   console.log(`  ✓ Colegio en BD: ${slug} → tenant_id ${tenantId}`);
 
@@ -500,9 +527,9 @@ async function main() {
   if (!args["skip-vercel"]) {
     const project = await createVercelProject(projectName);
 
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = env.url;
+    const anonKey = env.anonKey;
+    const serviceKey = env.serviceKey;
 
     await addVercelEnv(project.id, "PUBLIC_TENANT_ID", tenantId);
     await addVercelEnv(project.id, "PUBLIC_SITE_SLUG", slug);

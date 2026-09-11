@@ -1,6 +1,7 @@
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
-import { siteConfig } from "../../site.config";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { siteConfig, siteSlug } from "../../site.config";
 
 /**
  * Build-time validation for the white-label configuration.
@@ -217,6 +218,97 @@ function validateInternalLinks(errors: string[]): void {
   }
 }
 
+function normalizeHostname(hostname: string): string {
+  return hostname.replace(/^www\./, "").toLowerCase();
+}
+
+/**
+ * Valida que siteConfig.seo.siteUrl coincida con el dominio declarado del
+ * colegio en clients.json (raíz del monorepo).
+ *
+ * El siteUrl alimenta canónicos, sitemap y og:url. Un siteUrl incorrecto
+ * (p. ej. el del piloto hardcodeado en un colegio nuevo) degradaría el SEO en
+ * producción. Se compara solo el hostname (ignora protocolo, path y el prefijo
+ * www.), normalizando a minúsculas.
+ *
+ * No se bloquea en previews de Vercel (VERCEL_ENV === "preview"), donde el
+ * dominio de despliegue difiere legítimamente del de producción. El build local
+ * valida como producción para detectar el error antes de deployar.
+ */
+function validateSiteUrl(errors: string[]): void {
+  const siteUrl = siteConfig.seo.siteUrl;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(siteUrl);
+  } catch {
+    errors.push(
+      `seo.siteUrl no es una URL válida: "${siteUrl}". Se requiere una URL absoluta (https://...).`,
+    );
+    return;
+  }
+
+  if (process.env.VERCEL_ENV === "preview") {
+    return;
+  }
+
+  // clients.json vive en la raíz del monorepo. Se localiza desde la ubicación
+  // real de este archivo (import.meta.url) y no desde process.cwd(), para ser
+  // invariable al directorio desde el que se lance el build.
+  const here = fileURLToPath(import.meta.url);
+  const clientsFile = resolve(
+    dirname(here),
+    "..",
+    "..",
+    "..",
+    "..",
+    "..",
+    "clients.json",
+  );
+
+  if (!existsSync(clientsFile)) {
+    console.warn(
+      `[validateConfig] No se encontró clients.json en ${clientsFile}. ` +
+        `No se puede contrastar seo.siteUrl contra el dominio del colegio.`,
+    );
+    return;
+  }
+
+  let clients: { slug: string; domain?: string }[];
+  try {
+    clients = JSON.parse(readFileSync(clientsFile, "utf8"));
+  } catch {
+    console.warn(
+      `[validateConfig] clients.json no es JSON válido (` +
+        `${clientsFile}). No se puede contrastar seo.siteUrl.`,
+    );
+    return;
+  }
+
+  const entry = clients.find((c) => c.slug === siteSlug);
+  const expectedDomain = entry?.domain?.trim();
+
+  if (!expectedDomain) {
+    console.warn(
+      `[validateConfig] No hay dominio declarado para "${siteSlug}" en ` +
+        `clients.json. No se puede contrastar seo.siteUrl.`,
+    );
+    return;
+  }
+
+  const actualHostname = normalizeHostname(parsed.hostname);
+  const expectedHostname = normalizeHostname(expectedDomain);
+
+  if (actualHostname !== expectedHostname) {
+    errors.push(
+      `seo.siteUrl ("${siteUrl}") no coincide con el dominio del colegio ` +
+        `"${siteSlug}" en clients.json ("${expectedDomain}"). ` +
+        `Actualiza seo.siteUrl en src/configs/${siteSlug}.ts para evitar ` +
+        `canónicos, sitemap y og:url incorrectos.`,
+    );
+  }
+}
+
 function validateContrast(errors: string[]): void {
   for (const pair of REQUIRED_CONTRAST_PAIRS) {
     const foreground = siteConfig.branding.colors[pair.foreground] as HexColor;
@@ -241,6 +333,7 @@ export function validateConfig(): void {
   validateAssets(errors);
   validateContrast(errors);
   validateInternalLinks(errors);
+  validateSiteUrl(errors);
 
   if (errors.length > 0) {
     console.error("\n❌ Validación de site.config.ts falló:\n");
@@ -254,6 +347,6 @@ export function validateConfig(): void {
   }
 
   console.log(
-    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos, enlaces).",
+    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos, enlaces, siteUrl).",
   );
 }

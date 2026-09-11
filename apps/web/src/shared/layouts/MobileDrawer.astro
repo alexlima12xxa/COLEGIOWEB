@@ -34,11 +34,6 @@ const intranetUrl = siteConfig.links?.intranetUrl;
         <Logo variant="light" iconOnly class="drawer__logo" />
         <span class="drawer__identity">
           <span class="drawer__name">{siteConfig.identity.name}</span>
-          {
-            siteConfig.identity.campus && (
-              <span class="drawer__campus">{siteConfig.identity.campus}</span>
-            )
-          }
         </span>
       </a>
       <button
@@ -54,10 +49,14 @@ const intranetUrl = siteConfig.links?.intranetUrl;
     <nav class="drawer__nav" aria-label="Navegación">
       <ul class="drawer__list">
         {
-          links.map((link) => (
+          links.map((link, index) => (
             <li class="drawer__item">
               <a href={link.href} class="drawer__link">
-                {link.label}
+                {index === 0 ? (
+                  <span class="drawer__link-first-word">{link.label}</span>
+                ) : (
+                  link.label
+                )}
               </a>
             </li>
           ))

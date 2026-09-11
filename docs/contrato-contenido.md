@@ -211,7 +211,26 @@ Reglas:
 
 ---
 
-## 8. Checklist de mantenimiento (agregar una clave nueva)
+## 8. Imágenes: formato de subida y optimización
+
+- **Qué subir**: JPG o PNG, **≤ 2 MB** por archivo. El panel admin guarda el
+  original en Supabase Storage (bucket `media`); no se recomienda subir AVIF/WebP
+  manualmente porque el build los regenera.
+- **Qué hace el build**: las imágenes de Storage se optimizan en build-time vía
+  `astro:assets` → AVIF + WebP con `srcset` responsivo (`widths=[480,768,1200]`).
+  El JPEG/PNG original queda como fallback.
+- **Assets de marca** (`logo`, `favicon`, `og-image`, placeholders): viven en
+  `public/branding/` y **no** pasan por `astro:assets`; se sirven tal cual. Los
+  placeholders pesados se reducen con `pnpm --filter @web-modelo/web optimize:images`.
+- **Validación de accesibilidad**: en build-time se hace `HEAD` a cada imagen de
+  Storage; si no responde 2xx, se sustituye por un placeholder local (el build no
+  se rompe).
+- **Pendiente (fase 2 panel admin)**: validar MIME y tamaño en la edge function de
+  subida (rechazar > 2 MB o tipos no-imagen antes de escribir en Storage).
+
+---
+
+## 9. Checklist de mantenimiento (agregar una clave nueva)
 
 Para añadir una sección editable nueva, seguir SIEMPRE este orden:
 

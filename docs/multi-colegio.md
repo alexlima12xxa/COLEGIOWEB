@@ -25,6 +25,7 @@
 ### 1. Marca en código (la agencia)
 
 1. Crear `apps/web/src/configs/<slug>.ts` — copia la forma de `colegio-piloto.ts` con los datos del colegio (identity, contact, social, levels, sections, admissions, branding, seo, supabase). **Sin schema y sin imports desde `site.config.ts`** (dependencia circular).
+   > `seo.siteUrl` debe ser `https://` + el mismo `domain` declarado en `clients.json` (paso 2). `validateConfig.ts` rompe el build de producción si no coinciden (misma URL, ignorando el prefijo `www.`). En previews de Vercel (`VERCEL_ENV === "preview"`) no se bloquea.
 2. Crear los assets en `public/branding/<slug>/` (logo, logo-inverse, favicon, og-image, placeholders). `validateConfig.ts` falla el build si un asset referenciado no existe.
 3. Validar localmente con el slug del colegio:
    ```bash
@@ -46,6 +47,10 @@ Agregar la entrada en `clients.json` (raíz):
   "rebuildHookUrl": ""
 }
 ```
+
+> El `domain` debe coincidir con `seo.siteUrl` de `src/configs/<slug>.ts`
+> (sin `https://`, ignorando `www.`); `validateConfig.ts` valida la consistencia
+> en build-time.
 
 ### 3. Alta automatizada
 
@@ -74,6 +79,12 @@ El script:
 3. Siembra las 12 claves de contenido (plantilla parametrizada).
 4. Crea el proyecto Vercel `web-<slug>` (rootDirectory `apps/web`, framework astro), setea env vars (`PUBLIC_TENANT_ID`, `PUBLIC_SITE_SLUG`, Supabase URL/keys), agrega el dominio y crea el deploy hook.
 5. Guarda `tenant_settings.rebuild_hook_url`.
+
+> **Regla de negocio (1 email = 1 colegio):** un `adminEmail` pertenece a un único
+> colegio. Si el email ya existe en Auth con un `app_metadata.tenant_id` distinto,
+> el script **aborta** con error (no sobrescribe) para evitar acceso cruzado entre
+> colegios. El re-run del mismo `slug` es idempotente (mismo `tenant_id`), así que
+> repetir el alta de un colegio ya dado de alta es seguro.
 
 > **Nota:** el script usa la REST API de Vercel (token), no la CLI interactiva.
 
@@ -104,9 +115,37 @@ git diff --quiet HEAD^ HEAD -- apps/web/src/configs/<slug>.ts apps/web/public/br
 - Fallback: si no hay registro en `tenant_settings`, usa la env var `REBUILD_HOOK_URL` del proyecto admin (compatibilidad con el flujo original de un solo colegio).
 - La tabla `tenant_settings` tiene RLS admin-only: el hook URL **no es legible por anon** (ni siquiera vía `X-Tenant-Id`).
 
+## Seguridad RLS — contrato de funciones de tenancy
+
+Las políticas RLS del esquema dependen de dos helpers definidos en
+`20260828000000_init.sql`:
+
+| Función | Definición | Uso |
+|---|---|---|
+| `public.is_admin()` | `(auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'` | Autorización de escritura admin |
+| `public.current_tenant_id()` | `coalesce(app_metadata.tenant_id, cabecera X-Tenant-Id)` | Lectura pública de contenido por tenant |
+| `public.current_tenant_from_jwt()` | Solo `app_metadata.tenant_id` del JWT, **sin fallback a cabecera** | Datos sensibles (`tenant_settings`) |
+
+**Advertencia de seguridad:** `current_tenant_id()` hace *fallback* a la
+cabecera `X-Tenant-Id`, que es 100 % controlable por el cliente. Ese fallback
+**solo es apto para lectura pública de contenido** (noticias, circulares,
+banners, contenido estático). **Nunca** debe usarse para autorizar secretos.
+
+El hook URL de `tenant_settings` (secreto operativo) usa la función estricta
+`current_tenant_from_jwt()`, que ignora la cabecera y resuelve el tenant
+únicamente desde el JWT firmado. Si el claim no está presente, la política
+deniega (fail-closed).
+
+**Invariante:** los JWT del panel admin **siempre** llevan
+`app_metadata.tenant_id`, fijado por el script `colegio-alta.mjs` al crear el
+usuario (`app_metadata { role: "admin", tenant_id }`) y validado antes de
+entrar al panel en `apps/admin/lib/auth.ts` y `apps/admin/proxy.ts`. `role` y
+`tenant_id` en `app_metadata` no son editables por el usuario final (los firma
+Supabase).
+
 ## Limitaciones conocidas
 
-- **`site` hardcodeado en `astro.config.ts`**: `site: "https://colegioweb.vercel.app"` afecta canónicos/sitemap de todos los colegios. Fuera del alcance actual; pendiente parametrizar por `PUBLIC_SITE_SLUG` (trabajo futuro).
+- **`site` en `astro.config.ts`**: ya parametrizado por `siteConfig.seo.siteUrl` (seleccionada por `PUBLIC_SITE_SLUG`). `validateConfig.ts` rompe el build de producción si `seo.siteUrl` no coincide con el `domain` de `clients.json`; los previews de Vercel (`VERCEL_ENV === "preview"`) no se bloquean.
 - **Vercel Pro** necesario para >3 proyectos.
 - **Costos**: bandwidth/requests por proyecto al crecer (revisar plan Pro/Enterprise).
 - **Assets de marca**: el seed referencia `/branding/<slug>/placeholders/...`; si la agencia no los crea, las imágenes 404 en el navegador (no rompen el build). El director puede reemplazarlas desde el panel.
