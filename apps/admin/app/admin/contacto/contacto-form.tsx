@@ -56,9 +56,11 @@ export interface ContactoData {
 export function ContactoForm({
   initial,
   whatsappInicial,
+  emailNotificacionesInicial,
 }: {
   initial: ContactoData;
   whatsappInicial?: string;
+  emailNotificacionesInicial?: string;
 }) {
   const [state, formAction, pending] = useActionState<ContactoState, FormData>(
     guardarContacto,
@@ -109,9 +111,32 @@ export function ContactoForm({
           />
           <p className="mt-1 text-xs text-zinc-500">
             Número internacional sin espacios ni guiones (E.164). Es el número
-            al que se redirige el botón de WhatsApp en la web.
+            al que apunta el botón flotante &quot;Informes&quot; de WhatsApp.
           </p>
           <FieldError message={state.fieldErrors?.whatsapp} />
+        </div>
+
+        <div>
+          <label
+            htmlFor="emailNotificaciones"
+            className="block text-sm font-medium text-zinc-700"
+          >
+            Correo de notificaciones de leads
+          </label>
+          <input
+            id="emailNotificaciones"
+            name="emailNotificaciones"
+            type="email"
+            defaultValue={emailNotificacionesInicial ?? ""}
+            placeholder="Ej. informes@colegio.edu.co"
+            className={inputClass}
+          />
+          <p className="mt-1 text-xs text-zinc-500">
+            Dirección a la que llegan las solicitudes del formulario de
+            admisiones. Si se deja vacío se usa el correo de respaldo configurado
+            en el servidor.
+          </p>
+          <FieldError message={state.fieldErrors?.emailNotificaciones} />
         </div>
 
         <div>

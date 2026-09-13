@@ -1,6 +1,6 @@
 @layer components {
   .footer {
-    background-color: var(--color-surface-inverse);
+    background-color: var(--color-primary);
     color: var(--color-text-inverse);
   }
 

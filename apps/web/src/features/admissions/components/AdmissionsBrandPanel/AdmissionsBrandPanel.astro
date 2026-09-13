@@ -1,0 +1,28 @@
+---
+import "./AdmissionsBrandPanel.css";
+
+export interface Props {
+  /** Ruta de la imagen/mascota destacada (fallback a primaria del brand). */
+  brandImage?: string;
+  class?: string;
+}
+
+const {
+  brandImage = "/branding/placeholders/primaria.avif",
+  class: className,
+} = Astro.props;
+---
+
+<aside class:list={["brandPanel", className]}>
+  <div class="brandPanel__visual" aria-hidden="true">
+    <img
+      src={brandImage}
+      alt=""
+      class="brandPanel__image"
+      width="960"
+      height="1080"
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+</aside>

@@ -19,6 +19,7 @@ const LIMITS = {
 } as const;
 
 const WHATSAPP_REGEX = /^\+[1-9]\d{6,14}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function clamp(
   value: string,
@@ -49,6 +50,9 @@ export async function guardarContacto(
   const mapUrl = String(formData.get("mapUrl") ?? "").trim();
   const mapEmbedUrl = String(formData.get("mapEmbedUrl") ?? "").trim();
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
+  const emailNotificaciones = String(
+    formData.get("emailNotificaciones") ?? "",
+  ).trim();
 
   const eMap = clamp(mapUrl, LIMITS.mapa);
   const eMapEmbed = clamp(mapEmbedUrl, LIMITS.mapa);
@@ -58,6 +62,10 @@ export async function guardarContacto(
   if (!WHATSAPP_REGEX.test(whatsapp)) {
     fieldErrors.whatsapp =
       'El número debe comenzar con "+" seguido de 7 a 15 dígitos (sin espacios ni guiones).';
+  }
+
+  if (emailNotificaciones && !EMAIL_REGEX.test(emailNotificaciones)) {
+    fieldErrors.emailNotificaciones = "Ingresa un correo electrónico válido.";
   }
 
   // Directorio de departamentos
@@ -130,6 +138,25 @@ export async function guardarContacto(
     );
   if (errorWhatsapp) {
     return { error: `No se pudo guardar "whatsapp": ${errorWhatsapp.message}` };
+  }
+
+  // Correo de notificaciones de leads. Se guarda como clave `notificaciones`
+  // (mismo patrón que `whatsapp`): la Edge Function send-lead-email lo lee
+  // para resolver el destino de los correos de solicitud.
+  const { error: errorNotificaciones } = await supabase
+    .from("contenido")
+    .upsert(
+      {
+        tenant_id: tenantId,
+        clave: "notificaciones",
+        valor: { email: emailNotificaciones || null },
+      },
+      { onConflict: "tenant_id,clave" },
+    );
+  if (errorNotificaciones) {
+    return {
+      error: `No se pudo guardar "notificaciones": ${errorNotificaciones.message}`,
+    };
   }
 
   await triggerRebuild(supabase, tenantId);

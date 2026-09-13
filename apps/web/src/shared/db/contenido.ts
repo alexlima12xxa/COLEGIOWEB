@@ -15,6 +15,7 @@ import {
   nosotrosHeroSchema,
   pilarSchema,
   pilaresSchema,
+  notificacionesSchema,
   videoTourSchema,
   whatsappSchema,
 } from "./schema";
@@ -440,6 +441,16 @@ export async function getContacto(): Promise<Contacto> {
 export async function getWhatsapp(): Promise<{ numero?: string }> {
   const raw = await getContenido<unknown>("whatsapp", () => undefined);
   const parsed = whatsappSchema.safeParse(raw);
+  return parsed.success ? parsed.data : {};
+}
+
+// ── Notificaciones (clave `notificaciones`) ─────────────────────────────────
+// {email} correo destino de los leads. Si la clave no existe o es inválida, se
+// devuelve `{}`; el punto de uso aplica el fallback correspondiente.
+
+export async function getNotificaciones(): Promise<{ email?: string }> {
+  const raw = await getContenido<unknown>("notificaciones", () => undefined);
+  const parsed = notificacionesSchema.safeParse(raw);
   return parsed.success ? parsed.data : {};
 }
 

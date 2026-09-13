@@ -54,6 +54,31 @@
     border-color: var(--color-danger);
   }
 
+  .input__controlWrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .input__prefix {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--space-md);
+    border: 1px solid var(--color-border-strong);
+    border-right: 0;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+  }
+
+  .input__control--withPrefix {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+
   textarea.input__control {
     min-height: 6rem;
     resize: vertical;

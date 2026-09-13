@@ -93,7 +93,7 @@ export default {
     active: true,
     periodLabel: "Admisiones 2026 abiertas",
     ctaLabel: "Solicitar información",
-    ctaUrl: "/admisiones#formulario",
+    ctaUrl: "/formulario",
     deadline: "2026-11-30",
     requirements: [
       "Formulario de inscripción",

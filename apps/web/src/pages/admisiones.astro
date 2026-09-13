@@ -6,7 +6,6 @@ import AdmissionsHero from "../features/admissions/components/AdmissionsHero/Adm
 import AdmissionsSteps from "../features/admissions/components/AdmissionsSteps/AdmissionsSteps.astro";
 import AdmissionsRequirements from "../features/admissions/components/AdmissionsRequirements/AdmissionsRequirements.astro";
 import AdmissionsFaq from "../features/admissions/components/AdmissionsFaq/AdmissionsFaq.astro";
-import AdmissionForm from "../features/admissions/components/AdmissionForm/AdmissionForm.astro";
 import { siteConfig } from "../site.config";
 import {
   getAdmisiones,
@@ -15,10 +14,6 @@ import {
 } from "../shared/db/contenido";
 
 const activeLevels = (await getNivelesResumen()).filter((l) => l.enabled);
-const supabaseUrl =
-  import.meta.env.PUBLIC_SUPABASE_URL || siteConfig.supabase.url;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
-const tenantId = import.meta.env.PUBLIC_TENANT_ID;
 
 const title = "Admisiones";
 const description =
@@ -112,18 +107,6 @@ const faqJsonLd = {
 
   <AdmissionsFaq items={admissions.faq} />
 
-  <Section padding="xl" bg="muted" id="formulario">
-    <AdmissionForm
-      whatsapp={whatsapp.numero || siteConfig.contact.whatsapp}
-      schoolName={siteConfig.identity.name}
-      levels={activeLevels}
-      supabaseUrl={supabaseUrl}
-      supabaseAnonKey={supabaseAnonKey}
-      tenantId={tenantId}
-      privacyUrl="/aviso-de-privacidad"
-    />
-  </Section>
-
   <Section padding="xl" bg="inverse" class="admissionsCta">
     <div class="admissionsCta__content">
       <h2 class="admissionsCta__title">¿Tienes dudas sobre el proceso?</h2>
@@ -131,16 +114,7 @@ const faqJsonLd = {
         Nuestro equipo de admisiones está listo para ayudarte.
       </p>
       <div class="admissionsCta__actions">
-        <Button href="#formulario" size="lg"> Solicitar información </Button>
-        <Button
-          href={`https://wa.me/${whatsappNumber}`}
-          variant="secondary"
-          size="lg"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Escribir por WhatsApp
-        </Button>
+        <Button href="/formulario" size="lg"> Solicitar información </Button>
       </div>
     </div>
   </Section>
@@ -160,7 +134,7 @@ const faqJsonLd = {
   .admissionsCta__title {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-inverse);
+    color: var(--color-primary);
   }
 
   @media (min-width: 48rem) {
@@ -170,7 +144,7 @@ const faqJsonLd = {
   }
 
   .admissionsCta__text {
-    color: var(--color-text-inverse);
+    color: var(--color-primary);
     opacity: 0.85;
   }
 

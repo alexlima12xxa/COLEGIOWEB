@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../shared/layouts/BaseLayout.astro";
+import AdmissionsSplitScreen from "../features/admissions/components/AdmissionsSplitScreen/AdmissionsSplitScreen.astro";
+import AdmissionsBrandPanel from "../features/admissions/components/AdmissionsBrandPanel/AdmissionsBrandPanel.astro";
+import AdmissionsHighlights from "../features/admissions/components/AdmissionsHighlights/AdmissionsHighlights.astro";
+import AdmissionForm from "../features/admissions/components/AdmissionForm/AdmissionForm.astro";
+import { siteConfig } from "../site.config";
+import { getNivelesResumen } from "../shared/db/contenido";
+
+const title = "Solicitar información de admisiones";
+const description = `Completa el formulario y te contactaremos por correo para acompañarte en el proceso de admisión de ${siteConfig.identity.name}.`;
+
+const activeLevels = (await getNivelesResumen()).filter((l) => l.enabled);
+
+const supabaseUrl =
+  import.meta.env.PUBLIC_SUPABASE_URL || siteConfig.supabase.url;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const tenantId = import.meta.env.PUBLIC_TENANT_ID;
+---
+
+<BaseLayout title={title} description={description} path="/formulario">
+  <AdmissionsSplitScreen>
+    <AdmissionsBrandPanel slot="brand" />
+
+    <AdmissionForm
+      levels={activeLevels}
+      supabaseUrl={supabaseUrl}
+      supabaseAnonKey={supabaseAnonKey}
+      tenantId={tenantId}
+      privacyUrl="/aviso-de-privacidad"
+    />
+  </AdmissionsSplitScreen>
+
+  <AdmissionsHighlights />
+</BaseLayout>

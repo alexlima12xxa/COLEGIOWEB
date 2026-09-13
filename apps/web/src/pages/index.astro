@@ -201,17 +201,12 @@ const videoJsonLd = {
     <PillarsEnAccion pillars={pilares.items} />
   </Section>
 
-  <Section padding="xl" bg="inverse" class="homeCta">
+  <Section padding="lg" bg="inverse" class="homeCta">
     <div class="homeCta__content">
       <h2 class="homeCta__title">Sé parte de la comunidad Colegio Piloto</h2>
-      <p class="homeCta__text">
-        Inicia el proceso de admisiones 2026 y descubre todo lo que podemos
-        ofrecer a tu familia.
-      </p>
       <div class="homeCta__actions">
-        <Button href="/admisiones" size="lg"> Iniciar admisión </Button>
-        <Button href="/contacto" variant="secondary" size="lg">
-          Hablar con admisiones
+        <Button href="/formulario" variant="primary" size="lg">
+          Ingresa aquí
         </Button>
       </div>
     </div>
@@ -565,7 +560,7 @@ const videoJsonLd = {
   .homeCta__title {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-inverse);
+    color: var(--color-primary);
   }
 
   @media (min-width: 48rem) {
@@ -575,7 +570,7 @@ const videoJsonLd = {
   }
 
   .homeCta__text {
-    color: var(--color-text-inverse);
+    color: var(--color-primary);
     opacity: 0.85;
   }
 

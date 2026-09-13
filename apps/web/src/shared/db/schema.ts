@@ -416,6 +416,16 @@ export const whatsappSchema = z.object({
 
 export type Whatsapp = z.infer<typeof whatsappSchema>;
 
+// ── Notificaciones (clave `notificaciones`) ─────────────────────────────────
+// {email} correo destino de los leads del formulario. Se usa en la Edge
+// Function send-lead-email para saber a dónde reenviar cada solicitud.
+
+export const notificacionesSchema = z.object({
+  email: z.string().email("Correo de notificaciones inválido"),
+});
+
+export type Notificaciones = z.infer<typeof notificacionesSchema>;
+
 // ── Footer (clave `footer`) ─────────────────────────────────────────────────
 // Datos del pie de página: contacto general (dirección, ciudad, teléfono,
 // email, horario), títulos editables, redes sociales y bloques de nivel con

@@ -107,4 +107,19 @@
   .btn--success:active {
     background-color: var(--color-success-active);
   }
+
+  .btn--whatsapp {
+    background-color: var(--color-whatsapp);
+    color: var(--color-text-inverse);
+  }
+
+  @media (hover: hover) {
+    .btn--whatsapp:hover {
+      background-color: var(--color-whatsapp-hover);
+    }
+  }
+
+  .btn--whatsapp:active {
+    background-color: var(--color-whatsapp-active);
+  }
 }

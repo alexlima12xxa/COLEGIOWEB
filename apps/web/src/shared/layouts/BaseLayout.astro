@@ -4,6 +4,7 @@ import { ClientRouter } from "astro:transitions";
 import SEOHead from "./SEOHead.astro";
 import Navbar from "./Navbar.astro";
 import Footer from "./Footer.astro";
+import WhatsAppFloat from "../../features/home/components/WhatsAppFloat/WhatsAppFloat.astro";
 import "./BaseLayout.css";
 
 export interface Props {
@@ -49,5 +50,7 @@ const { title, description, image, path, noindex } = Astro.props;
     </main>
 
     <Footer />
+
+    <WhatsAppFloat />
   </body>
 </html>

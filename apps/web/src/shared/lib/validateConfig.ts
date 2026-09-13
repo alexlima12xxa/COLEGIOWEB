@@ -190,7 +190,7 @@ function validateInternalLinks(errors: string[]): void {
   if (ctaUrl.startsWith("#")) {
     errors.push(
       `admissions.ctaUrl es solo un ancla ("${ctaUrl}"): el ancla no existe en todas las páginas. ` +
-        `Usa una ruta interna completa, ej. "/admisiones#formulario".`,
+        `Usa una ruta interna completa, ej. "/formulario".`,
     );
     return;
   }

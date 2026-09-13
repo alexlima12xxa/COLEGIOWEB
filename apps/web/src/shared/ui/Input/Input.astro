@@ -13,6 +13,8 @@ export interface Props {
   class?: string;
   autocomplete?: string;
   rows?: number;
+  /** Texto corto antepuesto al control (ej. prefijo telefónico "+57"). */
+  prefix?: string;
 }
 
 const {
@@ -27,12 +29,15 @@ const {
   class: className,
   autocomplete,
   rows = 4,
+  prefix,
 } = Astro.props;
 
 const describedBy = error ? `${id}-error` : undefined;
 const inputClass = ["input__control", error ? "input__control--error" : ""]
   .filter(Boolean)
   .join(" ");
+
+const hasPrefix = Boolean(prefix);
 ---
 
 <div class:list={["input", className]}>
@@ -48,7 +53,43 @@ const inputClass = ["input__control", error ? "input__control--error" : ""]
   </label>
 
   {
-    type === "textarea" ? (
+    hasPrefix && (
+      <div class="input__controlWrapper">
+        <span class="input__prefix" aria-hidden="true">
+          {prefix}
+        </span>
+        {type === "select" ? (
+          <select
+            id={id}
+            name={name}
+            class:list={[inputClass, "input__control--withPrefix"]}
+            required={required}
+            aria-describedby={describedBy}
+            aria-invalid={error ? "true" : undefined}
+          >
+            {options.map((option) => (
+              <option value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            id={id}
+            name={name}
+            type={type as "text" | "email" | "tel"}
+            class:list={[inputClass, "input__control--withPrefix"]}
+            required={required}
+            placeholder={placeholder}
+            aria-describedby={describedBy}
+            aria-invalid={error ? "true" : undefined}
+            autocomplete={autocomplete}
+          />
+        )}
+      </div>
+    )
+  }
+
+  {
+    !hasPrefix && type === "textarea" ? (
       <textarea
         id={id}
         name={name}
@@ -60,7 +101,7 @@ const inputClass = ["input__control", error ? "input__control--error" : ""]
         autocomplete={autocomplete}
         rows={rows}
       />
-    ) : type === "select" ? (
+    ) : !hasPrefix && type === "select" ? (
       <select
         id={id}
         name={name}
@@ -73,11 +114,11 @@ const inputClass = ["input__control", error ? "input__control--error" : ""]
           <option value={option.value}>{option.label}</option>
         ))}
       </select>
-    ) : (
+    ) : !hasPrefix ? (
       <input
         id={id}
         name={name}
-        type={type}
+        type={type as "text" | "email" | "tel"}
         class={inputClass}
         required={required}
         placeholder={placeholder}
@@ -85,7 +126,7 @@ const inputClass = ["input__control", error ? "input__control--error" : ""]
         aria-invalid={error ? "true" : undefined}
         autocomplete={autocomplete}
       />
-    )
+    ) : null
   }
 
   <span

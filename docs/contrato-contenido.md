@@ -84,6 +84,7 @@ server action                      contenido (JSONB) o
 | `galeria` | `[{src, alt, variant}]` | `home.bentoGallery` | Galería | `getGaleria` |
 | `contacto` | `{info: {mapUrl?, mapEmbedUrl?}, departments[], formFields[]}` | `contact.json` | Contacto | `getContacto` |
 | `whatsapp` | `{numero}` (E.164 `+573101234567`) | `siteConfig.contact.whatsapp` | Contacto | `getWhatsapp` |
+| `notificaciones` | `{email}` (correo destino de leads) | `LEAD_EMAIL_TO` (edge function) | Contacto | `getNotificaciones` |
 | `footer` | ver sección 4 | `siteConfig` (contact/social/levels) | Footer | `getFooter` |
 
 ---

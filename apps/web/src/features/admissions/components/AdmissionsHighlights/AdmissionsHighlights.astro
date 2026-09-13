@@ -1,0 +1,53 @@
+---
+import Section from "../../../../shared/ui/Section/Section.astro";
+import ContentImage from "../../../../shared/ui/ContentImage/ContentImage.astro";
+import "./AdmissionsHighlights.css";
+
+export interface HighlightItem {
+  image: string;
+  alt: string;
+}
+
+export interface Props {
+  items?: HighlightItem[];
+  class?: string;
+}
+
+const {
+  items = [
+    {
+      image: "/branding/placeholders/gallery-1.jpg",
+      alt: "Instalaciones del colegio",
+    },
+    {
+      image: "/branding/placeholders/gallery-2.jpg",
+      alt: "Actividades académicas",
+    },
+    {
+      image: "/branding/placeholders/gallery-3.jpg",
+      alt: "Vida estudiantil",
+    },
+  ],
+  class: className,
+} = Astro.props;
+---
+
+<Section padding="lg" bg="default" class:list={["highlights", className]}>
+  <ul class="highlights__list" role="list">
+    {
+      items.map((item) => (
+        <li class="highlights__item">
+          <div class="highlights__media">
+            <ContentImage
+              src={item.image}
+              alt={item.alt}
+              sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+              loading="lazy"
+              class="highlights__image"
+            />
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

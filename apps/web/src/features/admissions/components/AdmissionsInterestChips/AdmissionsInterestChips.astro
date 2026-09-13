@@ -1,0 +1,35 @@
+---
+import "./AdmissionsInterestChips.css";
+
+export interface Props {
+  label?: string;
+  options?: string[];
+  class?: string;
+}
+
+const {
+  label = "¿Qué te interesa? (opcional)",
+  options = ["Costos", "Metodología", "Extracurriculares"],
+  class: className,
+} = Astro.props;
+---
+
+<fieldset class:list={["interestChips", className]}>
+  <legend class="interestChips__legend">{label}</legend>
+  <div class="interestChips__list" role="group">
+    {
+      options.map((opt) => (
+        <label class="interestChips__item">
+          <input
+            type="checkbox"
+            name="interest"
+            value={opt}
+            class="interestChips__input"
+            autocomplete="off"
+          />
+          <span class="interestChips__pill">{opt}</span>
+        </label>
+      ))
+    }
+  </div>
+</fieldset>

@@ -2,6 +2,7 @@
 import "./AdmissionForm.css";
 import Input from "../../../../shared/ui/Input/Input.astro";
 import Button from "../../../../shared/ui/Button/Button.astro";
+import AdmissionsInterestChips from "../AdmissionsInterestChips/AdmissionsInterestChips.astro";
 
 export interface LevelOption {
   id: string;
@@ -9,23 +10,23 @@ export interface LevelOption {
 }
 
 export interface Props {
-  whatsapp: string;
-  schoolName: string;
   levels: LevelOption[];
   supabaseUrl?: string;
   supabaseAnonKey?: string;
   tenantId?: string;
   privacyUrl?: string;
+  termsUrl?: string;
+  phonePrefix?: string;
 }
 
 const {
-  whatsapp,
-  schoolName,
   levels,
   supabaseUrl,
   supabaseAnonKey,
   tenantId,
   privacyUrl = "/aviso-de-privacidad",
+  termsUrl = "/admisiones",
+  phonePrefix = "",
 } = Astro.props;
 
 const levelOptions = levels.map((level) => ({
@@ -40,8 +41,6 @@ const levelOptions = levels.map((level) => ({
   action="#"
   method="post"
   novalidate
-  data-whatsapp={whatsapp}
-  data-school-name={schoolName}
   data-supabase-url={supabaseUrl}
   data-supabase-anon-key={supabaseAnonKey}
   data-tenant-id={tenantId}
@@ -52,9 +51,9 @@ const levelOptions = levels.map((level) => ({
     set:html={JSON.stringify(levels)}
   />
   <div class="admissionForm__header">
-    <h2 class="admissionForm__title">Solicita información de admisiones</h2>
+    <h2 class="admissionForm__title">Solicita información</h2>
     <p class="admissionForm__lead">
-      Completa el formulario y te contactaremos por WhatsApp.
+      Te contactaremos a la brevedad posible.
     </p>
   </div>
 
@@ -82,11 +81,12 @@ const levelOptions = levels.map((level) => ({
     <Input
       id="admission-phone"
       name="phone"
-      label="Teléfono"
+      label="Teléfono / WhatsApp"
       type="tel"
       required
-      placeholder="Ej. +57 310 123 4567"
+      placeholder="310 123 4567"
       autocomplete="tel"
+      prefix={phonePrefix}
       class="admissionForm__field"
     />
 
@@ -111,15 +111,7 @@ const levelOptions = levels.map((level) => ({
       class="admissionForm__field"
     />
 
-    <Input
-      id="admission-message"
-      name="message"
-      label="Mensaje"
-      type="textarea"
-      placeholder="Cuéntanos qué información necesitas..."
-      rows={4}
-      class="admissionForm__field admissionForm__field--full"
-    />
+    <AdmissionsInterestChips class="admissionForm__field--full" />
 
     {
       /* Honeypot: campo invisible para bots. El input no es enfocable y
@@ -136,7 +128,7 @@ const levelOptions = levels.map((level) => ({
       />
     </div>
 
-    <div class="admissionForm__privacy admissionForm__field--full">
+    <div class="admissionForm__consent admissionForm__field--full">
       <label class="admissionForm__checkbox">
         <input
           id="admission-privacy"
@@ -150,11 +142,36 @@ const levelOptions = levels.map((level) => ({
           <a href={privacyUrl} target="_blank" rel="noopener noreferrer">
             aviso de privacidad
           </a>{" "}
-          y el tratamiento de mis datos para recibir información.
+          y el tratamiento de mis datos.
         </span>
       </label>
       <span
         id="admission-privacy-error"
+        class="admissionForm__checkboxError"
+        aria-live="polite"
+        hidden
+      >
+      </span>
+    </div>
+
+    <div class="admissionForm__consent admissionForm__field--full">
+      <label class="admissionForm__checkbox">
+        <input
+          id="admission-terms"
+          name="termsAccepted"
+          type="checkbox"
+          aria-describedby="admission-terms-error"
+        />
+        <span>
+          Acepto los{" "}
+          <a href={termsUrl} target="_blank" rel="noopener noreferrer">
+            términos y condiciones
+          </a>{" "}
+          de admisiones.
+        </span>
+      </label>
+      <span
+        id="admission-terms-error"
         class="admissionForm__checkboxError"
         aria-live="polite"
         hidden
@@ -171,7 +188,7 @@ const levelOptions = levels.map((level) => ({
       size="lg"
       class="admissionForm__submit"
     >
-      Enviar por WhatsApp
+      Enviar solicitud
     </Button>
     <p
       id="admission-form-success"
@@ -180,16 +197,7 @@ const levelOptions = levels.map((level) => ({
       aria-live="polite"
       hidden
     >
-      Se abrió WhatsApp con tu mensaje listo. Solo presiona <strong
-        >Enviar</strong
-      > en la pestaña que se abrió. Si no la ves, revisa el bloqueador de ventanas
-      emergentes.
-    </p>
-    <p class="admissionForm__help">
-      Si tienes problemas, escríbenos directamente al{" "}
-      <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}>
-        {whatsapp}
-      </a>.
+      Solicitud enviada. Te contactaremos por correo electrónico.
     </p>
   </div>
 </form>
@@ -201,10 +209,6 @@ const levelOptions = levels.map((level) => ({
     markSubmitted,
     secondsUntilNext,
   } from "../../../../shared/lib/rateLimit";
-  import {
-    buildWhatsAppMessage,
-    buildWhatsAppUrl,
-  } from "../../../../shared/lib/whatsapp";
 
   interface LevelOption {
     id: string;
@@ -233,8 +237,6 @@ const levelOptions = levels.map((level) => ({
     const levels: LevelOption[] = levelsJson ? JSON.parse(levelsJson) : [];
 
     const dataset = form.dataset;
-    const whatsapp = dataset.whatsapp ?? "";
-    const schoolName = dataset.schoolName ?? "";
     const supabaseUrl = dataset.supabaseUrl ?? "";
     const supabaseAnonKey = dataset.supabaseAnonKey ?? "";
     const tenantId = dataset.tenantId ?? "";
@@ -379,34 +381,15 @@ const levelOptions = levels.map((level) => ({
         phone: String(formData.get("phone") || "").trim(),
         email: String(formData.get("email")).trim(),
         level: String(formData.get("level")),
-        message: String(formData.get("message") || "").trim(),
+        message: "",
       };
 
       const levelName = getLevelName(data.level);
 
-      // WhatsApp se abre SÍNCRONAMENTE dentro del gesto del usuario: un
-      // `await` antes de window.open consume la activación transitoria y
-      // los bloqueadores de popups (Safari) matan la pestaña silenciosamente.
-      // El lead se persiste después, sin bloquear el handoff.
-      const whatsappMessage = buildWhatsAppMessage({
-        ...data,
-        level: levelName,
-        schoolName,
-      });
-      const whatsappUrl = buildWhatsAppUrl(whatsapp, whatsappMessage);
-
       markSubmitted();
-      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
-      if (successContainer) {
-        successContainer.hidden = false;
-      }
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.textContent = "Mensaje preparado";
-      }
-
-      // Persistencia del lead (fire-and-forget): no bloquea el envío.
+      // Persistencia del lead (fire-and-forget): el INSERT en `leads` dispara
+      // un Database Webhook que reenvía el correo de notificación al colegio.
       if (supabaseUrl && supabaseAnonKey) {
         try {
           const client = createBrowserClient({
@@ -427,10 +410,40 @@ const levelOptions = levels.map((level) => ({
 
           if (error) {
             console.error("[AdmissionForm] Supabase error:", error);
+            if (successContainer) {
+              successContainer.hidden = true;
+            }
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.textContent = "Enviar solicitud";
+            }
+            showGlobalError(
+              "No pudimos enviar tu solicitud. Inténtalo de nuevo en unos minutos.",
+            );
+            return;
           }
         } catch (error) {
           console.error("[AdmissionForm] Supabase exception:", error);
+          if (successContainer) {
+            successContainer.hidden = true;
+          }
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Enviar solicitud";
+          }
+          showGlobalError(
+            "No pudimos enviar tu solicitud. Inténtalo de nuevo en unos minutos.",
+          );
+          return;
         }
+      }
+
+      if (successContainer) {
+        successContainer.hidden = false;
+      }
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Solicitud enviada";
       }
     });
   }

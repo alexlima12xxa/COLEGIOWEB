@@ -1,0 +1,26 @@
+---
+import "./AdmissionsSplitScreen.css";
+
+export interface Props {
+  class?: string;
+  headline?: string;
+}
+
+const { class: className, headline = "El futuro de tus hijos comienza aquí" } =
+  Astro.props;
+---
+
+<div class:list={["splitScreen", className]}>
+  <header class="splitScreen__headline">
+    <h1 class="splitScreen__title">{headline}</h1>
+  </header>
+
+  <div class="splitScreen__content">
+    <slot name="brand" />
+    <div class="splitScreen__surface">
+      <div class="splitScreen__card">
+        <slot />
+      </div>
+    </div>
+  </div>
+</div>

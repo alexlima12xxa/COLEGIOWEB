@@ -5,7 +5,7 @@ import { ContactoForm } from "./contacto-form";
 
 export const dynamic = "force-dynamic";
 
-const CLAVES = ["contacto", "whatsapp"] as const;
+const CLAVES = ["contacto", "whatsapp", "notificaciones"] as const;
 
 export default async function ContactoPage() {
   const { supabase } = await requireAdmin();
@@ -20,6 +20,7 @@ export default async function ContactoPage() {
   );
   const contacto = porClave.get("contacto");
   const whatsappRaw = porClave.get("whatsapp");
+  const notificacionesRaw = porClave.get("notificaciones");
 
   const contactoObj =
     contacto && typeof contacto === "object" && !Array.isArray(contacto)
@@ -45,6 +46,13 @@ export default async function ContactoPage() {
       ? (whatsappRaw as { numero?: string }).numero
       : undefined;
 
+  const emailNotificacionesInicial =
+    notificacionesRaw &&
+    typeof notificacionesRaw === "object" &&
+    !Array.isArray(notificacionesRaw)
+      ? (notificacionesRaw as { email?: string }).email
+      : undefined;
+
   return (
     <div className="space-y-6">
       <div>
@@ -52,10 +60,10 @@ export default async function ContactoPage() {
           Contacto
         </h1>
         <p className="mt-1 text-sm text-zinc-600">
-          WhatsApp, mapa y directorio por departamento de la página de contacto.
-          La dirección, teléfono y horario generales se editan en
-          &quot;Footer&quot;. Los cambios aparecen en la web tras el rebuild
-          automático.
+          WhatsApp, correo de notificaciones, mapa y directorio por departamento
+          de la página de contacto. La dirección, teléfono y horario generales se
+          editan en &quot;Footer&quot;. Los cambios aparecen en la web tras el
+          rebuild automático.
         </p>
       </div>
 
@@ -64,7 +72,11 @@ export default async function ContactoPage() {
       </ModuleCard>
 
       <ModuleCard id="contacto-editor" title="Contacto">
-        <ContactoForm initial={contactoObj} whatsappInicial={whatsappInicial} />
+        <ContactoForm
+          initial={contactoObj}
+          whatsappInicial={whatsappInicial}
+          emailNotificacionesInicial={emailNotificacionesInicial}
+        />
       </ModuleCard>
     </div>
   );

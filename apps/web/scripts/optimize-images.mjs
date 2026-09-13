@@ -82,3 +82,19 @@ console.log(
     `hero-photo.avif: ${kb(before)} -> ${kb(optimized.length)} (640px w)`,
   );
 }
+
+// AVIF de la mascota/artwork del formulario de admisiones (LCP). Generado
+// desde `primaria.png`; el componente AdmissionsBrandPanel apunta a este .avif.
+{
+  const src = `${BASE}/primaria.png`;
+  const dst = `${BASE}/primaria.avif`;
+  const before = existsSync(dst) ? (await readFile(dst)).length : 0;
+  const optimized = await sharp(src)
+    .resize({ width: 960, withoutEnlargement: true })
+    .avif({ quality: 50, effort: 6 })
+    .toBuffer();
+  await writeFile(dst, optimized);
+  console.log(
+    `primaria.avif: ${kb(before)} -> ${kb(optimized.length)} (960px w)`,
+  );
+}

@@ -24,8 +24,12 @@
   }
 
   .section--bg-inverse {
-    background-color: var(--color-surface-inverse);
-    color: var(--color-text-inverse);
+    background-color: color-mix(
+      in oklch,
+      var(--color-primary) 10%,
+      var(--color-surface)
+    );
+    color: var(--color-primary);
   }
 
   .section__container {
