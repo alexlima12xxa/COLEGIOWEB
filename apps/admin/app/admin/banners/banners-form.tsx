@@ -66,19 +66,21 @@ export interface BannerInitial {
 export function buildPreviewUrlById(
   id: string,
   previewToken: string | null,
+  base: string | null,
 ): string | null {
-  const base = process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
-  if (!base || !previewToken) return null;
-  return `${base}/preview-admin?token=${encodeURIComponent(previewToken)}&id=${encodeURIComponent(id)}`;
+  const baseUrl = base?.replace(/\/+$/, "") ?? process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
+  if (!baseUrl || !previewToken) return null;
+  return `${baseUrl}/preview-admin?token=${encodeURIComponent(previewToken)}&id=${encodeURIComponent(id)}`;
 }
 
 function buildPreviewUrl(
   plantillaId: string,
   datos: Record<string, unknown>,
   previewToken: string | null,
+  base: string | null,
 ): string | null {
-  const base = process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
-  if (!base || !previewToken) return null;
+  const baseUrl = base?.replace(/\/+$/, "") ?? process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
+  if (!baseUrl || !previewToken) return null;
 
   const payload: Record<string, unknown> = {
     plantillaId,
@@ -88,17 +90,19 @@ function buildPreviewUrl(
     datos: { ...datos, title: str(datos.title) || " " },
   };
   const encoded = encodeURIComponent(JSON.stringify(payload));
-  return `${base}/preview-admin?token=${encodeURIComponent(previewToken)}&datos=${encoded}`;
+  return `${baseUrl}/preview-admin?token=${encodeURIComponent(previewToken)}&datos=${encoded}`;
 }
 
 function BannerPreviewIframe({
   plantillaId,
   datos,
   previewToken,
+  previewWebUrl,
 }: {
   plantillaId: string;
   datos: Record<string, unknown>;
   previewToken: string | null;
+  previewWebUrl: string | null;
 }) {
   const [abierto, setAbierto] = useState(false);
 
@@ -123,7 +127,7 @@ function BannerPreviewIframe({
     );
   }
 
-  const url = buildPreviewUrl(plantillaId, datos, previewToken);
+  const url = buildPreviewUrl(plantillaId, datos, previewToken, previewWebUrl);
 
   if (!url) {
     return (
@@ -199,9 +203,11 @@ function BannerPreviewIframe({
 export function BannerForm({
   initial,
   previewToken,
+  previewWebUrl,
 }: {
   initial: BannerInitial;
   previewToken?: string | null;
+  previewWebUrl?: string | null;
 }) {
   const [state, formAction, pending] = useActionState<BannersState, FormData>(
     guardarBanner,
@@ -510,6 +516,7 @@ export function BannerForm({
         plantillaId={plantillaId}
         datos={previewDatos}
         previewToken={previewToken ?? null}
+        previewWebUrl={previewWebUrl ?? null}
       />
 
       <Status ok={state.ok} />

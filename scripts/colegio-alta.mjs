@@ -197,6 +197,7 @@ function buildSeed(cliente) {
   const email = cliente.adminEmail || `contacto@${cliente.slug}.edu.co`;
   const slug = cliente.slug;
   const assets = (file) => `/branding/${slug}/${file}`;
+  const anio = new Date().getFullYear();
 
   return {
     mision: `Formar personas íntegras, críticas y comprometidas con su entorno, a través de una educación de excelencia que integra saberes, valores y competencias para la vida.`,
@@ -221,8 +222,28 @@ function buildSeed(cliente) {
     historia: [
       {
         title: "Fundación",
-        date: "2026",
+        date: String(anio),
         description: `Nace ${nombre} con la misión de ofrecer una educación de calidad centrada en el estudiante y en valores sólidos.`,
+      },
+      {
+        title: "Primera promoción",
+        date: String(anio + 1),
+        description: `Egresará la primera promoción de ${nombre}, consolidando un proyecto educativo centrado en el estudiante.`,
+      },
+      {
+        title: "Expansión de sede",
+        date: String(anio + 2),
+        description: `Ampliamos las instalaciones y la oferta académica para acompañar el crecimiento de la comunidad educativa.`,
+      },
+      {
+        title: "Certificación de calidad",
+        date: String(anio + 3),
+        description: `Alcanzamos la certificación de calidad que avala nuestros procesos pedagógicos y de gestión institucional.`,
+      },
+      {
+        title: "Educación híbrida y digital",
+        date: String(anio + 4),
+        description: `Integramos entornos híbridos y herramientas digitales para enriquecer la experiencia de aprendizaje.`,
       },
     ],
     nosotros_hero: {
@@ -313,53 +334,88 @@ function buildSeed(cliente) {
       },
     },
     admisiones: {
-      schedule: [
+      periodLabel: `Admisiones ${anio} abiertas`,
+      fechasClave: [
         {
-          title: "Inscripciones abiertas",
-          date: "Enero – marzo",
-          description: "Recepción de formularios y documentos de aspirantes.",
+          title: "Inicio de Postulaciones",
+          date: "1 de Septiembre, " + (anio - 1),
+          estado: "en-curso",
+          description: "Apertura oficial del proceso para todos los niveles educativos.",
         },
         {
-          title: "Evaluación de admisión",
-          date: "Abril",
-          description: "Entrevistas y pruebas de ubicación académica.",
+          title: "Cierre de Convocatoria",
+          date: "30 de Noviembre, " + (anio - 1),
+          estado: "ultimos-cupos",
+          description: "Fecha límite de recepción de postulaciones completas.",
+        },
+        {
+          title: "Jornada de Inducción",
+          date: "22 de Enero, " + anio,
+          estado: "familias-admitidas",
+          description: "Bienvenida y orientación para las familias admitidas.",
+        },
+      ],
+      aviso: `El número de vacantes es limitado por nivel para mantener un ratio máximo de 22 alumnos por aula en ${nombre}.`,
+      etapas: [
+        {
+          title: "Inscripción en línea",
+          description: "Diligencia el formulario digital y adjunta la documentación requerida sin salir de casa.",
+          pie: "Formato 100% digital",
+        },
+        {
+          title: "Entrevista y valoración",
+          description: "Conoce al equipo docente y realiza la entrevista y la valoración académica según el nivel.",
+          pie: "Presencial en campus",
         },
         {
           title: "Publicación de resultados",
-          date: "Mayo",
-          description: "Comunicación de resultados y cartas de aceptación.",
+          description: "Recibe la confirmación de admisión de forma oficial y con toda la transparencia.",
+          pie: "Vía portal y correo",
         },
         {
           title: "Matrícula y bienvenida",
-          date: "Junio – julio",
-          description: "Proceso de matrícula e inducción a la comunidad escolar.",
+          description: "Completa la matrícula y participa en la inducción para integrarte a la comunidad escolar.",
+          pie: "Integración institucional",
         },
       ],
-      requirements: [
-        "Formulario de inscripción debidamente diligenciado",
-        "Copia del documento de identidad del estudiante",
-        "Copia del documento de identidad del acudiente",
-        "Certificado de notas del año escolar anterior",
-        "Fotografía tamaño 3x4 actualizada",
-      ],
+      requisitosPorNivel: {
+        preescolar: [
+          { title: "Registro civil de nacimiento", description: "Copia legible del registro civil del aspirante, vigente y sin enmendaduras.", formato: "PDF o JPG legible (máx. 5MB)" },
+          { title: "Documento de identidad de los acudientes", description: "Copia de la cédula de identidad de padre, madre o acudiente responsable.", formato: "PDF o JPG legible (máx. 5MB)" },
+          { title: "Certificado de desarrollo o jardín", description: "Certificación de la institución o jardín anterior (si aplica) sobre el proceso del menor.", formato: "Documento oficial sellado (PDF)" },
+          { title: "Fotografía reciente", description: "Fotografía tamaño 3x4 con fondo claro y actualizada al periodo vigente.", formato: "JPG o PNG (máx. 2MB)" },
+          { title: "Certificado de salud y vacunación", description: "Esquema de vacunación al día y certificado médico de aptitud para actividad escolar.", formato: "Documento oficial sellado (PDF)" },
+        ],
+        primaria: [
+          { title: "Registro civil de nacimiento", description: "Copia legible del registro civil del aspirante, vigente y sin enmendaduras.", formato: "PDF o JPG legible (máx. 5MB)" },
+          { title: "Documento de identidad de los acudientes", description: "Copia de la cédula de identidad de padre, madre o acudiente responsable.", formato: "PDF o JPG legible (máx. 5MB)" },
+          { title: "Certificado de notas del año anterior", description: "Informe académico o boletín del grado inmediatamente anterior, debidamente firmado.", formato: "Documento oficial sellado (PDF)" },
+          { title: "Paz y salvo de la institución anterior", description: "Certificación de paz y salvo académico y financiero de la institución de procedencia.", formato: "Documento oficial sellado (PDF)" },
+          { title: "Fotografía reciente", description: "Fotografía tamaño 3x4 con fondo claro y actualizada al periodo vigente.", formato: "JPG o PNG (máx. 2MB)" },
+        ],
+        secundaria: [
+          { title: "Registro civil de nacimiento", description: "Copia legible del registro civil del aspirante, vigente y sin enmendaduras.", formato: "PDF o JPG legible (máx. 5MB)" },
+          { title: "Documento de identidad del estudiante", description: "Tarjeta de identidad o cédula de ciudadanía del aspirante, según corresponda.", formato: "PDF o JPG legible (máx. 5MB)" },
+          { title: "Certificado de notas del año anterior", description: "Informe académico o boletín del grado inmediatamente anterior, debidamente firmado.", formato: "Documento oficial sellado (PDF)" },
+          { title: "Paz y salvo de la institución anterior", description: "Certificación de paz y salvo académico y financiero de la institución de procedencia.", formato: "Documento oficial sellado (PDF)" },
+          { title: "Certificado de conducta y conformidad", description: "Certificación de buen comportamiento y convivencia expedida por la institución anterior.", formato: "Documento oficial sellado (PDF)" },
+        ],
+      },
       faq: [
         {
-          id: "edades",
-          title: "¿Qué edades corresponden a cada nivel?",
-          content:
-            "Preescolar recibe niños entre 3 y 5 años, primaria de 6 a 10 años y secundaria de 11 a 17 años.",
+          id: "criterios",
+          title: "¿Cuáles son los criterios de selección?",
+          content: "Evaluamos el desempeño académico, la entrevista con la familia y la disponibilidad de cupos por nivel, manteniendo un proceso transparente con criterios publicados y comunicados a cada familia.",
         },
         {
           id: "costos",
-          title: "¿Cuáles son los costos de matrícula y pensión?",
-          content:
-            "Los valores se definen anualmente y se informan en la oficina de admisiones.",
+          title: "¿Cuáles son los costos de inscripción?",
+          content: "El valor de inscripción y matrícula se informa en la oficina de admisiones. Ofrecemos facilidades de pago y descuentos por pronto pago descritos en la circular de costos del periodo.",
         },
         {
-          id: "uniforme",
-          title: "¿El colegio tiene uniforme?",
-          content:
-            "Sí, contamos con uniforme institucional diario y de educación física.",
+          id: "resultados",
+          title: "¿Cómo y cuándo me notifican los resultados?",
+          content: "Los resultados se publican vía portal de admisiones y correo electrónico registrado en la postulación, dentro del cronograma oficial señalado en la sección de fechas clave.",
         },
       ],
     },
@@ -548,7 +604,11 @@ async function main() {
 
   // 4. tenant_settings
   const { error: settingsError } = await supabase.from("tenant_settings").upsert(
-    { tenant_id: tenantId, rebuild_hook_url: rebuildHookUrl || "" },
+    {
+      tenant_id: tenantId,
+      rebuild_hook_url: rebuildHookUrl || "",
+      preview_web_url: cliente.domain ? `https://${cliente.domain}` : "",
+    },
     { onConflict: "tenant_id" },
   );
   if (settingsError) fail(`No se pudo guardar tenant_settings: ${settingsError.message}`);

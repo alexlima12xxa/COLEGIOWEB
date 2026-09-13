@@ -4,6 +4,7 @@ import Button from "../../../shared/ui/Button/Button.astro";
 import Card from "../../../shared/ui/Card/Card.astro";
 import ResponsiveImage from "../../../shared/ui/ResponsiveImage/ResponsiveImage.astro";
 import { Check, Clock, BookOpen } from "@lucide/astro";
+import { siteConfig } from "../../../site.config";
 import "./NivelLayout.css";
 
 export interface Props {
@@ -52,7 +53,7 @@ const {
       <div class="levelLayout__media">
         <ResponsiveImage
           src={image}
-          alt={`Estudiantes de ${name} en el Colegio Piloto`}
+          alt={`Estudiantes de ${name} en ${siteConfig.identity.name}`}
           width={1200}
           height={800}
           loading="eager"

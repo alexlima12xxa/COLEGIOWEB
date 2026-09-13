@@ -10,7 +10,7 @@ import { getContacto, getFooter } from "../shared/db/contenido";
 
 const title = "Contacto";
 const description =
-  "Comunícate con el Colegio Piloto: directorio telefónico, formulario de contacto y ubicación.";
+  `Comunícate con ${siteConfig.identity.name}: directorio telefónico, formulario de contacto y ubicación.`;
 
 // Directorio y campos del formulario desde Supabase (tabla `contenido`), con
 // fallback local. Se resuelven en build-time: un cambio del panel aparece
@@ -207,7 +207,7 @@ const PLACEHOLDERS_BY_FIELD: Record<string, string> = {
       <div class="contactMap__wrapper">
         <iframe
           src={mapEmbedUrl}
-          title="Ubicación del Colegio Piloto en Google Maps"
+          title={`Ubicación de ${siteConfig.identity.name} en Google Maps`}
           allowfullscreen
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"

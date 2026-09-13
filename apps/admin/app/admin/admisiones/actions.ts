@@ -16,18 +16,18 @@ const LIMITS = {
   heroTitlePre: { min: 0, max: 160 },
   heroTitleHighlight: { min: 0, max: 160 },
   heroDescription: { min: 0, max: 500 },
-  fechaTitulo: { min: 3, max: 120 },
+  fechaTitulo: { min: 2, max: 120 },
   fechaFecha: { min: 1, max: 80 },
-  fechaDesc: { min: 0, max: 500 },
-  aviso: { min: 0, max: 500 },
-  etapaTitulo: { min: 3, max: 120 },
-  etapaDesc: { min: 3, max: 500 },
+  fechaDesc: { min: 5, max: 500 },
+  aviso: { min: 5, max: 500 },
+  etapaTitulo: { min: 2, max: 120 },
+  etapaDesc: { min: 5, max: 500 },
   etapaPie: { min: 2, max: 120 },
   requisitoTitulo: { min: 2, max: 160 },
-  requisitoDesc: { min: 3, max: 500 },
+  requisitoDesc: { min: 5, max: 500 },
   requisitoFormato: { min: 2, max: 120 },
   faqTitulo: { min: 3, max: 200 },
-  faqContenido: { min: 3, max: 1000 },
+  faqContenido: { min: 5, max: 2000 },
 } as const;
 
 const ESTADOS = ["en-curso", "ultimos-cupos", "familias-admitidas"] as const;
@@ -91,7 +91,7 @@ export async function guardarAdmisiones(
   if (eHeroDescription) fieldErrors.heroDescription = eHeroDescription;
 
   const aviso = String(formData.get("aviso") ?? "").trim();
-  const eAviso = clamp(aviso, LIMITS.aviso);
+  const eAviso = aviso ? clamp(aviso, LIMITS.aviso) : null;
   if (eAviso) fieldErrors.aviso = eAviso;
 
   // Fechas clave (lista de {title, date, estado, description})
@@ -117,7 +117,7 @@ export async function guardarAdmisiones(
     if (!title && !date && !description) continue;
     const eT = clamp(title, LIMITS.fechaTitulo);
     const eF = clamp(date, LIMITS.fechaFecha);
-    const eD = clamp(description, LIMITS.fechaDesc);
+    const eD = description ? clamp(description, LIMITS.fechaDesc) : null;
     if (eT) fieldErrors[`fecha_title-${i}`] = eT;
     if (eF) fieldErrors[`fecha_date-${i}`] = eF;
     if (eD) fieldErrors[`fecha_description-${i}`] = eD;

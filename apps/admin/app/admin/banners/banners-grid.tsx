@@ -19,11 +19,13 @@ export interface BannerCardData {
 function Thumb({
   id,
   token,
+  previewWebUrl,
 }: {
   id: string;
   token: string | null;
+  previewWebUrl: string | null;
 }) {
-  const url = buildPreviewUrlById(id, token);
+  const url = buildPreviewUrlById(id, token, previewWebUrl);
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number | null>(null);
 
@@ -83,15 +85,17 @@ function Thumb({
 function BannerCard({
   banner,
   token,
+  previewWebUrl,
 }: {
   banner: BannerCardData;
   token: string | null;
+  previewWebUrl: string | null;
 }) {
   const [editando, setEditando] = useState(false);
 
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
-      <Thumb id={banner.id} token={token} />
+      <Thumb id={banner.id} token={token} previewWebUrl={previewWebUrl} />
 
       <div className="space-y-3 p-4">
         <div className="flex items-start justify-between gap-2">
@@ -163,6 +167,7 @@ function BannerCard({
               datos: banner.datos,
             }}
             previewToken={token}
+            previewWebUrl={previewWebUrl}
           />
         </div>
       ) : null}
@@ -173,9 +178,11 @@ function BannerCard({
 export function BannersGrid({
   banners,
   token,
+  previewWebUrl,
 }: {
   banners: BannerCardData[];
   token: string | null;
+  previewWebUrl: string | null;
 }) {
   const [mostrandoNuevo, setMostrandoNuevo] = useState(false);
 
@@ -183,7 +190,12 @@ export function BannersGrid({
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {banners.map((banner) => (
-          <BannerCard key={banner.id} banner={banner} token={token} />
+          <BannerCard
+            key={banner.id}
+            banner={banner}
+            token={token}
+            previewWebUrl={previewWebUrl}
+          />
         ))}
 
         {mostrandoNuevo ? (
@@ -196,6 +208,7 @@ export function BannersGrid({
                 datos: {},
               }}
               previewToken={token}
+              previewWebUrl={previewWebUrl}
             />
           </div>
         ) : null}

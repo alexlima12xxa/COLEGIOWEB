@@ -10,7 +10,18 @@ const PLANTILLA_LABEL: Record<string, string> = Object.fromEntries(
 );
 
 export default async function BannersPage() {
-  const { supabase } = await requireAdmin();
+  const { supabase, tenantId } = await requireAdmin();
+
+  const { data: settings } = await supabase
+    .from("tenant_settings")
+    .select("preview_web_url")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+
+  const previewWebUrl =
+    (settings?.preview_web_url as string | undefined)?.trim() ||
+    process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "") ||
+    null;
 
   const { data } = await supabase
     .from("banners")
@@ -50,7 +61,11 @@ export default async function BannersPage() {
         </p>
       </div>
 
-      <BannersGrid banners={banners} token={previewToken} />
+      <BannersGrid
+        banners={banners}
+        token={previewToken}
+        previewWebUrl={previewWebUrl}
+      />
     </div>
   );
 }

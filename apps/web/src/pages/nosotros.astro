@@ -14,10 +14,11 @@ import {
   getNosotrosHero,
 } from "../shared/db/contenido";
 import { resolveAssetUrl } from "../shared/db/storage";
+import { siteConfig } from "../site.config";
 
 const title = "Nosotros";
 const description =
-  "Conoce la historia, misión, visión y equipo directivo del Colegio Piloto.";
+  `Conoce la historia, misión, visión y equipo directivo de ${siteConfig.identity.name}.`;
 
 // Contenido editorial desde Supabase (tabla `contenido`), con fallback local.
 // Se resuelve en build-time: un cambio del panel aparece tras el rebuild.
@@ -46,7 +47,7 @@ const heroImageUrl = resolveAssetUrl(nosotrosHero.image) ?? nosotrosHero.image;
       <div class="aboutHero__media">
         <ResponsiveImage
           src={heroImageUrl}
-          alt="Sede principal del Colegio Piloto"
+          alt={`Sede principal de ${siteConfig.identity.name}`}
           width={1200}
           height={800}
           loading="eager"
