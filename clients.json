@@ -5,5 +5,12 @@
     "tenantId": "",
     "adminEmail": "contacto@colegiopiloto.edu.co",
     "rebuildHookUrl": ""
+  },
+  {
+    "slug": "colegio-nuevo",
+    "domain": "colegionuevo.yachay-ia.com",
+    "tenantId": "",
+    "adminEmail": "correopruebaprueba998@gmail.com",
+    "rebuildHookUrl": ""
   }
 ]
