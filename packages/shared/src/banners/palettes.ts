@@ -23,3 +23,22 @@ export const PRUEBA_TONOS: TonoPrueba[] = [
 export function tonoPruebaPorKey(key: string): TonoPrueba {
   return PRUEBA_TONOS.find((t) => t.key === key) ?? PRUEBA_TONOS[0];
 }
+
+export interface TonoMatriculaFondo {
+  key: string;
+  label: string;
+  bg: string;
+}
+
+// Fondos de la plantilla "matricula": solo cambia el color de fondo del banner
+// (sección y columna de foto). El resto del diseño (kicker/título/subtítulo/CTA)
+// es fijo.
+export const MATRICULA_FONDOS: TonoMatriculaFondo[] = [
+  { key: "gris", label: "Gris", bg: "#f5f5f5" },
+  { key: "azul-claro", label: "Azul claro", bg: "#cae6ff" },
+  { key: "crema", label: "Crema", bg: "#feffeb" },
+];
+
+export function fondoMatriculaPorKey(key: string): TonoMatriculaFondo {
+  return MATRICULA_FONDOS.find((t) => t.key === key) ?? MATRICULA_FONDOS[0];
+}

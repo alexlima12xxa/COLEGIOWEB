@@ -1,5 +1,5 @@
 ﻿import type { EditableSchema } from "./contratos";
-import { PRUEBA_TONOS } from "./palettes";
+import { PRUEBA_TONOS, MATRICULA_FONDOS } from "./palettes";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -21,7 +21,7 @@ export interface EntradaCatalogo {
   contrato: EditableSchema;
 }
 
-export const BANNERS_SLUGS = ["prueba"] as const;
+export const BANNERS_SLUGS = ["prueba", "matricula"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -41,6 +41,34 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
           tipo: "opciones",
           default: PRUEBA_TONOS[0].key,
           opciones: PRUEBA_TONOS.map((t) => ({ label: t.label, value: t.key })),
+        },
+        { key: "actions", label: "Botones", tipo: "booleano" },
+      ],
+    },
+  },
+  {
+    slug: "matricula",
+    nombre: "Banner de Matrícula",
+    contrato: {
+      slug: "matricula",
+      nombre: "Matrícula",
+      campos: [
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
+        {
+          key: "fondo",
+          label: "Fondo del banner",
+          tipo: "opciones",
+          default: MATRICULA_FONDOS[0].key,
+          opciones: MATRICULA_FONDOS.map((t) => ({ label: t.label, value: t.key })),
+        },
+        {
+          key: "background",
+          label: "Foto lateral",
+          tipo: "imagen",
+          opcional: true,
+          ayuda: "PNG transparente o imagen del colegio. Al menos 1280×720.",
         },
         { key: "actions", label: "Botones", tipo: "booleano" },
       ],
