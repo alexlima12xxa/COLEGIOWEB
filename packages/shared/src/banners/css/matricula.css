@@ -18,16 +18,17 @@
     --banner-container-max-width: 80rem;
     --banner-container-padding-x: 2.5rem;
     --banner-gap: 2rem;
-    --banner-kicker-size: clamp(1.5rem, 3.2vw, 2.25rem);
+    --banner-kicker-size: clamp(1.75rem, 3.8vw, 2.5rem);
     --banner-kicker-weight: 800;
     --banner-kicker-spacing: 0.02em;
-    --banner-title-size: clamp(2.75rem, 6.5vw, 5rem);
+    --banner-title-size: clamp(3.25rem, 8vw, 6rem);
     --banner-title-weight: 900;
     --banner-title-line-height: 1;
     --banner-title-spacing: -0.02em;
     --banner-subtitle-size: clamp(1rem, 1.8vw, 1.25rem);
     --banner-subtitle-line-height: 1.5;
     --banner-subtitle-max-width: 36rem;
+    --banner-content-padding-left: 2rem;
     --banner-btn-padding-y: 0.75rem;
     --banner-btn-padding-x: 1.75rem;
     --banner-btn-font-size: 1.125rem;
@@ -59,14 +60,14 @@
 
   .banner__matricula-container {
     display: grid;
-    grid-template-columns: var(--banner-grid-cols, 1fr 1fr);
+    grid-template-columns: var(--banner-grid-cols, minmax(0, 1fr) minmax(0, 1.25fr));
     width: var(--banner-container-width, 100%);
     max-width: var(--banner-container-max-width, 80rem);
     height: var(--banner-container-height, 100%);
     margin: var(--banner-container-margin, 0 auto);
     padding-inline: var(--banner-container-padding-x, 2.5rem);
     gap: var(--banner-gap, 2rem);
-    align-items: center;
+    align-items: stretch;
   }
 
   .banner__matricula-content {
@@ -75,6 +76,7 @@
     justify-content: center;
     align-items: flex-start;
     padding: var(--banner-content-padding, var(--space-xl, 2.5rem) 0);
+    padding-inline-start: var(--banner-content-padding-left, 2rem);
     z-index: var(--banner-content-z, 2);
   }
 
@@ -185,7 +187,7 @@
   .banner__matricula-foto img {
     width: var(--banner-foto-img-width, 100%);
     height: var(--banner-foto-img-height, 100%);
-    object-fit: var(--banner-foto-fit, cover);
+    object-fit: var(--banner-foto-fit, contain);
     object-position: var(--banner-foto-position, center bottom);
     display: block;
   }
@@ -254,21 +256,22 @@
     .banner__matricula-container {
       max-width: var(--banner-container-max-width-desktop-lg, 88rem);
       padding-inline: var(--banner-container-padding-desktop-lg, 3.5rem);
-      gap: var(--banner-gap-desktop-lg, 3rem);
+      gap: var(--banner-gap-desktop-lg, 2rem);
     }
 
     .banner__matricula-content {
       padding: var(--banner-content-padding-desktop-lg, var(--space-xl, 3rem) 0);
+      padding-inline-start: var(--banner-content-padding-left-desktop-lg, 4rem);
     }
 
     .banner__matricula-kicker,
     .banner__matricula-content > span {
-      font-size: var(--banner-kicker-size-desktop-lg, 2.25rem);
+      font-size: var(--banner-kicker-size-desktop-lg, 2.5rem);
     }
 
     .banner__matricula-title,
     .banner__matricula-content > h1 {
-      font-size: var(--banner-title-size-desktop-lg, 5rem);
+      font-size: var(--banner-title-size-desktop-lg, 6rem);
     }
 
     .banner__matricula-subtitle,
