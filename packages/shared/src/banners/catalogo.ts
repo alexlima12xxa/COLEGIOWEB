@@ -1,5 +1,5 @@
 ﻿import type { EditableSchema } from "./contratos";
-import { PRUEBA_TONOS } from "./palettes";
+import { PRUEBA_TONO_DEFAULT, PRUEBA_TONOS } from "./palettes";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -45,7 +45,7 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
           key: "tono",
           label: "Tono de colores",
           tipo: "opciones",
-          default: PRUEBA_TONOS[0].key,
+          default: PRUEBA_TONO_DEFAULT.key,
           opciones: PRUEBA_TONOS.map((t) => ({ label: t.label, value: t.key })),
         },
         { key: "actions", label: "Botones", tipo: "booleano" },
@@ -56,7 +56,7 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       title: "Formamos líderes para transformar el futuro",
       subtitle:
         "Una educación integral, cercana y de excelencia desde preescolar hasta bachillerato.",
-      tono: PRUEBA_TONOS[0].key,
+      tono: PRUEBA_TONO_DEFAULT.key,
       cta: { label: "Iniciar admisión", href: "/admisiones", variant: "primary" },
     },
   },

@@ -8,7 +8,9 @@ describe("catálogo de banners", () => {
     for (const slug of BANNERS_SLUGS) {
       const entradas = CATALOGO_BANNERS.filter((c) => c.slug === slug);
       expect(entradas).toHaveLength(1);
-      expect(entradas[0].contrato.slug).toBe(slug);
+      const [entrada] = entradas;
+      expect(entrada).toBeDefined();
+      expect(entrada?.contrato.slug).toBe(slug);
     }
   });
 
