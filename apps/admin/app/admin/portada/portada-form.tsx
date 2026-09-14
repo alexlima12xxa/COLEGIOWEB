@@ -174,6 +174,7 @@ const NAVBAR_HINTS = [
   "Noticias",
   "Circulares",
   "Contacto",
+  "Formulario",
 ];
 
 const NAVBAR_ROUTES = [
@@ -184,6 +185,7 @@ const NAVBAR_ROUTES = [
   "/noticias",
   "/circulares",
   "/contacto",
+  "/formulario",
 ];
 
 interface NavbarLinkData {

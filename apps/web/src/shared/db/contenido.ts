@@ -431,7 +431,14 @@ export async function getContacto(): Promise<Contacto> {
   const raw = await getContenido<unknown>("contacto", () => fallbackContacto());
   const parsed = contactoSchema.safeParse(raw);
   if (!parsed.success) return fallbackContacto();
-  return parsed.data;
+  const contacto = parsed.data;
+  // Los `formFields` no se editan en el panel y pueden faltar en filas antiguas
+  // o guardadas sin ellos. Si vienen vacíos, se restauran desde el fallback
+  // local conservando `info` y `departments` guardados.
+  if (contacto.formFields.length === 0) {
+    return { ...contacto, formFields: fallbackContacto().formFields };
+  }
+  return contacto;
 }
 
 // ── WhatsApp (clave `whatsapp`) ─────────────────────────────────────────────

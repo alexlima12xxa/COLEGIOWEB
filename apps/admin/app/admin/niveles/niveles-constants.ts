@@ -20,6 +20,7 @@ export const PAGINAS_CTA = [
   "/noticias",
   "/circulares",
   "/contacto",
+  "/formulario",
 ] as const;
 
 export const CTA_HREF_DEFAULT = "/admisiones";

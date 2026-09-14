@@ -26,4 +26,5 @@ export const PAGINAS_FOOTER = [
   "/noticias",
   "/circulares",
   "/contacto",
+  "/formulario",
 ] as const;

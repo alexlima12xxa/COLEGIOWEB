@@ -105,6 +105,22 @@ export async function guardarContacto(
 
   if (Object.keys(fieldErrors).length > 0) return { fieldErrors };
 
+  const { supabase, tenantId } = await requireAdmin();
+
+  // `formFields` no se edita en el panel (los define la web en su fallback).
+  // Se preservan desde la fila existente para no borrarlos al guardar.
+  const { data: filaExistente } = await supabase
+    .from("contenido")
+    .select("valor")
+    .eq("tenant_id", tenantId)
+    .eq("clave", "contacto")
+    .maybeSingle();
+  const formFields = Array.isArray(
+    (filaExistente?.valor as { formFields?: unknown } | null)?.formFields,
+  )
+    ? (filaExistente?.valor as { formFields: unknown[] }).formFields
+    : undefined;
+
   // La clave `contacto` solo guarda lo específico de la página de contacto:
   // URLs del mapa y directorio por departamento. Los datos generales de
   // contacto (dirección, teléfono, email, horario) se guardan en la clave
@@ -115,9 +131,9 @@ export async function guardarContacto(
       mapEmbedUrl: mapEmbedUrl || undefined,
     },
     departments,
+    ...(formFields ? { formFields } : {}),
   };
 
-  const { supabase, tenantId } = await requireAdmin();
   const { error } = await supabase
     .from("contenido")
     .upsert(

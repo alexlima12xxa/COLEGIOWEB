@@ -145,7 +145,7 @@ export async function guardarHero(
 // ── Navbar (clave `navbar`) ─────────────────────────────────────────────────
 // Lista fija de enlaces [{label, href}]. Logo y nombre siguen en config.
 
-const NAVBAR_COUNT = 7;
+const NAVBAR_COUNT = 8;
 
 const NAVBAR_ROUTES = [
   "/",
@@ -155,6 +155,7 @@ const NAVBAR_ROUTES = [
   "/noticias",
   "/circulares",
   "/contacto",
+  "/formulario",
 ];
 
 export async function guardarNavbar(
