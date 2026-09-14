@@ -16,8 +16,7 @@ import {
 const activeLevels = (await getNivelesResumen()).filter((l) => l.enabled);
 
 const title = "Admisiones";
-const description =
-  `Proceso de admisiones 2026 del ${siteConfig.identity.name}: fechas clave, etapas, requisitos por nivel y preguntas frecuentes.`;
+const description = `Proceso de admisiones 2026 del ${siteConfig.identity.name}: fechas clave, etapas, requisitos por nivel y preguntas frecuentes.`;
 
 // Contenido editorial desde Supabase (tabla `contenido`), con fallback local.
 // Se resuelve en build-time: un cambio del panel aparece tras el rebuild.

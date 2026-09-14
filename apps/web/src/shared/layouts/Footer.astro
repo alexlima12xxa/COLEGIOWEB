@@ -59,6 +59,12 @@ const socialLabels: Record<string, string> = {
 };
 
 const currentYear = new Date().getFullYear();
+
+// Imagen de marca para el footer (PNG o SVG, cualquier proporción): se usa la
+// versión inversa si existe, con fallback a la normal. Si no hay ninguna, el
+// componente Logo renderiza el isotipo generado + nombre (fallback).
+const footerImage =
+  siteConfig.branding.assets.logoInverse ?? siteConfig.branding.assets.logo;
 ---
 
 <footer class:list={["footer", className]}>
@@ -70,7 +76,20 @@ const currentYear = new Date().getFullYear();
           class="footer__brandLink"
           aria-label={`Inicio - ${siteConfig.identity.name}`}
         >
-          <Logo variant="dark" size="md" class="footer__logo" />
+          {
+            footerImage ? (
+              <img
+                src={footerImage}
+                alt={siteConfig.identity.name}
+                class="footer__brandImage"
+                width="80"
+                height="80"
+                decoding="async"
+              />
+            ) : (
+              <Logo variant="dark" size="md" class="footer__logo" />
+            )
+          }
         </a>
         <p class="footer__slogan">{siteConfig.identity.slogan}</p>
       </div>

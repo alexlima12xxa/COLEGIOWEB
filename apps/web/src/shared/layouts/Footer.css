@@ -36,6 +36,9 @@
   .footer__brand {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     gap: var(--space-md);
   }
 
@@ -48,11 +51,21 @@
     max-width: 10rem;
   }
 
+  .footer__brandImage {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 12rem;
+    max-height: 5rem;
+    object-fit: contain;
+  }
+
   .footer__slogan {
     color: var(--color-text-inverse);
     opacity: 0.8;
     font-size: var(--text-sm);
     max-width: 24rem;
+    margin-inline: auto;
   }
 
   .footer__title {

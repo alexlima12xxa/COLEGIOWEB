@@ -27,6 +27,8 @@
 1. Crear `apps/web/src/configs/<slug>.ts` — copia la forma de `colegio-piloto.ts` con los datos del colegio (identity, contact, social, levels, sections, admissions, branding, seo, supabase). **Sin schema y sin imports desde `site.config.ts`** (dependencia circular).
    > `seo.siteUrl` debe ser `https://` + el mismo `domain` declarado en `clients.json` (paso 2). `validateConfig.ts` rompe el build de producción si no coinciden (misma URL, ignorando el prefijo `www.`). En previews de Vercel (`VERCEL_ENV === "preview"`) no se bloquea.
 2. Crear los assets en `public/branding/<slug>/` (logo, logo-inverse, favicon, og-image, placeholders). `validateConfig.ts` falla el build si un asset referenciado no existe.
+   > **Regla de marca:** **nunca** exportar el logo como SVG con imagen raster embebida (el "export as image" de Figma/Illustrator incrusta un PNG base64 con viewBox cuadrado y sin transparencia — rompe el logo del footer y el favicon). Usar PNG con fondo transparente o SVG vectorial con textos convertidos a curvas. Proporciones recomendadas: `logo`/`logo-inverse` horizontales (~5:1, ej. 240×48); `favicon` cuadrado (1:1, ej. 32×32). El footer acepta PNG o SVG de cualquier proporción y los escala con máximos de 12rem×5rem centrado.
+   > **Dimensiones obligatorias:** todo SVG de marca debe declarar `width` y `height` además de `viewBox` (ej. `<svg width="240" height="48" viewBox="0 0 240 48">`). Sin dimensiones intrínsecas, el navegador no puede resolver el tamaño del `<img>` del footer (colapsa a 0 y no se ve) ni del favicon.
 3. Validar localmente con el slug del colegio:
    ```bash
    $env:PUBLIC_SITE_SLUG="<slug>"; pnpm --filter @web-modelo/web check
@@ -63,17 +65,18 @@ pnpm colegio:alta <slug>
 
 Env vars requeridas por el script:
 
-| Variable | Descripción |
-|---|---|
-| `SUPABASE_URL` | URL del proyecto Supabase |
-| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (solo build-time / scripts) |
-| `SUPABASE_ANON_KEY` | Anon key pública |
-| `VERCEL_TOKEN` | Token de Vercel (cuenta/team) — salvo `--skip-vercel` |
-| `VERCEL_TEAM_ID` | (opcional) Team de Vercel |
+| Variable                    | Descripción                                           |
+| --------------------------- | ----------------------------------------------------- |
+| `SUPABASE_URL`              | URL del proyecto Supabase                             |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (solo build-time / scripts)          |
+| `SUPABASE_ANON_KEY`         | Anon key pública                                      |
+| `VERCEL_TOKEN`              | Token de Vercel (cuenta/team) — salvo `--skip-vercel` |
+| `VERCEL_TEAM_ID`            | (opcional) Team de Vercel                             |
 
 Flags útiles: `--password <pw>`, `--domain <d>`, `--email <e>`, `--rebuild-hook <url>`, `--project-name <n>`, `--skip-vercel`, `--skip-seed`.
 
 El script:
+
 1. Upsert del colegio en `colegios` (por slug) → `tenant_id`.
 2. Crea el admin en Supabase Auth con `app_metadata { role: "admin", tenant_id }`.
 3. Siembra las 12 claves de contenido (plantilla parametrizada).
@@ -120,13 +123,13 @@ git diff --quiet HEAD^ HEAD -- apps/web/src/configs/<slug>.ts apps/web/public/br
 Las políticas RLS del esquema dependen de dos helpers definidos en
 `20260828000000_init.sql`:
 
-| Función | Definición | Uso |
-|---|---|---|
-| `public.is_admin()` | `(auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'` | Autorización de escritura admin |
-| `public.current_tenant_id()` | `coalesce(app_metadata.tenant_id, cabecera X-Tenant-Id)` | Lectura pública de contenido por tenant |
-| `public.current_tenant_from_jwt()` | Solo `app_metadata.tenant_id` del JWT, **sin fallback a cabecera** | Datos sensibles (`tenant_settings`) |
+| Función                            | Definición                                                         | Uso                                     |
+| ---------------------------------- | ------------------------------------------------------------------ | --------------------------------------- |
+| `public.is_admin()`                | `(auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'`              | Autorización de escritura admin         |
+| `public.current_tenant_id()`       | `coalesce(app_metadata.tenant_id, cabecera X-Tenant-Id)`           | Lectura pública de contenido por tenant |
+| `public.current_tenant_from_jwt()` | Solo `app_metadata.tenant_id` del JWT, **sin fallback a cabecera** | Datos sensibles (`tenant_settings`)     |
 
-**Advertencia de seguridad:** `current_tenant_id()` hace *fallback* a la
+**Advertencia de seguridad:** `current_tenant_id()` hace _fallback_ a la
 cabecera `X-Tenant-Id`, que es 100 % controlable por el cliente. Ese fallback
 **solo es apto para lectura pública de contenido** (noticias, circulares,
 banners, contenido estático). **Nunca** debe usarse para autorizar secretos.
@@ -149,6 +152,7 @@ Supabase).
 - **Vercel Pro** necesario para >3 proyectos.
 - **Costos**: bandwidth/requests por proyecto al crecer (revisar plan Pro/Enterprise).
 - **Assets de marca**: el seed referencia `/branding/<slug>/placeholders/...`; si la agencia no los crea, las imágenes 404 en el navegador (no rompen el build). El director puede reemplazarlas desde el panel.
+- **SVG con raster embebido**: `validateConfig.ts` solo verifica que el asset exista, no su contenido. Un SVG exportado de Figma con PNG incrustado pasa el build pero se ve roto en el footer y favicon. Regla: PNG transparente o SVG con textos en curvas (ver checklist paso 1).
 - **Migración de datos**: hoy solo existe el piloto; no hay migración de colegios existentes.
 
 ## Fuera de alcance (decisiones)
