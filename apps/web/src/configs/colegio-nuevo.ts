@@ -14,7 +14,7 @@ export default {
   identity: {
     name: "Colegio Nuevo",
     campus: "Sede Principal",
-    slogan: "Inspiramos tu mente para que lideres el futuro",
+    slogan: "Formando líderes para el futuro con excelencia académica",
     shortDescription:
       "Institución educativa comprometida con la excelencia académica y la formación integral.",
     description:
