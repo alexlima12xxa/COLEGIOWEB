@@ -1,5 +1,5 @@
 ﻿import type { EditableSchema } from "./contratos";
-import { PRUEBA_TONOS, MATRICULA_FONDOS } from "./palettes";
+import { PRUEBA_TONOS } from "./palettes";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -19,9 +19,15 @@ export interface EntradaCatalogo {
   slug: BannerSlug;
   nombre: string;
   contrato: EditableSchema;
+  /**
+   * Contenido de ejemplo de la plantilla. El panel lo precarga al crear un
+   * banner para que el director vea el diseño real completo (con textos) ANTES
+   * de escribir. Debe ser un `datos` válido para la plantilla.
+   */
+  ejemplo: Record<string, unknown>;
 }
 
-export const BANNERS_SLUGS = ["prueba", "matricula"] as const;
+export const BANNERS_SLUGS = ["prueba"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -45,37 +51,47 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
         { key: "actions", label: "Botones", tipo: "booleano" },
       ],
     },
-  },
-  {
-    slug: "matricula",
-    nombre: "Banner de Matrícula",
-    contrato: {
-      slug: "matricula",
-      nombre: "Matrícula",
-      campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
-        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
-        {
-          key: "fondo",
-          label: "Fondo del banner",
-          tipo: "opciones",
-          default: MATRICULA_FONDOS[0].key,
-          opciones: MATRICULA_FONDOS.map((t) => ({ label: t.label, value: t.key })),
-        },
-        {
-          key: "background",
-          label: "Foto lateral",
-          tipo: "imagen",
-          opcional: true,
-          ayuda: "PNG transparente o imagen del colegio. Al menos 1280×720.",
-        },
-        { key: "actions", label: "Botones", tipo: "booleano" },
-      ],
+    ejemplo: {
+      kicker: "ADMISIÓN 2026",
+      title: "Formamos líderes para transformar el futuro",
+      subtitle:
+        "Una educación integral, cercana y de excelencia desde preescolar hasta bachillerato.",
+      tono: PRUEBA_TONOS[0].key,
+      cta: { label: "Iniciar admisión", href: "/admisiones", variant: "primary" },
     },
   },
 ];
 
 export function catalogoPorSlug(slug: string): EntradaCatalogo | undefined {
   return CATALOGO_BANNERS.find((b) => b.slug === slug);
+}
+
+/** Datos de ejemplo de una plantilla (o `{}` si no existe). */
+export function ejemploDePlantilla(slug: string): Record<string, unknown> {
+  return catalogoPorSlug(slug)?.ejemplo ?? {};
+}
+
+// Campos de contenido que, si el director no los toca, delatan que el banner
+// sigue siendo el ejemplo (guard para no publicar textos de muestra).
+const CAMPOS_EJEMPLO = ["title", "subtitle", "kicker"] as const;
+
+/**
+ * ¿El borrador sigue teniendo el contenido de ejemplo? Se usa para avisar (y
+ * bloquear en el server) al guardar un banner nuevo sin editarlo.
+ */
+export function esContenidoEjemplo(
+  slug: string,
+  datos: Record<string, unknown>,
+): boolean {
+  const ejemplo = catalogoPorSlug(slug)?.ejemplo;
+  if (!ejemplo) return false;
+
+  const hayEjemplo = CAMPOS_EJEMPLO.some(
+    (k) => typeof ejemplo[k] === "string" && (ejemplo[k] as string).length > 0,
+  );
+  if (!hayEjemplo) return false;
+
+  return CAMPOS_EJEMPLO.every(
+    (k) => String(datos[k] ?? "") === String(ejemplo[k] ?? ""),
+  );
 }

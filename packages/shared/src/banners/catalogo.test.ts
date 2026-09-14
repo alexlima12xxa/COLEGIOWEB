@@ -43,4 +43,23 @@ describe("catálogo de banners", () => {
     }
     expect(catalogoPorSlug("no-existe")).toBeUndefined();
   });
+
+  it("cada plantilla tiene un ejemplo con título no vacío", () => {
+    for (const entrada of CATALOGO_BANNERS) {
+      expect(typeof entrada.ejemplo.title).toBe("string");
+      expect((entrada.ejemplo.title as string).trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  it("el tono del ejemplo (si existe) es una opción válida del contrato", () => {
+    for (const entrada of CATALOGO_BANNERS) {
+      const tono = entrada.ejemplo.tono;
+      if (typeof tono !== "string" || !tono) continue;
+      const campoTono = entrada.contrato.campos.find(
+        (c) => c.key === "tono" && c.tipo === "opciones",
+      );
+      expect(campoTono).toBeDefined();
+      expect(campoTono?.opciones?.some((o) => o.value === tono)).toBe(true);
+    }
+  });
 });

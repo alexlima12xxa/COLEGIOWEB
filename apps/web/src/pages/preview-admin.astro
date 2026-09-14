@@ -23,6 +23,27 @@ import { verifyPreviewToken } from "../shared/lib/preview-token";
  */
 export const prerender = false;
 
+// Restringe qué sitios pueden embeber esta ruta en un iframe (anti-clickjacking
+// del preview). Opt-in: define `ADMIN_ORIGIN` (p. ej.
+// https://admin.micolegio.com) en el entorno de la web. Si no se define, no se
+// emite el header (comportamiento actual).
+const adminOrigin =
+  (import.meta.env?.ADMIN_ORIGIN as string | undefined) ??
+  process.env.ADMIN_ORIGIN ??
+  "";
+if (adminOrigin) {
+  Astro.response.headers.set(
+    "Content-Security-Policy",
+    `frame-ancestors 'self' ${adminOrigin}`,
+  );
+}
+
+// Esta ruta no usa el layout SEOHead (que aporta `<meta charset="utf-8">`), así
+// que hay que declarar la codificación explícitamente: Astro sirve el SSR como
+// `text/html` sin charset y el navegador caería en un fallback legacy
+// (windows-1252), mostrando mojibake en tildes/ñ (p. ej. `á` → `Ã¡`).
+Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
+
 const token = Astro.url.searchParams.get("token");
 
 let banner: Banner | null = null;
@@ -35,7 +56,9 @@ if (!verifyPreviewToken(token)) {
 
   if (datosParam) {
     try {
-      const parsed = JSON.parse(decodeURIComponent(datosParam));
+      // `URLSearchParams.get` ya decodifica el valor; no volver a aplicar
+      // `decodeURIComponent` (corrompería textos con `%` literales).
+      const parsed = JSON.parse(datosParam);
       const result = bannerSchema.safeParse(parsed);
       if (result.success) banner = result.data;
     } catch {
@@ -73,6 +96,7 @@ if (!verifyPreviewToken(token)) {
 }
 ---
 
+<meta charset="utf-8" />
 {
   banner ? (
     <HomeBanner banner={banner} />

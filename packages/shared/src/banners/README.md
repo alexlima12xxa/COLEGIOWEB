@@ -28,7 +28,7 @@ El registro único es `CATALOGO_BANNERS` en `catalogo.ts`. De él se derivan:
 
 | Archivo | Rol | ¿Tocar al agregar plantilla? |
 |---------|-----|------------------------------|
-| `catalogo.ts` | slug + contrato (fuente de verdad) | **Sí** |
+| `catalogo.ts` | slug + contrato + **ejemplo** (fuente de verdad) | **Sí** |
 | `palettes.ts` | colores controlados + helpers `tonoXPorKey` | Sí (si usa tonos) |
 | `css/<slug>.css` | estilo de la plantilla | **Sí** (crear) |
 | `css/_banner.css` | base compartida de todas | No (infraestructura) |
@@ -97,6 +97,17 @@ export const BANNERS_SLUGS = ["prueba", "tarjeta-foto"] as const;
       { key: "background", label: "Imagen de la derecha", tipo: "imagen", ayuda: "Al menos 1280×720." },
       { key: "actions", label: "Botones", tipo: "booleano" },
     ],
+  },
+  // Contenido de muestra: el panel lo precarga al crear un banner para que el
+  // director vea el diseño real con textos ANTES de escribir. Si la plantilla
+  // usa imagen, incluye un placeholder local para que el preview se vea completo.
+  ejemplo: {
+    kicker: "ADMISIÓN 2026",
+    title: "Formamos líderes para transformar el futuro",
+    subtitle: "Una educación integral, cercana y de excelencia.",
+    tono: TARJETA_FOTO_TONOS[0].key,
+    background: "/branding/placeholders/<tu-placeholder>.jpg",
+    cta: { label: "Iniciar admisión", href: "/admisiones", variant: "primary" },
   },
 }
 ```
@@ -251,13 +262,20 @@ plantilla.
   predefinidas; nunca color libre.
 - **Hero**: `min-height: 90dvh` (90vh en pantallas ≥ 64rem).
 - Clase raíz siempre `banner banner--<slug>` para heredar la base compartida.
+- **Contenido de ejemplo (`ejemplo`)**: cada entrada del catálogo declara un
+  `datos` válido de muestra. El panel lo precarga al crear un banner para que el
+  director vea el diseño real antes de escribir. Si la plantilla usa imagen, el
+  ejemplo incluye un **placeholder local** (`/branding/placeholders/…`).
+  `catalogo.test.ts` valida que exista y que su `tono` sea una opción válida.
+- **Zona de imagen**: el contenedor de la foto debe tener `background-color`
+  (obligatorio: si el director sube un PNG transparente, se ve el color detrás).
 
 ---
 
 ## 5. Checklist de verificación
 
 - [ ] Paleta definida + helper `tonoXPorKey`.
-- [ ] Slug agregado a `BANNERS_SLUGS` + entrada en `CATALOGO_BANNERS`.
+- [ ] Slug agregado a `BANNERS_SLUGS` + entrada en `CATALOGO_BANNERS` con `ejemplo` (datos válidos; placeholder local si usa imagen).
 - [ ] `css/<slug>.css` creado (nombre == slug).
 - [ ] `templates/Banner<X>.astro` creado e importando base.css + su CSS.
 - [ ] Registrado en `COMPONENTES` de `HomeBanner.astro`.
@@ -271,10 +289,73 @@ plantilla.
 
 - **No hardcodear `plantilla_id`** en `banners-grid.tsx`; usar `BANNERS_SLUGS[0]`
   como default del "nuevo banner".
-- **Preview en localhost**: `NEXT_PUBLIC_WEB_URL` del admin debe apuntar a la web
-  local (ej. `http://localhost:4321`) y hay que **reiniciar el dev server de la
-  web** para que lea el env (`PREVIEW_SIGNING_KEY` via `import.meta.env`).
+- **Preview (iframe)**: el admin embebe `/preview-admin` con un token firmado.
+  Requiere `NEXT_PUBLIC_WEB_URL` en el admin y `PREVIEW_SIGNING_KEY` idéntico en
+  admin y web. En local, `NEXT_PUBLIC_WEB_URL` apunta a la web local (ej.
+  `http://localhost:4321`) y hay que **reiniciar el dev server de la web** para
+  que lea el env (`PREVIEW_SIGNING_KEY` vía `import.meta.env`).
+- **`ADMIN_ORIGIN` (opcional, web)**: si se define, `/preview-admin` emite
+  `Content-Security-Policy: frame-ancestors` y solo el origen indicado puede
+  embeberlo. Debe ser el origen exacto del admin (con `https://`, sin barra
+  final). Si se omite, no se emite el header y el preview funciona igual.
+- **Contenido de ejemplo**: al crear un banner el panel precarga `ejemplo`. Si el
+  director guarda sin editarlo, se muestra un **aviso ámbar no bloqueante** (sí
+  puede guardar). Revisa los textos antes de publicar.
 - **El grid del admin solo lista banners guardados** en Supabase. Una plantilla
   nueva por sí sola no genera tarjeta hasta que creas un banner.
 - **No duplicar slugs**: `schema.ts` y `actions.ts` derivan de `BANNERS_SLUGS`;
   editar la lista a mano en esos archivos rompe la fuente de verdad única.
+- **No se usa `data-banner-field`**: el preview es un iframe que renderiza las
+  plantillas `.astro` reales; no hay marcado de zonas ni render compartido.
+
+---
+
+## 7. De Figma a la web (replicar el diseño idéntico)
+
+Para generar el CSS + HTML de una plantilla a partir de un diseño de Figma, usa
+el prompt de `figma-prompt.md`. Claves para que el resultado sea fiel:
+
+- **Llena la ficha de especificación** (colores, tipografías px→rem, espaciados,
+  comportamiento móvil). El AI NO debe adivinar medidas.
+- **Estructura del layout**: la dicta el diseño, no el prompt. El AI reporta las
+  zonas que ve en la FICHA LEÍDA (antes del código) para validar la distribución
+  (texto/foto en cualquier posición: columnas, fondo full-bleed, superpuesta…).
+- **Zona de imagen**: el sistema renderiza un `<img>` real. En el CSS de la
+  plantilla, estila el contenedor con `position: relative` y el `<img>` con
+  `position: absolute; inset: 0; width/height: 100%; object-fit`. Así el tamaño
+  de la imagen subida nunca rompe el layout. Puede haber **N zonas** (N campos
+  `imagen` del contrato; el panel las sube al instante sin tocar el servidor).
+- **NO uses `ResponsiveImage` para la foto del banner**: envuelve en `<picture>`
+  (astro:assets) y fuerza `height: auto`, lo que rompe la cadena `height: 100%`
+  y la imagen no llena el hero. Usa `<img src={resolveAssetUrl(...)}>` directo.
+- **Tipografía**: usa `var(--font-display, "Outfit", ...)` para títulos y
+  `var(--font-sans, ...)` para el resto (tokens del sitio), no `system-ui` a pelo.
+- **Variantes de color**: decláralas en `palettes.ts` como opciones controladas
+  (el director elige entre opciones predefinidas), con sus hex exactos.
+- **Recomendación de imagen**: ver `figma-prompt.md` (resolución ×2 retina y
+  recorte a la silueta para PNG transparente).
+
+---
+
+## 8. Flujo de creación y subida de un banner (panel admin)
+
+Resumen de lo que hace el panel hoy:
+
+1. **Crear y ver el diseño.** El director pulsa "Nuevo banner", elige plantilla y
+   el panel precarga el `ejemplo` de esa plantilla. El iframe muestra el diseño
+   real (con textos e imagen de muestra) desde el primer render, antes de
+   escribir nada. Al cambiar de plantilla se recarga con su ejemplo.
+2. **Subir imagen.** El campo de tipo `imagen` sube el archivo de inmediato al
+   bucket `media` (`banners/temp-…`) y el preview lo muestra al instante. El
+   director puede reemplazarla cuantas veces quiera antes de guardar.
+3. **Guardar.** Al enviar, `guardarBanner` compone `datos`, conserva los campos
+   no editados, procesa `background`/`image` (sube o reutiliza; convierte
+   data-URL) y persiste la ruta del bucket. Después dispara el rebuild de la web.
+4. **Publicar.** La web resuelve la ruta con `resolveAssetUrl` al construir. El
+   preview corre en la web, por eso un placeholder local (`/branding/…`) funciona
+   sin Supabase.
+5. **Imágenes.** Se aceptan JPG, PNG, WebP y AVIF. Para **PNG transparente**, el
+   contenedor de la foto debe tener `background-color` (obligatorio) y el `<img>`
+   `object-fit`/`object-position` según el diseño. Recorta a la silueta y exporta
+   a ×2 para que se vea nítida.
+

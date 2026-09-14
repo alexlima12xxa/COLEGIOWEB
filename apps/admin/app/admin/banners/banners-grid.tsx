@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { BannerForm, buildPreviewUrlById } from "./banners-form";
 import { DeleteBannerButton } from "./delete-button";
-import { alternarBannerActivo, duplicarBanner } from "./actions";
-import { BANNERS_SLUGS } from "@web-modelo/shared";
+import { alternarBannerActivo, duplicarBanner, obtenerTokenPreview } from "./actions";
+import { BANNERS_SLUGS, ejemploDePlantilla } from "@web-modelo/shared";
 
 export interface BannerCardData {
   id: string;
@@ -186,6 +186,21 @@ export function BannersGrid({
 }) {
   const [mostrandoNuevo, setMostrandoNuevo] = useState(false);
 
+  // El token de preview caduca (TTL 5 min). Lo renovamos cada 4 min para que el
+  // editor abierto mucho tiempo no deje los iframes en blanco (404).
+  const [liveToken, setLiveToken] = useState(token);
+  useEffect(() => {
+    const id = setInterval(async () => {
+      try {
+        const fresco = await obtenerTokenPreview();
+        if (fresco) setLiveToken(fresco);
+      } catch {
+        // Si falla la renovación se conserva el token actual.
+      }
+    }, 4 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -193,7 +208,7 @@ export function BannersGrid({
           <BannerCard
             key={banner.id}
             banner={banner}
-            token={token}
+            token={liveToken}
             previewWebUrl={previewWebUrl}
           />
         ))}
@@ -205,9 +220,9 @@ export function BannersGrid({
                 plantilla_id: BANNERS_SLUGS[0],
                 orden: banners.length,
                 activo: true,
-                datos: {},
+                datos: ejemploDePlantilla(BANNERS_SLUGS[0]),
               }}
-              previewToken={token}
+              previewToken={liveToken}
               previewWebUrl={previewWebUrl}
             />
           </div>

@@ -10,6 +10,8 @@ import { guardarBanner, subirImagenBanner } from "./actions";
 import {
   CATALOGO_BANNERS,
   catalogoPorSlug,
+  ejemploDePlantilla,
+  esContenidoEjemplo,
   type EditableCampo,
   type OpcionCampo,
 } from "@web-modelo/shared";
@@ -106,6 +108,14 @@ function BannerPreviewIframe({
 }) {
   const [abierto, setAbierto] = useState(false);
 
+  // Debounce del borrador: evita recargar el iframe en cada tecla (flicker y
+  // renders SSR innecesarios). Se actualiza 350 ms después de dejar de escribir.
+  const [debounced, setDebounced] = useState(datos);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(datos), 350);
+    return () => clearTimeout(t);
+  }, [datos]);
+
   // Cierre del modal con la tecla Escape.
   useEffect(() => {
     if (!abierto) return;
@@ -127,7 +137,7 @@ function BannerPreviewIframe({
     );
   }
 
-  const url = buildPreviewUrl(plantillaId, datos, previewToken, previewWebUrl);
+  const url = buildPreviewUrl(plantillaId, debounced, previewToken, previewWebUrl);
 
   if (!url) {
     return (
@@ -269,34 +279,26 @@ export function BannerForm({
     }));
   }
 
-  // Re-inicializa campos y preview al elegir otra plantilla. Conserva el
-  // borrador en vivo de los campos compartidos (title/kicker/subtitle/cta/…)
-  // y reinicia los campos de opciones (tono) específicos de la plantilla a su
-  // default válido si el valor actual no pertenece a la nueva plantilla.
-  function cambiarPlantilla(nueva: string) {
-    const nuevoContrato = catalogoPorSlug(nueva)?.contrato.campos ?? [];
+  // Precarga el EJEMPLO de la plantilla: así el director ve el diseño real
+  // completo (con textos) desde el primer render, antes de escribir.
+  function aplicarEjemplo(slug: string) {
+    const ejemplo = ejemploDePlantilla(slug);
+    const nuevoContrato = catalogoPorSlug(slug)?.contrato.campos ?? [];
     const inicialCampos: Record<string, string> = {};
-    const inicialDatos: Record<string, unknown> = { ...previewDatos };
-
     for (const c of nuevoContrato) {
-      const actual = str(inicialDatos[c.key]);
-      let valor = actual || c.default || "";
-      if (c.tipo === "opciones" && c.default && c.opciones?.length) {
-        const esValida = c.opciones.some((o) => o.value === actual);
-        if (!esValida) {
-          valor = c.default;
-          inicialDatos[c.key] = c.default;
-        }
-      }
-      if (inicialDatos[c.key] === undefined && c.default) {
-        inicialDatos[c.key] = c.default;
-      }
-      inicialCampos[c.key] = valor;
+      inicialCampos[c.key] = str(ejemplo[c.key]) || c.default || "";
     }
-
-    setPlantillaId(nueva);
     setCampos(inicialCampos);
-    setPreviewDatos(inicialDatos);
+    setPreviewDatos({ ...ejemplo });
+    const cta = ejemplo.cta as { label?: string; href?: string } | undefined;
+    setCtaLabel(cta?.label ?? "");
+    setCtaHref(cta?.href ?? "");
+  }
+
+  // Al cambiar de plantilla se recarga el preview con el ejemplo de la nueva.
+  function cambiarPlantilla(nueva: string) {
+    setPlantillaId(nueva);
+    aplicarEjemplo(nueva);
   }
 
   function renderCampo(campo: EditableCampo) {
@@ -408,6 +410,10 @@ export function BannerForm({
     );
   }
 
+  // Aviso de contenido de ejemplo sin editar (solo en banners nuevos).
+  const usandoEjemplo =
+    !initial.id && esContenidoEjemplo(plantillaId, previewDatos);
+
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="id" value={initial.id ?? ""} />
@@ -434,6 +440,13 @@ export function BannerForm({
           <FieldError message={state.fieldErrors?.plantillaId} />
         </div>
       </div>
+
+      {usandoEjemplo ? (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800">
+          Este banner todavía tiene el <strong>contenido de ejemplo</strong>.
+          Puedes guardarlo, pero revisa los textos antes de publicarlo.
+        </p>
+      ) : null}
 
       {contrato?.contrato.campos
         .filter((campo) => campo.key !== "actions")
@@ -512,12 +525,24 @@ export function BannerForm({
         </div>
       </div>
 
-      <BannerPreviewIframe
-        plantillaId={plantillaId}
-        datos={previewDatos}
-        previewToken={previewToken ?? null}
-        previewWebUrl={previewWebUrl ?? null}
-      />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <span className={labelClass}>Vista previa (diseño real)</span>
+          <button
+            type="button"
+            onClick={() => aplicarEjemplo(plantillaId)}
+            className="text-xs font-medium text-blue-700 transition hover:text-blue-800"
+          >
+            Restaurar ejemplo
+          </button>
+        </div>
+        <BannerPreviewIframe
+          plantillaId={plantillaId}
+          datos={previewDatos}
+          previewToken={previewToken ?? null}
+          previewWebUrl={previewWebUrl ?? null}
+        />
+      </div>
 
       <Status ok={state.ok} />
       {state.error ? <FormError message={state.error} /> : null}

@@ -6,8 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./banners/css/base.css": "./src/banners/css/_banner.css",
-    "./banners/css/prueba.css": "./src/banners/css/prueba.css",
-    "./banners/css/matricula.css": "./src/banners/css/matricula.css"
+    "./banners/css/prueba.css": "./src/banners/css/prueba.css"
   },
   "scripts": {
     "gen:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" > src/types.ts",

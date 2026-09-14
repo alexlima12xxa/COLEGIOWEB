@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { triggerRebuild } from "@/lib/rebuild";
+import { signPreviewToken } from "@/lib/preview-token";
 import { BANNERS_SLUGS, catalogoPorSlug } from "@web-modelo/shared";
 
 export type BannersState = {
@@ -233,6 +234,14 @@ export async function guardarBanner(
   await triggerRebuild(supabase, tenantId);
   revalidatePath("/admin/banners");
   return { ok: true };
+}
+
+// Renueva el token firmado del preview (TTL corto). El grid lo llama cada
+// pocos minutos para que el editor abierto mucho tiempo no deje los iframes
+// en blanco al caducar el token.
+export async function obtenerTokenPreview(): Promise<string | null> {
+  await requireAdmin();
+  return signPreviewToken();
 }
 
 // Subida inmediata de imagen desde el editor (antes de guardar el banner).
