@@ -1,14 +1,14 @@
 @layer features {
   .admissionsHero {
-    --adm-blue: #1d4ed8;
-    --adm-blue-soft: #eff6ff;
-    --adm-green: #047857;
-    --adm-green-soft: #ecfdf5;
-    --adm-amber: #b45309;
-    --adm-amber-soft: #fef3c7;
-    --adm-lavender: #6d28d9;
-    --adm-lavender-soft: #ede9fe;
-    --adm-navy: #0f172a;
+    --adm-blue: var(--color-primary);
+    --adm-blue-soft: var(--color-primary-soft);
+    --adm-green: var(--color-success);
+    --adm-green-soft: var(--color-success-soft);
+    --adm-amber: var(--color-warning);
+    --adm-amber-soft: var(--color-warning-soft);
+    --adm-lavender: var(--color-info);
+    --adm-lavender-soft: color-mix(in oklch, var(--color-info) 12%, white);
+    --adm-navy: var(--color-surface-inverse);
   }
 
   .admissionsHero__grid {
@@ -117,7 +117,7 @@
   }
 
   .admissionsHero__whatIcon {
-    color: #25d366;
+    color: var(--color-whatsapp);
   }
 
   .admissionsHero__trust {

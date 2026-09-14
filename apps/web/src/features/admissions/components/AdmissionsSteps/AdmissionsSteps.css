@@ -1,8 +1,8 @@
 @layer features {
   .admissionsSteps {
-    --adm-blue: #1d4ed8;
-    --adm-blue-soft: #dbeafe;
-    --adm-green: #047857;
+    --adm-blue: var(--color-primary);
+    --adm-blue-soft: var(--color-primary-soft);
+    --adm-green: var(--color-success);
   }
 
   .admissionsSteps__header {

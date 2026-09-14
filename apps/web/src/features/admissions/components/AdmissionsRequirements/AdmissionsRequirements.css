@@ -1,9 +1,9 @@
 @layer features {
   .admissionsRequirements {
-    --adm-blue: #1d4ed8;
-    --adm-green: #047857;
-    --adm-green-soft: #ecfdf5;
-    --adm-blue-soft: #eff6ff;
+    --adm-blue: var(--color-primary);
+    --adm-green: var(--color-success);
+    --adm-green-soft: var(--color-success-soft);
+    --adm-blue-soft: var(--color-primary-soft);
   }
 
   .admissionsRequirements__header {

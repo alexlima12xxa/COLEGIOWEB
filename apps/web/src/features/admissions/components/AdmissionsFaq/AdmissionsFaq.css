@@ -1,6 +1,6 @@
 @layer features {
   .admissionsFaq {
-    --adm-blue: #1d4ed8;
+    --adm-blue: var(--color-primary);
   }
 
   .admissionsFaq__header {
