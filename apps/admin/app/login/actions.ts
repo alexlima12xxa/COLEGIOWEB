@@ -34,7 +34,15 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect(next.startsWith("/") ? next : "/admin");
+
+  // Solo rutas internas: `//evil.com` y `/\evil.com` se tratan como externas
+  // para evitar un open redirect tras autenticarse.
+  const safeNext =
+    next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")
+      ? next
+      : "/admin";
+
+  redirect(safeNext);
 }
 
 // Server Action de logout: cierra la sesión y vuelve a /login.
