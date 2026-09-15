@@ -1,5 +1,5 @@
 import { getDbContext } from "./client";
-import { resolveAssetUrl } from "./storage";
+import { ensureAccessibleImage } from "./imageAccess";
 import { siteConfig } from "../../site.config";
 import {
   admisionesSchema,
@@ -63,39 +63,6 @@ type Hero = z.infer<typeof heroSchema>;
 type VideoTour = z.infer<typeof videoTourSchema>;
 
 const cache = new Map<string, unknown>();
-
-// Placeholder local para imágenes de Storage inaccesibles (no romper build).
-const IMAGE_FALLBACK = "/branding/placeholders/gallery-1.jpg";
-const imageAccessCache = new Map<string, boolean>();
-
-async function isImageAccessible(url: string): Promise<boolean> {
-  const cached = imageAccessCache.get(url);
-  if (cached !== undefined) return cached;
-  let accessible: boolean;
-  try {
-    const res = await fetch(url, {
-      method: "HEAD",
-      signal: AbortSignal.timeout(2500),
-    });
-    accessible = res.status >= 200 && res.status < 300;
-  } catch {
-    accessible = false;
-  }
-  imageAccessCache.set(url, accessible);
-  return accessible;
-}
-
-// Sustituye una imagen de Storage inaccesible por un placeholder local.
-async function ensureAccessibleImage(
-  path?: string,
-): Promise<string | undefined> {
-  if (!path) return undefined;
-  if (path.startsWith("/") || /^https?:\/\//i.test(path)) return path;
-  const resolved = resolveAssetUrl(path);
-  if (!resolved) return path;
-  const accessible = await isImageAccessible(resolved);
-  return accessible ? path : IMAGE_FALLBACK;
-}
 
 /** Lee una clave de la tabla `contenido` del tenant. Nunca lanza. */
 async function readClave<T>(clave: string): Promise<T | undefined> {
