@@ -1,5 +1,5 @@
 import { getDbContext } from "./client";
-import { resolveAssetUrl } from "./storage";
+import { ensureAccessibleImage } from "./imageAccess";
 import { bannerSchema, bannersFallbackSchema } from "./schema";
 import type { Banner } from "./schema";
 import bannersFallbackData from "../../data/fallback/banners.json";
@@ -17,10 +17,6 @@ import bannersFallbackData from "../../data/fallback/banners.json";
  * resuelven y, si son inaccesibles, se sustituyen por un placeholder local.
  */
 
-const IMAGE_FALLBACK = "/branding/placeholders/gallery-1.jpg";
-
-const imageAccessCache = new Map<string, boolean>();
-
 /**
  * Resultado de la consulta. `fromDb` indica si los datos provienen de Supabase
  * (con BD configurada). La web lo usa para decidir entre slider de banners
@@ -30,35 +26,6 @@ const imageAccessCache = new Map<string, boolean>();
 export interface BannersResult {
   banners: Banner[];
   fromDb: boolean;
-}
-
-async function isImageAccessible(url: string): Promise<boolean> {
-  const cached = imageAccessCache.get(url);
-  if (cached !== undefined) return cached;
-
-  let accessible: boolean;
-  try {
-    const res = await fetch(url, { method: "HEAD" });
-    accessible = res.status >= 200 && res.status < 300;
-  } catch {
-    accessible = false;
-  }
-
-  imageAccessCache.set(url, accessible);
-  return accessible;
-}
-
-async function ensureAccessibleImage(
-  path?: string,
-): Promise<string | undefined> {
-  if (!path) return undefined;
-  if (path.startsWith("/") || /^https?:\/\//i.test(path)) return path;
-
-  const resolved = resolveAssetUrl(path);
-  if (!resolved) return path;
-
-  const accessible = await isImageAccessible(resolved);
-  return accessible ? path : IMAGE_FALLBACK;
 }
 
 function fallbackBanners(): Banner[] {
