@@ -28,6 +28,32 @@ const LIMITS = {
   orden: { min: 0, max: 999 },
 } as const;
 
+// Límites de subida de imágenes: 8 MB y formatos raster que astro:assets
+// procesa en la web pública. Es una validación de UX: el control robusto es
+// la política de MIME/tamaño del bucket "media" en Supabase Storage.
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_MIME = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+] as const;
+
+// Devuelve un mensaje de error si el archivo no es una imagen válida, o null.
+function validarImagen(file: File): string | null {
+  if (file.size > MAX_IMAGE_BYTES) {
+    return "La imagen supera el tamaño máximo de 8 MB.";
+  }
+  if (
+    !ALLOWED_IMAGE_MIME.includes(
+      file.type as (typeof ALLOWED_IMAGE_MIME)[number],
+    )
+  ) {
+    return "Formato no permitido. Usa JPG, PNG, WebP o AVIF.";
+  }
+  return null;
+}
+
 function clampLen(value: string, limits: { min: number; max: number }): string | null {
   const len = value.length;
   if (len < limits.min) return `Mínimo ${limits.min} caracteres (actual: ${len}).`;
@@ -41,6 +67,9 @@ async function uploadOrKeep(
   current: string,
 ): Promise<{ path: string; error?: string }> {
   if (!file || file.size === 0) return { path: current };
+
+  const invalid = validarImagen(file);
+  if (invalid) return { path: current, error: invalid };
 
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
   const base = slugify(current.split("/").pop()?.split(".")[0] ?? "banner") || "banner";
@@ -67,8 +96,14 @@ async function uploadDataUrl(
   const match = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
   if (!match) return dataUrl;
   const mime = match[1];
+  if (
+    !ALLOWED_IMAGE_MIME.includes(mime as (typeof ALLOWED_IMAGE_MIME)[number])
+  ) {
+    return dataUrl;
+  }
   try {
     const file = dataUrlToFile(dataUrl, mime, "banner");
+    if (file.size > MAX_IMAGE_BYTES) return dataUrl;
     const { supabase } = await requireAdmin();
     const uploadPath = `${folder}/banner-${Date.now()}.${extFromMime(mime)}`;
     const { error } = await supabase.storage
@@ -252,6 +287,10 @@ export async function subirImagenBanner(
 ): Promise<{ path: string; error?: string }> {
   const file = formData.get("file") as File | null;
   if (!file || file.size === 0) return { path: "", error: "Archivo vacío." };
+
+  const invalid = validarImagen(file);
+  if (invalid) return { path: "", error: invalid };
+
   const ext = slugify(file.name.split(".").pop() ?? "jpg") || "jpg";
   const uploadPath = `banners/temp-${Date.now()}.${ext.toLowerCase()}`;
 
