@@ -30,3 +30,24 @@ export async function cambiarEstadoLead(formData: FormData) {
 
   revalidatePath("/admin/leads");
 }
+
+// Elimina uno o varios leads por su id (borrado individual, grupal o total).
+// requireAdmin() garantiza sesión + tenant, y RLS (leads_delete_admin) aísla
+// el borrado al colegio del director: los ids de otro tenant no se eliminan.
+export async function eliminarLeads(ids: string[]) {
+  const { supabase } = await requireAdmin();
+
+  const validos = Array.from(
+    new Set(ids.filter((id) => typeof id === "string" && id.length > 0)),
+  );
+
+  if (validos.length === 0) return;
+
+  const { error } = await supabase.from("leads").delete().in("id", validos);
+
+  if (error) {
+    throw new Error(`No se pudieron eliminar los leads: ${error.message}`);
+  }
+
+  revalidatePath("/admin/leads");
+}
