@@ -47,8 +47,3 @@ export function secondsUntilNext(
   const remaining = minutes * 60 * 1000 - (Date.now() - Number(last));
   return Math.max(0, Math.ceil(remaining / 1000));
 }
-
-export function clearRateLimit(form = DEFAULT_FORM): void {
-  if (!isBrowser()) return;
-  localStorage.removeItem(storageKey(form));
-}
