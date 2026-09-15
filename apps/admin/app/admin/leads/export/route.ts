@@ -12,8 +12,14 @@ interface ExportSearchParams {
 
 // Escapa un valor para CSV (RFC 4180): envuelve en comillas si contiene
 // comas, comillas, saltos de línea o punto y coma.
+// Además neutraliza la inyección de fórmulas: Excel/Sheets evalúan celdas que
+// empiezan por = + - @ (o tab/CR), por lo que se prefijan con apóstrofo para
+// forzar su tratamiento como texto.
 function csvCell(value: string | null | undefined): string {
-  const v = value ?? "";
+  let v = value ?? "";
+  if (/^[=+\-@\t\r]/.test(v)) {
+    v = `'${v}`;
+  }
   if (/[",;\n\r]/.test(v)) {
     return `"${v.replace(/"/g, '""')}"`;
   }
