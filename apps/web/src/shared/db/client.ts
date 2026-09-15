@@ -54,10 +54,6 @@ export function getDbConfig(): DbConfig | null {
   };
 }
 
-export function isDbConfigured(): boolean {
-  return getDbConfig() !== null;
-}
-
 let cachedContext: DbContext | null | undefined;
 
 export function getDbContext(): DbContext | null {
