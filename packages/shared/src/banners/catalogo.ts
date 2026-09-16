@@ -27,7 +27,7 @@ export interface EntradaCatalogo {
   ejemplo: Record<string, unknown>;
 }
 
-export const BANNERS_SLUGS = ["prueba"] as const;
+export const BANNERS_SLUGS = ["prueba", "matricula-banner"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -58,6 +58,33 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
         "Una educación integral, cercana y de excelencia desde preescolar hasta bachillerato.",
       tono: PRUEBA_TONO_DEFAULT.key,
       cta: { label: "Iniciar admisión", href: "/admisiones", variant: "primary" },
+    },
+  },
+  {
+    slug: "matricula-banner",
+    nombre: "matricula-1",
+    contrato: {
+      slug: "matricula-banner",
+      nombre: "Matrícula",
+      campos: [
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
+        {
+          key: "image",
+          label: "Silueta (PNG transparente)",
+          tipo: "imagen",
+          ayuda: "PNG con fondo transparente, al menos 800×1200.",
+        },
+        { key: "actions", label: "Botones", tipo: "booleano" },
+      ],
+    },
+    ejemplo: {
+      title: "MATRÍCULA",
+      subtitle: "2027",
+      image: "/branding/placeholders/nino-birrete.avif",
+      imageAlt: "Estudiante sonriendo con birrete celebrando matrícula escolar",
+      cta: { label: "Inscríbete aquí", href: "/admisiones", variant: "primary" },
     },
   },
 ];

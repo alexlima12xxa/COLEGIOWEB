@@ -14,117 +14,163 @@ adivinar medidas: cuanto más precisa la ficha, más idéntico el resultado.
 ## El prompt
 
 ```text
-Eres un ingeniero frontend que genera componentes web siguiendo restricciones técnicas estrictas. A partir de la imagen de diseño que te adjunto, genera el código de un componente hero/banner para un sitio web educativo.
+Eres un ingeniero frontend senior que genera componentes web siguiendo restricciones técnicas estrictas. A partir de la imagen adjunta y los datos de entrada que te proporciono, genera el código de una plantilla de hero/banner para un sitio web educativo (Astro + panel admin).
 
-Este banner se integra en un sistema existente (Astro + panel admin). El CSS debe ser autocontenido y usar variables con fallback, porque se renderiza tanto en la web como en el preview del panel.
+El CSS debe ser autocontenido y usar CSS custom properties con fallback, porque se renderiza tanto en la web pública como en el preview del panel de control.
+
+
+═══════════════════════════════════════════════
+DATOS DE ENTRADA (LLENADOS POR EL USUARIO)
+═══════════════════════════════════════════════
+[SLUG DE LA PLANTILLA]:
+(Identificador en kebab-case, ej: matricula-nino, hero-admision, tarjeta-foto.)
+
+
+[FUENTE PERSONALIZADA (OPCIONAL)]:
+(Solo indicar si el diseño usa una fuente NUEVA que no es Outfit ni Inter.
+ Si usa Outfit (títulos) e Inter (textos), deja este campo vacío.
+ Ejemplo: "Nueva fuente para títulos: Playfair Display".)
+NOTA: NO agregar @font-face ni @import. Las fuentes son self-hosted globales
+y se registran fuera del banner.
+
+
+[VARIANTES DE TONO / COLOR (OPCIONAL)]:
+(Si el diseño admite variantes de color, describe QUÉ variables cambian y sus
+hex alternativos. El sistema inyecta estos valores desde la paleta al renderizar.
+ Formato:
+ - Variables themables: --banner-bg, --banner-title-color, --banner-cta-bg, ...
+ - Tono "oscuro": --banner-bg: #0b192c, --banner-title-color: #ffffff
+ - Tono "crema":  --banner-bg: #fff8ee, --banner-title-color: #2d3142
+ Si no hay variantes, deja este campo vacío.)
+
+
+[COMPORTAMIENTO MÓVIL ESPECÍFICO (OPCIONAL)]:
+(Si hay un requisito especial para móvil, indícalo. Ej: "ocultar foto",
+ "foto arriba y texto abajo". Si se deja vacío, aplica apilado vertical estándar.)
+
+
+[DATOS EXTRAÍDOS DE FIGMA - "Copy as CSS (todas las capas)"]:
+(Pega aquí el CSS crudo que copiaste de Figma:
+ clic derecho -> Copy/Paste as -> Copy as CSS.)
+
 
 ═══════════════════════════════════════════════
 RESTRICCIONES TÉCNICAS (OBLIGATORIAS)
 ═══════════════════════════════════════════════
 1. CSS puro, sin frameworks (NO Tailwind, NO Bootstrap).
-2. TODO color y espacio vía CSS custom properties con fallback: var(--nombre, valor-fallback).
+2. TODO color, espacio y radio vía CSS custom properties con fallback: var(--nombre, valor-fallback).
 3. Todo el CSS dentro de @layer components { ... }.
-4. Clase raíz del componente: class="banner banner--<SLUG>" (slug corto en kebab-case, ej: "tarjeta-foto").
-5. Responsive con 2 breakpoints:
-   - max-width: 48rem (móvil)
-   - min-width: 64rem (desktop grande)
-6. Altura del hero:
+4. Clase raíz del componente: <article class="banner banner--<SLUG>"> (usando el slug exacto provisto).
+5. Altura del hero:
    - Móvil: min-height: 90dvh; height: 90dvh;
    - Desktop: min-height: 90vh; height: 90vh;
-7. NO JavaScript, NO TypeScript.
-8. Textos editables, sin clases que restrinjan el contenido:
-   - kicker → <span class="banner__<SLUG>-kicker">
-   - título → <h1 class="banner__<SLUG>-title">
-   - subtítulo → <p class="banner__<SLUG>-subtitle">
-9. Botones de acción: <div class="bannerActions"></div> (vacío; el sistema lo llena después). Si el diseño usa botones con look propio, estila .bannerActions a, .bannerActions button, .bannerActions > * (el sistema renderiza <a class="btn btn--primary btn--lg">).
-10. ZONAS DE IMAGEN — CRÍTICO: el diseño puede tener UNA O VARIAS zonas de imagen (foto lateral, fondo full-bleed, franja, etc.), en cualquier posición. El sistema renderiza un <img> REAL dentro de cada contenedor (no un div placeholder). Para CADA zona <zona> (ej: foto, fondo, foto-lateral) el CSS debe funcionar con esta estructura:
+6. Responsive con 2 breakpoints:
+   - max-width: 48rem (móvil)
+   - min-width: 64rem (desktop grande)
+7. ESTRUCTURA Y LAYOUT (agnóstico, dictado 100% por el CSS de Figma):
+   - Analiza dimensiones del lienzo y coordenadas (left, top, width) del CSS de Figma.
+   - Si los elementos flotan con márgenes amplios respecto al lienzo, NO los pegues a los
+     bordes: agrúpalos en un contenedor con max-width / centrado para que no se dispersen
+     en monitores anchos (1920px+).
+   - Si tocan 0px o tienen width 100%, deben ser full-bleed (borde a borde).
+   - Si hay texto sobre imagen, resuélvelo con z-index o superposición de grid.
+   - NO asumas 2 columnas: respeta el número de zonas (1, 2, 3 o N) del diseño.
+8. NO JavaScript, NO TypeScript.
+9. TEXTOS EDITABLES — usar las CLASES BASE del sistema, NO crear clases propias:
+   - kicker    → <span class="banner__kicker">
+   - título    → <h1 class="banner__title">
+   - subtítulo → <p class="banner__subtitle">
+   Los overrides del diseño se escanean con la raíz:
+   .banner--<SLUG> .banner__title { ... }
+   Si el diseño muestra más de 2 líneas de título o más de 3 de subtítulo, declara:
+   .banner--<SLUG> { --banner-title-lineas: <n>; --banner-subtitle-lineas: <n>; }
+10. CONTENIDO: envuelve kicker + título + subtítulo + CTA en
+    <div class="banner__content banner__content--<SLUG>"> ... </div>
+    (el sistema base aporta flex column, gap y z-index sobre las imágenes).
+11. Botones de acción:
+    - HTML: <div class="bannerActions"></div> (estrictamente vacío; el sistema lo llena).
+    - El sistema renderiza <a class="btn btn--primary btn--lg">.
+    - CSS: estilar sobre
+      .banner--<SLUG> .bannerActions a,
+      .banner--<SLUG> .bannerActions button,
+      .banner--<SLUG> .bannerActions > * { ... }
+12. ZONAS DE IMAGEN:
+    Para CADA zona de imagen <zona> (ej: foto, fondo, silueta), la estructura HTML obligatoria es:
     <div class="banner__<SLUG>-<zona>">
       <img ... />
     </div>
-    Requisitos del contenedor:
-      .banner__<SLUG>-<zona> { position: relative; background-color: <color>; overflow: hidden; }
-      .banner__<SLUG>-<zona> img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: <cover|contain>; object-position: <posición>; }
-    El background-color del contenedor es OBLIGATORIO (es parte del diseño: si la imagen es PNG transparente, se ve el color detrás).
-    Si hay texto SUPERPUESTO sobre una imagen (fondo), el bloque de texto lleva un z-index mayor que la imagen.
-11. TIPOGRAFÍA DEL SITIO (usa estos tokens como fallback, NO system-ui a pelo):
-    - Títulos: font-family: var(--font-display, "Outfit", system-ui, sans-serif);
-    - Kicker/subtítulo/CTA: font-family: var(--font-sans, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
-    - Espaciados: usa var(--space-xs|sm|md|lg|xl, <px/rem>) con fallback.
-12. El HTML es solo la estructura del componente (sin <html>, <head>, <body>).
-13. Si el diseño tiene variantes de color (tonos), decláralas en la PALETA (qué variables cambian y con qué hex). NO inventes tonos que no estén en el diseño.
+    Requisitos CSS:
+    .banner__<SLUG>-<zona> { position: relative; background-color: var(--banner-<zona>-bg, <color>); overflow: hidden; }
+    .banner__<SLUG>-<zona> img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: <cover|contain>; object-position: <posición>; }
+    - El background-color del contenedor es OBLIGATORIO (si la imagen es PNG transparente, se ve detrás).
+    - Siluetas/PNG recortados: object-fit: contain; anclados a su base (ej. bottom center).
+    - Fotos rectangulares o fondos: object-fit: cover; object-position: center.
+13. TIPOGRAFÍA:
+    - Extrae familias, pesos, interlineados y tamaños del CSS de Figma (px a rem: px / 16).
+    - Usa tokens del sitio: var(--font-display, "Outfit", sans-serif) para títulos y
+      var(--font-sans, "Inter", sans-serif) para kicker/subtítulo/CTA.
+    - NO incluir @font-face ni @import de fuentes.
+14. VARIANTES DE TONO (THEMING):
+    - Declara en la raíz los valores por defecto del diseño:
+      .banner--<SLUG> { --banner-bg: <hex>; --banner-title-color: <hex>; ... }
+    - Consume esas variables en las reglas: color: var(--banner-title-color, <hex>).
+    - NO uses el atributo data-tone ni style inline en el scaffold: la inyección del
+      tono se hace en la integración Astro desde la paleta.
+15. El bloque HTML devuelto debe contener ÚNICAMENTE la etiqueta <article> raíz y sus
+    hijos (sin <html>, <head> ni <body>).
+
 
 ═══════════════════════════════════════════════
-FICHA DE ESPECIFICACIÓN — LLENA CADA PUNTO CON VALORES REALES DEL FIGMA
+ENTREGA ESPERADA (EXACTAMENTE ESTOS 3 BLOQUES)
 ═══════════════════════════════════════════════
-[PALETA DE COLORES — hex exactos del Figma]
-- Fondo del banner: #______
-- Color del kicker: #______
-- Color del título: #______
-- Color del subtítulo: #______
-- Fondo de la zona de foto: #______
-- CTA: fondo #______ / hover #______ / texto #______
-- Variantes de tono (si existen): por cada tono, qué variables cambia y con qué hex.
+Devuelve EXACTAMENTE estos 3 bloques separados por una línea con "---":
 
-[TIPOGRAFÍA — px del Figma, conviértelos a rem (px / 16)]
-- Kicker: tamaño desktop y móvil, peso, letter-spacing, transform (uppercase?).
-- Título: tamaño desktop y móvil, peso, line-height, letter-spacing.
-- Subtítulo: tamaño desktop y móvil, peso, line-height, max-width.
-- CTA: tamaño, peso, padding vertical/horizontal, radio.
+1. FICHA LEÍDA: tu interpretación técnica para validación humana (slug confirmado,
+   tipo de layout, zonas de imagen con su object-fit y background-color, paleta base
+   en hex, variables themables declaradas y tipografías detectadas).
+2. BLOQUE CSS: todo el CSS dentro de ```css y ```
+3. BLOQUE HTML: el marcado dentro de ```html y ```
 
-[ESPACIADO — px del Figma]
-- Padding horizontal del contenedor.
-- Gap entre columnas.
-- Márgenes entre kicker → título → subtítulo → CTA.
-
-[ESTRUCTURA DEL LAYOUT — la dicta el DISEÑO, no este prompt]
-Analiza la imagen y enumera las ZONAS del componente (1, 2, 3 o las que tenga el diseño). Para cada zona:
-- Nombre (ej: zona-texto, zona-foto, zona-fondo, zona-cta).
-- Qué contiene (kicker/título/subtítulo, imagen, botones).
-- Posición en el layout (izquierda/derecha/arriba/abajo/fondo absoluto/superpuesta).
-- Tamaño (px o % del banner).
-- Alineación del contenido dentro de la zona.
-Para CADA zona de imagen: object-fit (cover/contain), object-position y background-color.
-Ejemplos válidos: texto sobre foto de fondo full-bleed, foto arriba y texto abajo, foto a la izquierda, 3 bloques, texto superpuesto a la imagen… NO asumas 2 columnas.
-
-[COMPORTAMIENTO RESPONSIVE]
-- Móvil (max-width: 48rem): ¿apila en 1 columna? ¿orden (texto arriba, foto abajo)? altura de la foto en px, tamaños de texto reducidos.
-- Desktop grande (min-width: 64rem): cambios de padding, gap, tamaños.
-
-[DESCRIPCIÓN DEL DISEÑO]
-Describe en 1-2 frases el diseño tal como se ve (ej: "Layout de 2 columnas: izquierda kicker grande, título enorme y CTA; derecha foto del niño con birrete que llena la altura del banner anclada abajo").
-
-═══════════════════════════════════════════════
-ENTREGA ESPERADA
-═══════════════════════════════════════════════
-Devuelve EXACTAMENTE estos 3 bloques separados por una línea vacía con "---":
-1. FICHA LEÍDA: tu interpretación del diseño (zonas, posiciones, tamaños, colores, tipografías) para que el usuario valide que leíste bien el Figma.
-2. BLOQUE CSS: todo el CSS entre ```css y ```
-3. BLOQUE HTML: todo el HTML entre ```html y ```
-
-NO incluyas explicaciones adicionales, NO incluyas JavaScript, NO incluyas imports ni rutas de archivos.
+NO incluyas explicaciones adicionales, NO incluyas JavaScript ni rutas de archivos.
 ```
 
 ---
 
 ## Después del prompt (integración)
 
-El CSS + HTML generados son el **scaffold**. Al pasármelos, el flujo es:
+El CSS + HTML son el **scaffold**. El flujo al recibirlos:
 
-1. **`packages/shared/src/banners/css/<slug>.css`** — el CSS tal cual (ya cumple: `@layer components`, vars con fallback, breakpoints).
-2. **`apps/web/.../templates/Banner<X>.astro`** — traduzco el HTML: cada zona de imagen (`.banner__<slug>-<zona>`) recibe un `<img>` real con la URL de su campo (`datos.background`, `datos.image`, `datos.assets[]` u otros campos `imagen` del contrato); los textos se conectan a sus campos (`datos.kicker/title/subtitle` y campos extra); el CTA a `<BannerActions>`. Las imágenes del banner son `<img>` directos (JPG/PNG/WebP/AVIF); para **PNG transparente**, el contenedor lleva `background-color` (obligatorio). El sistema soporta N zonas de imagen: cada una es un campo `imagen` del contrato (no hace falta tocar el servidor, el panel las sube al instante y guarda las rutas en `datos`).
-3. **`catalogo.ts` + `COMPONENTES` de `HomeBanner.astro` + export en `package.json`** — registro de la plantilla, incluyendo su `ejemplo` (datos de muestra que el panel precarga para que el director vea el diseño antes de editar; si la plantilla usa imagen, un placeholder local `/branding/placeholders/…`).
-4. **`palettes.ts`** — si el diseño declara variantes de tono, las registro como opciones controladas con sus hex exactos.
+1. **`packages/shared/src/banners/css/<slug>.css`** — el CSS tal cual.
+2. **`packages/shared/package.json`** — agregar el export del CSS nuevo
+   (`"./banners/css/<slug>.css": "./src/banners/css/<slug>.css"`).
+3. **`apps/web/.../templates/Banner<X>.astro`** — traduzco el HTML:
+   - Cada `.banner__<slug>-<zona>` recibe un `<img src={resolveAssetUrl(...)}>` real
+     (campos `datos.background`, `datos.image`, `datos.assets[]` u otro campo `imagen`).
+   - Textos → `datos.kicker/title/subtitle`; CTA → `<BannerActions>`.
+   - Tono → se inyecta vía `style` inline desde `palettes.ts` (NO data-tone).
+   - Importa `base.css` + `<slug>.css`.
+4. **`catalogo.ts`** — agregar slug a `BANNERS_SLUGS` + entrada en `CATALOGO_BANNERS`
+   con contrato, campos y `ejemplo`.
+5. **`palettes.ts`** — registrar los tonos con sus hex exactos.
+6. **`HomeBanner.astro`** — registrar el componente en `COMPONENTES`.
+7. Verificar: `pnpm --filter @web-modelo/shared test` + `web check` + `web build` + `admin build`.
 
-### Requisito de imagen (para el panel admin)
+### Flujo de imágenes
 
-El panel acepta **JPG, PNG, WebP y AVIF** (bucket `media`, ≤10 MB) y el preview
-muestra la imagen al instante. El CSS hace que **cualquier imagen se adapte**
-(`object-fit`), pero para que se vea nítida y como en el Figma:
+| Paso | Quién | Acción |
+|------|-------|--------|
+| 1 | Tú | Subes la captura del Figma al AI Studio |
+| 2 | AI | Genera CSS + HTML (scaffold) |
+| 3 | Tú | Implementas el template `.astro` + CSS |
+| 4 | Director | Sube la imagen real por el panel admin |
+| 5 | Admin | Sube a bucket `media` (Supabase) → se renderiza con `<img>` |
 
-- **Regla general:** la resolución mínima de CADA imagen depende de su zona =
-  tamaño final renderizado de la zona × 2 (retina). Ej: si la zona de foto mide
-  900px de alto en pantalla, sube una imagen de ~1800px de alto.
-- **PNG con recorte (sujeto sin fondo):** alto ≥ alto de SU zona × 2.
-- **PNG con sobrante transparente:** el `object-fit: cover` recorta o encoge al
-  sujeto. Mejor recortar a la silueta antes de subir.
-- **Foto de fondo full-bleed:** ancho ≥ ancho de su zona (toda la pantalla) × 2.
+La captura que subes al AI Studio es **solo** para leer el diseño.
+
+### Tamaño de imagen (retina ×2)
+
+| Zona en Figma | Imagen a subir |
+|---------------|----------------|
+| Foto lateral 600×900 | 1200×1800 |
+| Fondo full-bleed 2400×1088 | 4800×2176 |
+| Silueta PNG 400×600 | 800×1200 |

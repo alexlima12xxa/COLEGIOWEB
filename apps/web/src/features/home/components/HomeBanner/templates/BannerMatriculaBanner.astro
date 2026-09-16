@@ -1,0 +1,49 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import { resolveAssetUrl } from "../../../../../shared/db/storage";
+import BannerActions from "../BannerActions.astro";
+import "@web-modelo/shared/banners/css/base.css";
+import "@web-modelo/shared/banners/css/matricula-banner.css";
+
+/**
+ * Plantilla "matricula-banner": panel blanco con título/subtítulo a la
+ * izquierda y silueta PNG del estudiante con birrete anclada abajo a la
+ * derecha. Colores fijos por diseño (sin variantes de tono). La imagen se
+ * sube desde el panel admin (campo `image`).
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const imageUrl = datos.image
+  ? (resolveAssetUrl(datos.image) ?? datos.image)
+  : "";
+---
+
+<article class="banner banner--matricula-banner">
+  <div class="banner__matricula-banner-container">
+    <div class="banner__content banner__content--matricula-banner">
+      {datos.kicker && <span class="banner__kicker">{datos.kicker}</span>}
+      <h1 class="banner__title">{datos.title}</h1>
+      {datos.subtitle && <p class="banner__subtitle">{datos.subtitle}</p>}
+      <BannerActions cta={datos.cta} actions={datos.actions} />
+    </div>
+    <div class="banner__matricula-banner-silueta">
+      {
+        imageUrl && (
+          <img
+            src={imageUrl}
+            alt={
+              datos.imageAlt ||
+              "Estudiante sonriendo con birrete celebrando matrícula escolar"
+            }
+            loading="eager"
+            decoding="async"
+          />
+        )
+      }
+    </div>
+  </div>
+</article>

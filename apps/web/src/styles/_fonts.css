@@ -93,3 +93,28 @@
   font-style: normal;
   font-display: swap;
 }
+
+/*
+ * Baloo Chettan 2 variable (títulos de la plantilla matrícula) — self-hosted.
+ * Subset latín, pesos 400-800. font-display: swap para evitar FOIT.
+ */
+@font-face {
+  font-family: "Baloo Chettan 2";
+  src: url("/fonts/baloo-chettan-2/BalooChettan2Variable.woff2")
+    format("woff2-variations");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+ * Nunito variable (CTA de la plantilla matrícula) — self-hosted.
+ * Subset latín, pesos 200-1000. font-display: swap para evitar FOIT.
+ */
+@font-face {
+  font-family: "Nunito";
+  src: url("/fonts/nunito/NunitoVariable.woff2") format("woff2-variations");
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
