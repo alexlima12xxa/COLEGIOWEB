@@ -31,3 +31,24 @@ export const PRUEBA_TONOS: TonoPrueba[] = [
 export function tonoPruebaPorKey(key: string): TonoPrueba {
   return PRUEBA_TONOS.find((t) => t.key === key) ?? PRUEBA_TONO_DEFAULT;
 }
+
+// ── Refuerzo 1 ──────────────────────────────────────────────────────────────
+// Tonos de la plantilla "refuerzo-1": fill del SVG inline + color del texto CTA.
+
+export interface TonoRefuerzo1 {
+  key: string;
+  label: string;
+  color: string;
+}
+
+export const REFUERZO1_TONOS: TonoRefuerzo1[] = [
+  { key: "azul", label: "Azul institucional", color: "#00209E" },
+  { key: "rojo", label: "Rojo refuerzo", color: "#9E0000" },
+  { key: "teal", label: "Teal académico", color: "#007784" },
+];
+
+export const REFUERZO1_TONO_DEFAULT: TonoRefuerzo1 = REFUERZO1_TONOS[0];
+
+export function tonoRefuerzo1PorKey(key: string): TonoRefuerzo1 {
+  return REFUERZO1_TONOS.find((t) => t.key === key) ?? REFUERZO1_TONO_DEFAULT;
+}

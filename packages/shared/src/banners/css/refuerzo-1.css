@@ -1,0 +1,299 @@
+@layer components {
+  /* ════════════════════════════════════════════════════════════════════════
+     refuerzo-1 — Altura proporcional (Opción B)
+     Lienzo Figma: 1600×645
+     Mobile-first: base = móvil apilado, overrides con min-width
+     ════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Variables themables ──────────────────────────────────────────────── */
+  .banner--refuerzo-1 {
+    --banner-blue: #00209E;
+    --banner-bg: #F5F5F5;
+    --banner-cta-bg: #FFFFFF;
+    --banner-cta-shadow-color: rgba(81, 79, 79, 0.25);
+    --banner-photo-shadow: 4.63px 2.64px 2.64px rgba(0, 0, 0, 0.25);
+
+    background-color: var(--banner-bg, #F5F5F5);
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    padding-block: clamp(1rem, 3cqw, 4rem);
+  }
+
+
+  /* ── Contenedor centrado ─────────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__r1-container {
+    position: relative;
+    width: 100%;
+    max-width: 100rem;
+    overflow: visible;
+  }
+
+
+  /* ── SVG inline (Rectangle 3) ────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__r1-svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .banner--refuerzo-1 .banner__r1-svg svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .banner--refuerzo-1 .banner__r1-svg svg path {
+    fill: var(--banner-blue, #00209E);
+  }
+
+
+  /* ── Contenido editable ──────────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__content--refuerzo-1 {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+
+  /* ── Kicker ──────────────────────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__kicker {
+    font-family: 'Poppins', var(--font-sans, "Inter", sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.50;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+
+  /* ── Título ──────────────────────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__title {
+    font-family: 'Nunito', var(--font-sans, "Inter", sans-serif);
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.37;
+    color: #FFFFFF;
+    margin: 0;
+  }
+
+
+  /* ── Subtítulo ───────────────────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__subtitle {
+    font-family: 'Poppins', var(--font-sans, "Inter", sans-serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.49;
+    color: #FFFFFF;
+    margin: 0;
+  }
+
+
+  /* ── CTA ─────────────────────────────────────────────────────────────── */
+  .banner--refuerzo-1 .bannerActions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 0.75rem;
+  }
+
+  .banner--refuerzo-1 .bannerActions a,
+  .banner--refuerzo-1 .bannerActions button,
+  .banner--refuerzo-1 .bannerActions > * {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--banner-cta-bg, #FFFFFF);
+    color: var(--banner-blue, #00209E);
+    font-family: 'Nunito', var(--font-sans, "Inter", sans-serif);
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.37;
+    padding: 0.6em 1.5em;
+    border-radius: 0.75rem;
+    box-shadow: 2.96px 2.22px 2.96px var(--banner-cta-shadow-color, rgba(81, 79, 79, 0.25));
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .banner--refuerzo-1 .bannerActions a:hover,
+  .banner--refuerzo-1 .bannerActions button:hover,
+  .banner--refuerzo-1 .bannerActions > *:hover {
+    filter: brightness(1.08);
+    box-shadow: 4px 6px 8px var(--banner-cta-shadow-color, rgba(81, 79, 79, 0.3));
+  }
+
+  .banner--refuerzo-1 .bannerActions a:active,
+  .banner--refuerzo-1 .bannerActions button:active,
+  .banner--refuerzo-1 .bannerActions > *:active {
+    transform: scale(0.98);
+  }
+
+
+  /* ── Foto ────────────────────────────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__r1-foto {
+    position: relative;
+    width: 100%;
+    height: 14rem;
+    overflow: hidden;
+    z-index: 3;
+    order: -1;
+  }
+
+  .banner--refuerzo-1 .banner__r1-foto img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+
+  /* ════════════════════════════════════════════════════════════════════════
+     TABLET (≥ 48rem) — layout libre, sin aspect-ratio, sin cqw
+     ════════════════════════════════════════════════════════════════════════ */
+  @media (min-width: 48rem) {
+    .banner--refuerzo-1 {
+      padding-block: clamp(2rem, 4cqw, 5rem);
+    }
+
+    .banner--refuerzo-1 .banner__r1-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .banner--refuerzo-1 .banner__r1-svg {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1600 / 645;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .banner--refuerzo-1 .banner__content--refuerzo-1 {
+      grid-column: 1;
+      grid-row: 1;
+      padding: 2rem;
+      align-self: center;
+    }
+
+    .banner--refuerzo-1 .banner__r1-foto {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      max-height: 28rem;
+      transform: rotate(4deg);
+      filter: drop-shadow(var(--banner-photo-shadow));
+      order: 0;
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .banner--refuerzo-1 .banner__kicker {
+      font-size: 1.25rem;
+    }
+
+    .banner--refuerzo-1 .banner__title {
+      font-size: 3.5rem;
+    }
+
+    .banner--refuerzo-1 .banner__subtitle {
+      font-size: 1.125rem;
+    }
+
+    .banner--refuerzo-1 .bannerActions a,
+    .banner--refuerzo-1 .bannerActions button,
+    .banner--refuerzo-1 .bannerActions > * {
+      font-size: 1.25rem;
+      padding: 0.7em 1.8em;
+      border-radius: 1rem;
+    }
+  }
+
+
+  /* ════════════════════════════════════════════════════════════════════════
+     DESKTOP (≥ 64rem) — Fiel al lienzo Figma 1600×645
+     aspect-ratio, container-type, cqw, posiciones absolutas
+     ════════════════════════════════════════════════════════════════════════ */
+  @media (min-width: 64rem) {
+    .banner--refuerzo-1 .banner__r1-container {
+      aspect-ratio: 1600 / 645;
+      container-type: inline-size;
+      display: block;
+    }
+
+    /* SVG: 11.19% left, 14.90% top, 49.30% width, 70.21% height */
+    .banner--refuerzo-1 .banner__r1-svg {
+      left: 11.19%;
+      top: 14.90%;
+      width: 49.30%;
+      height: 70.21%;
+    }
+
+    /* Contenido: 18.68% left, 19.14% top, ~39% width */
+    .banner--refuerzo-1 .banner__content--refuerzo-1 {
+      left: 18.68%;
+      top: 19.14%;
+      width: 39%;
+      padding: 0;
+    }
+
+    /* Tipografía en cqw */
+    .banner--refuerzo-1 .banner__kicker {
+      font-size: clamp(1.25rem, 3.70cqw, 4rem);
+    }
+
+    .banner--refuerzo-1 .banner__title {
+      font-size: clamp(2rem, 8.33cqw, 10rem);
+    }
+
+    .banner--refuerzo-1 .banner__subtitle {
+      font-size: clamp(1rem, 2.22cqw, 2.5rem);
+    }
+
+    .banner--refuerzo-1 .bannerActions {
+      margin-top: clamp(0.5rem, 2cqw, 2rem);
+    }
+
+    .banner--refuerzo-1 .bannerActions a,
+    .banner--refuerzo-1 .bannerActions button,
+    .banner--refuerzo-1 .bannerActions > * {
+      font-size: clamp(1rem, 3.24cqw, 3.5rem);
+      padding: clamp(0.4em, 1cqw, 0.8em) clamp(1em, 2.5cqw, 2em);
+      border-radius: clamp(0.75rem, 1.90cqw, 2rem);
+    }
+
+    /* Foto: 49.54% left, -2.02% top, 37.52% width, 93.07% height, rotate 7.38° */
+    .banner--refuerzo-1 .banner__r1-foto {
+      position: absolute;
+      left: 49.54%;
+      top: -2.02%;
+      width: 37.52%;
+      height: 93.07%;
+      transform: rotate(7.38deg);
+      filter: drop-shadow(var(--banner-photo-shadow));
+      order: 0;
+    }
+  }
+}

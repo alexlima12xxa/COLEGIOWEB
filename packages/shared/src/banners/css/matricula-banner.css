@@ -13,8 +13,8 @@
 
 
     /* Alturas mandatorias */
-    --banner-height: 90vh;
-    --banner-min-height: 90vh;
+    --banner-height: 80vh;
+    --banner-min-height: 80vh;
     --banner-height-mobile: 90dvh;
     --banner-min-height-mobile: 90dvh;
 
@@ -52,8 +52,8 @@
     /* Configuración raíz */
     position: relative;
     width: 100%;
-    min-height: var(--banner-min-height, 90vh);
-    height: var(--banner-height, 90vh);
+    min-height: var(--banner-min-height, 80vh);
+    height: var(--banner-height, 80vh);
     background-color: var(--banner-bg, #ffffff);
     overflow: hidden;
     display: flex;
@@ -231,7 +231,7 @@
       flex-shrink: 0;
       padding-bottom: 0;
       padding-left: 0;
-      margin-top: auto;
+      margin-top: 6rem;
       gap: var(--banner-content-gap-mobile, 0.35rem);
       width: 100%;
     }
@@ -284,8 +284,8 @@
   /* Breakpoint Desktop Grande (≥ 64rem / 1024px) */
   @media (min-width: 64rem) {
     .banner--matricula-banner {
-      min-height: var(--banner-min-height, 90vh);
-      height: var(--banner-height, 90vh);
+      min-height: var(--banner-min-height, 80vh);
+      height: var(--banner-height, 80vh);
       align-items: flex-end;
     }
 

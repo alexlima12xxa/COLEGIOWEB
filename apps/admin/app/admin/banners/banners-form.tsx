@@ -139,6 +139,12 @@ function BannerPreviewIframe({
 
   const url = buildPreviewUrl(plantillaId, debounced, previewToken, previewWebUrl);
 
+  // Relación de aspecto del banner (del catálogo): el admin embebe la web en un
+  // iframe cross-origin y no puede medir su alto, así que el marco lo usa para
+  // no dejar bandas vacías. Fallback: hero de altura viewport (80vh de 720).
+  const relacion =
+    catalogoPorSlug(plantillaId)?.relacionPreview ?? "1280 / 576";
+
   if (!url) {
     return (
       <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-sm text-zinc-500">
@@ -152,7 +158,7 @@ function BannerPreviewIframe({
 
   return (
     <div className="space-y-2">
-      <div className="banner-preview group">
+      <div className="banner-preview group" style={{ aspectRatio: relacion }}>
         <iframe
           key={url}
           src={url}
@@ -195,7 +201,10 @@ function BannerPreviewIframe({
                 ✕
               </button>
             </div>
-            <div className="aspect-[1280/648] w-full overflow-hidden">
+            <div
+              className="w-full overflow-hidden"
+              style={{ aspectRatio: relacion }}
+            >
               <iframe
                 src={url}
                 title="Vista previa ampliada del banner"

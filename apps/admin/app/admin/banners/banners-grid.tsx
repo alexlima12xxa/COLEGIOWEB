@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { BannerForm, buildPreviewUrlById } from "./banners-form";
 import { DeleteBannerButton } from "./delete-button";
 import { alternarBannerActivo, duplicarBanner, obtenerTokenPreview } from "./actions";
-import { BANNERS_SLUGS, ejemploDePlantilla } from "@web-modelo/shared";
+import {
+  BANNERS_SLUGS,
+  catalogoPorSlug,
+  ejemploDePlantilla,
+} from "@web-modelo/shared";
 
 export interface BannerCardData {
   id: string;
@@ -20,10 +24,12 @@ function Thumb({
   id,
   token,
   previewWebUrl,
+  relacionPreview,
 }: {
   id: string;
   token: string | null;
   previewWebUrl: string | null;
+  relacionPreview: string;
 }) {
   const url = buildPreviewUrlById(id, token, previewWebUrl);
   const ref = useRef<HTMLDivElement>(null);
@@ -48,16 +54,18 @@ function Thumb({
     );
   }
 
-  // Renderiza el banner a tamaño de escritorio (1280×720 → el hero ocupa
-  // 90dvh ≈ 648px) y lo escala con CSS para llenar exactamente el ancho de la
-  // tarjeta. Se recorta el margen vertical sobrante (los 72px bajo el hero)
-  // para que no queden franjas grises ni en ancho ni en alto.
+  // Renderiza el banner a tamaño de escritorio (1280×720) y lo escala con CSS
+  // para llenar exactamente el ancho de la tarjeta. La altura visible se deriva
+  // de `relacionPreview` (del catálogo), no de un 90dvh fijo: así funciona igual
+  // para el modo "altura viewport" (1280/576) y el "altura proporcional"
+  // (1600/645) sin dejar franjas.
   const SOURCE_W = 1280;
   const SOURCE_H = 720;
-  const HERO_H = 648;
+  const [rw, rh] = relacionPreview.split("/").map((n) => Number(n.trim()));
+  const ratio = rw && rh ? rw / rh : SOURCE_W / 576;
   const targetW = width ?? SOURCE_W / 2.5;
   const scale = targetW / SOURCE_W;
-  const height = Math.max(1, Math.ceil(HERO_H * scale));
+  const height = Math.max(1, Math.ceil(targetW / ratio));
 
   return (
     <div
@@ -93,9 +101,17 @@ function BannerCard({
 }) {
   const [editando, setEditando] = useState(false);
 
+  const relacionPreview =
+    catalogoPorSlug(banner.plantilla_id)?.relacionPreview ?? "1280 / 576";
+
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
-      <Thumb id={banner.id} token={token} previewWebUrl={previewWebUrl} />
+      <Thumb
+        id={banner.id}
+        token={token}
+        previewWebUrl={previewWebUrl}
+        relacionPreview={relacionPreview}
+      />
 
       <div className="space-y-3 p-4">
         <div className="flex items-start justify-between gap-2">

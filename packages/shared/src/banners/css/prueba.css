@@ -15,8 +15,8 @@
 
   @media (min-width: 64rem) {
     .banner--prueba {
-      height: 90vh;
-      min-height: 90vh;
+      height: 80vh;
+      min-height: 80vh;
     }
   }
 

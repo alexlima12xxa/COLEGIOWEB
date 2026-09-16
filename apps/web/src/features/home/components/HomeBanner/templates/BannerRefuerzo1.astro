@@ -1,0 +1,67 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import { resolveAssetUrl } from "../../../../../shared/db/storage";
+import BannerActions from "../BannerActions.astro";
+import { tonoRefuerzo1PorKey } from "@web-modelo/shared";
+import "@web-modelo/shared/banners/css/base.css";
+import "@web-modelo/shared/banners/css/refuerzo-1.css";
+
+/**
+ * Plantilla "refuerzo-1": tarjeta azul redondeada (SVG inline) con texto
+ * blanco a la izquierda y foto del estudiante con rotación a la derecha.
+ * Modo altura proporcional (aspect-ratio 1600×645). El director elige el
+ * tono entre opciones controladas (clave `tono` → paleta en packages/shared).
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const tono = tonoRefuerzo1PorKey(String(datos.tono ?? ""));
+const imageUrl = datos.image
+  ? (resolveAssetUrl(datos.image) ?? datos.image)
+  : "";
+---
+
+<article
+  class="banner banner--refuerzo-1"
+  style={{ "--banner-blue": tono.color }}
+>
+  <div class="banner__r1-container">
+    <!-- SVG inline (Rectangle 3) — themable via --banner-blue -->
+    <div class="banner__r1-svg">
+      <svg
+        viewBox="0 0 1193 685"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        <path
+          d="M1193 615.525C1193 653.846 1161.93 684.912 1123.61 684.912H212.076C173.755 684.912 147.989 650.127 126.274 618.552C111.938 597.707 88.6568 586.942 58.1982 579.415C25.0854 571.232 9.20309e-06 543.419 2.17079e-05 509.31L2.40141e-05 503.019V69.3864C2.40141e-05 31.0653 31.0654 0 69.3865 0H1123.61C1161.93 0 1193 31.0654 1193 69.3865V615.525Z"
+        ></path>
+      </svg>
+    </div>
+
+    <!-- Contenido editable -->
+    <div class="banner__content banner__content--refuerzo-1">
+      {datos.kicker && <span class="banner__kicker">{datos.kicker}</span>}
+      <h1 class="banner__title">{datos.title}</h1>
+      {datos.subtitle && <p class="banner__subtitle">{datos.subtitle}</p>}
+      <BannerActions cta={datos.cta} actions={datos.actions} />
+    </div>
+
+    <!-- Foto del estudiante -->
+    <div class="banner__r1-foto">
+      {
+        imageUrl && (
+          <img
+            src={imageUrl}
+            alt={datos.imageAlt || "Foto del estudiante"}
+            loading="eager"
+            decoding="async"
+          />
+        )
+      }
+    </div>
+  </div>
+</article>
