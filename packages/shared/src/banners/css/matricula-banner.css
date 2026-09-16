@@ -79,7 +79,7 @@
     padding-inline: var(--banner-padding-x, 2rem);
     padding-block: var(--banner-padding-y, 0rem);
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: flex-end;
     position: relative;
   }
@@ -285,7 +285,7 @@
 
 
     .banner--matricula-banner .banner__matricula-banner-container {
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       padding-inline: var(--banner-padding-x, 3rem);
     }
 
