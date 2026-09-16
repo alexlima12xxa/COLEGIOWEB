@@ -94,6 +94,7 @@
     gap: var(--banner-content-gap, 0.5rem);
     height: 100%;
     padding-bottom: var(--banner-content-pb, 2rem);
+    padding-left: 2rem;
     z-index: 2;
   }
 
@@ -196,7 +197,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    object-position: bottom right;
+    object-position: bottom center;
     filter: drop-shadow(var(--banner-silueta-shadow, 20px -5px 5.3px rgba(0, 0, 0, 0.25)));
   }
 
@@ -228,6 +229,7 @@
       height: auto;
       flex-shrink: 0;
       padding-bottom: 0;
+      padding-left: 0;
       gap: var(--banner-content-gap-mobile, 0.35rem);
       width: 100%;
     }
@@ -303,7 +305,7 @@
 
 
     .banner--matricula-banner .banner__matricula-banner-silueta img {
-      object-position: bottom right;
+      object-position: bottom center;
     }
   }
 }
