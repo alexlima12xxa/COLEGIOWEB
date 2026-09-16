@@ -49,25 +49,6 @@ hex alternativos. El sistema inyecta estos valores desde la paleta al renderizar
  "foto arriba y texto abajo". Si se deja vacío, aplica apilado vertical estándar.)
 
 
-[MODO DE LAYOUT]:
-(Elige uno de los dos modos. Si se deja vacío, usa "altura viewport".
-
- AMBOS modos comparten estructura HÍBRIDA: fondo full-bleed (100% de ancho) +
- contenido en una caja centrada con max-width: 100rem (1600px). Lo que cambia
- es cómo se calcula la ALTURA.
-
- - "altura viewport": hero de impacto. La altura la dicta el viewport
-   (min-height: 90dvh en móvil / 80vh en desktop). Layout desktop-first.
-
- - "altura proporcional": banner tipo tarjeta, fiel al lienzo. La altura la dicta
-   la proporción del lienzo Figma con `aspect-ratio: <ancho> / <alto>` sobre el
-   contenedor centrado (max-width). El escalado interno usa container queries
-   (`container-type: inline-size`) y unidades `cqw`. Layout mobile-first.
-   ESTÁNDAR: el ancho del lienzo Figma == max-width del contenedor (1600px =
-   100rem). Así `px Figma = px CSS` (1:1) y no hay conversión manual.
-   Ejemplo: lienzo 1600×645 → aspect-ratio: 1600 / 645.)
-
-
 [DATOS EXTRAÍDOS DE FIGMA - "Copy as CSS (todas las capas)"]:
 (Pega aquí el CSS crudo que copiaste de Figma:
  clic derecho -> Copy/Paste as -> Copy as CSS.)
@@ -80,36 +61,12 @@ RESTRICCIONES TÉCNICAS (OBLIGATORIAS)
 2. TODO color, espacio y radio vía CSS custom properties con fallback: var(--nombre, valor-fallback).
 3. Todo el CSS dentro de @layer components { ... }.
 4. Clase raíz del componente: <article class="banner banner--<SLUG>"> (usando el slug exacto provisto).
-5. ALTURA / LAYOUT según el [MODO DE LAYOUT] elegido:
-   - Estructura HÍBRIDA (en AMBOS modos):
-     - El fondo (color/gradiente/foto de ambiente) es full-bleed: el <article>
-       ocupa width: 100% y su background-color llega de borde a borde.
-     - El contenido vive en una caja centrada con max-width: 100rem (1600px).
-   - Modo "altura viewport" (por defecto):
-     - Móvil: min-height: 90dvh; height: 90dvh;
-     - Desktop: min-height: 80vh; height: 80vh;
-     - Layout desktop-first (overrides con @media (max-width: 48rem)).
-   - Modo "altura proporcional":
-     - El contenedor centrado define la altura con la proporción EXACTA del
-       lienzo Figma: aspect-ratio: <anchoFigma> / <altoFigma>;
-       (ej. lienzo 1600×645 → aspect-ratio: 1600 / 645; NO usar 80vh).
-     - El contenedor centrado usa max-width: 100rem (1600px) y
-       container-type: inline-size para habilitar cqw.
-     - ESTÁNDAR DE LIENZO: el ancho del lienzo Figma == max-width del contenedor
-       (1600px). Así px Figma = px CSS (1:1). El ancho del lienzo NO altera el
-       CSS: `%` y `cqw` son proporciones, de modo que un lienzo de 2400 o de 1600
-       producen los MISMOS valores; el 1600 solo evita conversiones manuales.
-     - Layout mobile-first: la base describe el móvil (apilado) y
-       @media (min-width: 48rem) describe el desktop.
-     - En móvil el aspect-ratio del lienzo suele quedar demasiado bajo: rompe
-       la proporción con un layout apilado (foto + tarjeta), tamaños fijos en rem
-       y padding propio. El lienzo Figma solo gobierna el desktop.
+5. Altura del hero:
+   - Móvil: min-height: 90dvh; height: 90dvh;
+   - Desktop: min-height: 90vh; height: 90vh;
 6. Responsive con 2 breakpoints:
-   - max-width: 48rem (móvil) — en modo "altura viewport" (desktop-first).
-   - min-width: 48rem (desktop) — en modo "altura proporcional" (mobile-first).
-   - min-width: 64rem (desktop grande) — opcional, para ajustes finos.
-   Usa UNA sola dirección de overrides por plantilla; no mezcles mobile-first
-   y desktop-first en el mismo archivo.
+   - max-width: 48rem (móvil)
+   - min-width: 64rem (desktop grande)
 7. ESTRUCTURA Y LAYOUT (agnóstico, dictado 100% por el CSS de Figma):
    - Analiza dimensiones del lienzo y coordenadas (left, top, width) del CSS de Figma.
    - Si los elementos flotan con márgenes amplios respecto al lienzo, NO los pegues a los
@@ -118,16 +75,6 @@ RESTRICCIONES TÉCNICAS (OBLIGATORIAS)
    - Si tocan 0px o tienen width 100%, deben ser full-bleed (borde a borde).
    - Si hay texto sobre imagen, resuélvelo con z-index o superposición de grid.
    - NO asumas 2 columnas: respeta el número de zonas (1, 2, 3 o N) del diseño.
-   - CONVERSIÓN px → %: convierte cada left/top/width/height del CSS de Figma a
-     porcentaje del lienzo (valor / ancho o alto del lienzo × 100). Así el layout
-     escala solo y no depende de medidas fijas. El % resultante es idéntico con
-     cualquier ancho de lienzo (es una proporción).
-   - WRAPPER "CARD": cuando una forma (vector/fondo) es el fondo del texto en
-     móvil pero en desktop va posicionada de forma absoluta, envuelve la forma +
-     el contenido en un contenedor posicionado (ej. `.banner__<slug>-card`) que
-     haga de contexto común. En móvil el wrapper es `position: relative` con la
-     forma en `position: absolute; inset: 0` como fondo; en desktop el wrapper es
-     `position: absolute; inset: 0` y la forma/contenido se posicionan dentro.
 8. NO JavaScript, NO TypeScript.
 9. TEXTOS EDITABLES — usar las CLASES BASE del sistema, NO crear clases propias:
    - kicker    → <span class="banner__kicker">
@@ -140,9 +87,6 @@ RESTRICCIONES TÉCNICAS (OBLIGATORIAS)
 10. CONTENIDO: envuelve kicker + título + subtítulo + CTA en
     <div class="banner__content banner__content--<SLUG>"> ... </div>
     (el sistema base aporta flex column, gap y z-index sobre las imágenes).
-    - Reordenar en móvil SIN tocar el HTML: usa `order` en el contenedor flex.
-      (ej. `.banner__<slug>-foto { order: -1 }` sube la foto arriba del texto;
-      resetea `order: 0` en desktop).
 11. Botones de acción:
     - HTML: <div class="bannerActions"></div> (estrictamente vacío; el sistema lo llena).
     - El sistema renderiza <a class="btn btn--primary btn--lg">.
@@ -161,32 +105,11 @@ RESTRICCIONES TÉCNICAS (OBLIGATORIAS)
     - El background-color del contenedor es OBLIGATORIO (si la imagen es PNG transparente, se ve detrás).
     - Siluetas/PNG recortados: object-fit: contain; anclados a su base (ej. bottom center).
     - Fotos rectangulares o fondos: object-fit: cover; object-position: center.
-    - FORMAS VECTORIALES (SVG) QUE CAMBIAN DE COLOR POR TONO:
-      Si una forma del Figma (rectángulo, blob, marco) debe cambiar de color
-      según el tono, NO la pongas como archivo <img>. Inlínala en el HTML:
-      <div class="banner__<SLUG>-<zona>">
-        <svg viewBox="..." preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="..."/></svg>
-      </div>
-      y controla el color por CSS:
-      .banner__<SLUG>-<zona> svg path { fill: var(--banner-<tono>, <hex>); }
-      IMPORTANTE: `object-fit` NO aplica a SVG inline. Para recortar/mantener la
-      curva usa el atributo `preserveAspectRatio` (xMidYMid slice = llena y
-      recorta; xMidYMid meet = encaja sin recortar). El SVG inline no puede ser
-      campo `imagen` del contrato (es parte del diseño, no contenido editable).
 13. TIPOGRAFÍA:
     - Extrae familias, pesos, interlineados y tamaños del CSS de Figma (px a rem: px / 16).
     - Usa tokens del sitio: var(--font-display, "Outfit", sans-serif) para títulos y
       var(--font-sans, "Inter", sans-serif) para kicker/subtítulo/CTA.
     - NO incluir @font-face ni @import de fuentes.
-    - Si el diseño usa una fuente que no está self-hosted, indícala en
-      [FUENTE PERSONALIZADA] (se instala fuera del banner; ver README).
-    - MODO "ALTURA PROPORCIONAL": expresa los tamaños en cqw (relativo al
-      contenedor), no en vw. Fórmula: px_figma / ancho_lienzo × 100 = cqw.
-      (ej. 59.69px sobre lienzo 1600 → 3.73cqw). La fórmula es agnóstica al
-      ancho del lienzo: el mismo diseño da el mismo cqw con 1600 o con 2400.
-      Acota con clamp(): font-size: clamp(<mín-rem>, <cqw>, <máx-rem>);
-    - MODO "ALTURA PROPORCIONAL" en móvil: usa tamaños fijos en rem (más
-      predecibles que cqw en viewports pequeños).
 14. VARIANTES DE TONO (THEMING):
     - Declara en la raíz los valores por defecto del diseño:
       .banner--<SLUG> { --banner-bg: <hex>; --banner-title-color: <hex>; ... }
@@ -246,15 +169,8 @@ La captura que subes al AI Studio es **solo** para leer el diseño.
 
 ### Tamaño de imagen (retina ×2)
 
-Exporta CADA zona a ×2 de su tamaño real en el lienzo (no del lienzo completo).
-Ejemplos:
-
 | Zona en Figma | Imagen a subir |
 |---------------|----------------|
 | Foto lateral 600×900 | 1200×1800 |
-| Fondo full-bleed 1920×1080 | 3840×2160 |
+| Fondo full-bleed 2400×1088 | 4800×2176 |
 | Silueta PNG 400×600 | 800×1200 |
-
-Lienzo estándar del modo "altura proporcional": **1600×645** (== max-width
-100rem). En "altura viewport" el lienzo puede ser 1440 o 1920; el alto lo dicta
-el viewport (80vh en desktop).

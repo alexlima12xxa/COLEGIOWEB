@@ -7,8 +7,7 @@
     ".": "./src/index.ts",
     "./banners/css/base.css": "./src/banners/css/_banner.css",
     "./banners/css/prueba.css": "./src/banners/css/prueba.css",
-    "./banners/css/matricula-banner.css": "./src/banners/css/matricula-banner.css",
-    "./banners/css/refuerzo-1.css": "./src/banners/css/refuerzo-1.css"
+    "./banners/css/matricula-banner.css": "./src/banners/css/matricula-banner.css"
   },
   "scripts": {
     "gen:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" > src/types.ts",

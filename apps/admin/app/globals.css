@@ -38,15 +38,13 @@ body {
 }
 
 /* ── Frame de previsualización de banners (iframe → motor real de Astro) ──
-   El admin embebe la web en un iframe cross-origin y no puede medir su alto.
-   La relación de aspecto la inyecta el componente desde `relacionPreview` del
-   catálogo (inline `style={{ aspectRatio }}`), así que el marco coincide con
-   cada plantilla y no deja franjas. El `aspect-ratio` de aquí es solo el
-   fallback (hero de altura viewport: 80vh ≈ 576px sobre 1280×720). */
+   El banner real es full-screen (90dvh ≈ 648px sobre un iframe de 1280×720).
+   El marco usa la proporción real del hero (1280:648) para que el diseño llene
+   el contenedor sin franjas grises, en vez del 16/9 anterior que dejaba huecos. */
 
 .banner-preview {
   position: relative;
-  aspect-ratio: 1280 / 576;
+  aspect-ratio: 1280 / 648;
   width: 100%;
   overflow: hidden;
   border-radius: 0.75rem;
