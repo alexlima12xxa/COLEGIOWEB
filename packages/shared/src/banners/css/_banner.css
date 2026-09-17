@@ -8,12 +8,39 @@
      tokens globales de la web) el preview se vea consistente. */
 
   .banner {
-    position: relative;
-    display: grid;
+    position: relative; /* requerido por fondos absolutos de plantillas */
+    isolation: isolate; /* contexto de apilamiento propio */
     width: 100%;
-    overflow: hidden;
-    isolation: isolate;
+    height: 80vh;
+    min-height: 80vh;
+    display: flex; /* estandarizado: centra el contenedor único */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* bloquea desbordes y scrollbars */
     background-color: var(--color-surface-inverse, #1e1e2e);
+
+    /* Total vertical de padding mobile, derivado (evita desincronización) */
+    --banner-padding-total: calc(var(--banner-padding-mobile, 1.5rem) * 2);
+  }
+
+  /* Capa interna: SOLO restricciones de contención.
+     La plantilla define su motor de layout (display/flex/grid/gap/justify) en su .css.
+     Declarar la proporción con --banner-aspect-ratio, nunca con la propiedad directa
+     (rompería el reset mobile sin !important). */
+  .banner__container {
+    width: 100%;
+    max-width: var(--banner-container-max, 1600px);
+    max-height: 100%;
+    aspect-ratio: var(--banner-aspect-ratio, auto);
+  }
+
+  /* Contención de media (universal): ninguna gráfica desborda el marco ni
+     fuerza scroll. min-height: 0 permite encoger bajo el tamaño nativo. */
+  .banner__container :is(img, svg, video) {
+    flex-shrink: 1;
+    min-height: 0;
+    max-height: var(--banner-img-max-height, 30dvh);
+    object-fit: contain;
   }
 
   .banner__background {
@@ -110,5 +137,31 @@
     flex-wrap: wrap;
     gap: var(--space-md, 1rem);
     margin-top: var(--space-xs, 0.25rem);
+  }
+
+  /* ── Mobile / Tablet ──────────────────────────────────────────────────────
+     Marco congelado: no crece con el contenido. El contenedor queda acotado al
+     alto disponible (90dvh menos el padding vertical del marco) y la base
+     aporta un default de apilado que cada plantilla puede overridear con mayor
+     especificidad (.banner--<slug> .banner__container). Sin !important. */
+  @media (max-width: 1023px) {
+    .banner {
+      height: 90dvh;
+      min-height: 90dvh;
+      padding: var(--banner-padding-mobile, 1.5rem);
+    }
+
+    .banner__container {
+      max-height: calc(90dvh - var(--banner-padding-total, 3rem));
+      aspect-ratio: auto; /* gana por orden de origen, sin !important */
+      min-height: 0;
+
+      /* Default de apilado — overrideable por plantilla */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--banner-gap-mobile, 1rem);
+    }
   }
 }
