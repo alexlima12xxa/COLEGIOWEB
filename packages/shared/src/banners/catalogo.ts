@@ -1,5 +1,4 @@
 ﻿import type { EditableSchema } from "./contratos";
-import { PRUEBA_TONO_DEFAULT, PRUEBA_TONOS } from "./palettes";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -27,39 +26,10 @@ export interface EntradaCatalogo {
   ejemplo: Record<string, unknown>;
 }
 
-export const BANNERS_SLUGS = ["prueba", "matricula-banner"] as const;
+export const BANNERS_SLUGS = ["matricula-banner"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
-  {
-    slug: "prueba",
-    nombre: "Plantilla de prueba",
-    contrato: {
-      slug: "prueba",
-      nombre: "Prueba",
-      campos: [
-        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 60 },
-        { key: "title", label: "Título", tipo: "texto", maxLength: 160 },
-        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 300 },
-        {
-          key: "tono",
-          label: "Tono de colores",
-          tipo: "opciones",
-          default: PRUEBA_TONO_DEFAULT.key,
-          opciones: PRUEBA_TONOS.map((t) => ({ label: t.label, value: t.key })),
-        },
-        { key: "actions", label: "Botones", tipo: "booleano" },
-      ],
-    },
-    ejemplo: {
-      kicker: "ADMISIÓN 2026",
-      title: "Formamos líderes para transformar el futuro",
-      subtitle:
-        "Una educación integral, cercana y de excelencia desde preescolar hasta bachillerato.",
-      tono: PRUEBA_TONO_DEFAULT.key,
-      cta: { label: "Iniciar admisión", href: "/admisiones", variant: "primary" },
-    },
-  },
   {
     slug: "matricula-banner",
     nombre: "matricula-1",

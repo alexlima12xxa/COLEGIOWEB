@@ -2,16 +2,16 @@
   "version": 1,
   "items": [
     {
-      "plantillaId": "prueba",
+      "plantillaId": "matricula-banner",
       "orden": 0,
       "activo": true,
       "datos": {
-        "kicker": "Plantilla de prueba",
-        "title": "Banner de prueba funcionando",
-        "subtitle": "Gradiente diagonal con acento inferior, cargado desde el fallback local.",
-        "tono": "nocheMarino",
+        "title": "MATRÍCULA",
+        "subtitle": "2027",
+        "image": "/branding/placeholders/nino-birrete.avif",
+        "imageAlt": "Estudiante sonriendo con birrete celebrando matrícula escolar",
         "cta": {
-          "label": "Ver admisiones",
+          "label": "Inscríbete aquí",
           "href": "/admisiones",
           "variant": "primary"
         }

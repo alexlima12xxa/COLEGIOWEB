@@ -1,6 +1,5 @@
 ---
 import type { Banner } from "../../../../shared/db/schema";
-import BannerPrueba from "./templates/BannerPrueba.astro";
 import BannerMatriculaBanner from "./templates/BannerMatriculaBanner.astro";
 
 /**
@@ -21,7 +20,6 @@ const { banner } = Astro.props;
 const plantilla = banner.plantillaId;
 
 const COMPONENTES = {
-  prueba: BannerPrueba,
   "matricula-banner": BannerMatriculaBanner,
 } as const;
 
