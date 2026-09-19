@@ -19,7 +19,7 @@
   .bannerSlider__controls {
     position: absolute;
     inset-inline: 0;
-    bottom: var(--space-lg);
+    bottom: var(--space-md);
     z-index: 2;
     display: flex;
     justify-content: center;
@@ -94,11 +94,11 @@
   }
 
   .bannerSlider__arrow--prev {
-    left: var(--space-md);
+    left: var(--space-xl);
   }
 
   .bannerSlider__arrow--next {
-    right: var(--space-md);
+    right: var(--space-xl);
   }
 
   @media (hover: hover) {
