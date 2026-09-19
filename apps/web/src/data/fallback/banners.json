@@ -2,8 +2,26 @@
   "version": 1,
   "items": [
     {
-      "plantillaId": "matricula-banner",
+      "plantillaId": "refuerzo-1",
       "orden": 0,
+      "activo": true,
+      "datos": {
+        "kicker": "REFUERZO ESCOLAR",
+        "title": "2026",
+        "subtitle": "FECHA: 15 DE SETIEMBRE",
+        "tono": "azul",
+        "image": "/branding/placeholders/marco-foto-nina.avif",
+        "imageAlt": "Estudiante enmarcada con marco festoneado",
+        "cta": {
+          "label": "Informes aquí",
+          "href": "https://wa.me/51XXXXXXXXX",
+          "variant": "primary"
+        }
+      }
+    },
+    {
+      "plantillaId": "matricula-banner",
+      "orden": 1,
       "activo": true,
       "datos": {
         "title": "MATRÍCULA",

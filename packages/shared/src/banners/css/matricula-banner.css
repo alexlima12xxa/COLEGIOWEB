@@ -12,13 +12,6 @@
     --banner-silueta-shadow: 20px -5px 5.3px rgba(0, 0, 0, 0.25);
 
 
-    /* Alturas mandatorias */
-    --banner-height: 80vh;
-    --banner-min-height: 80vh;
-    --banner-height-mobile: 90dvh;
-    --banner-min-height-mobile: 90dvh;
-
-
     /* Dimensiones y espaciados */
     --banner-container-max: 100rem;
     --banner-padding-x: 2rem;
@@ -49,16 +42,14 @@
     --banner-cta-transform: matrix(1, -0.05, 0.04, 1, 0, 0);
 
 
-    /* Configuración raíz */
+    /* Configuración raíz: el alto lo dicta el canvas del motor (refuerzo-1) */
     position: relative;
     width: 100%;
-    min-height: var(--banner-min-height, 80vh);
-    height: var(--banner-height, 80vh);
     background-color: var(--banner-bg, #ffffff);
     overflow: hidden;
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     box-sizing: border-box;
   }
 
@@ -70,11 +61,8 @@
   }
 
 
-  /* Contenedor centralizado para pantallas anchas */
+  /* Contenedor: el alto lo aporta el canvas del motor (.banner__container) */
   .banner--matricula-banner .banner__matricula-banner-container {
-    width: 100%;
-    max-width: var(--banner-container-max, 100rem);
-    height: 100%;
     margin-inline: auto;
     padding-inline: var(--banner-padding-x, 2rem);
     padding-block: var(--banner-padding-y, 0rem);
@@ -203,15 +191,8 @@
   }
 
 
-  /* Breakpoint Móvil (≤ 48rem / 768px) */
-  @media (max-width: 48rem) {
-    .banner--matricula-banner {
-      min-height: var(--banner-min-height-mobile, 90dvh);
-      height: var(--banner-height-mobile, 90dvh);
-      align-items: stretch;
-    }
-
-
+  /* Breakpoint Móvil (≤ 599px): canvas 800×1280 del motor */
+  @media (max-width: 599px) {
     .banner--matricula-banner .banner__matricula-banner-container {
       display: flex;
       flex-direction: column;
@@ -220,7 +201,6 @@
       padding-inline: var(--banner-padding-x-mobile, 1.25rem);
       padding-top: var(--banner-padding-top-mobile, 2rem);
       padding-bottom: 0;
-      height: 100%;
     }
 
 
@@ -283,13 +263,6 @@
 
   /* Breakpoint Desktop Grande (≥ 64rem / 1024px) */
   @media (min-width: 64rem) {
-    .banner--matricula-banner {
-      min-height: var(--banner-min-height, 80vh);
-      height: var(--banner-height, 80vh);
-      align-items: flex-end;
-    }
-
-
     .banner--matricula-banner .banner__matricula-banner-container {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       padding-inline: var(--banner-padding-x, 3rem);

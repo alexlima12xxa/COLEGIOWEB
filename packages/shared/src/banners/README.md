@@ -56,7 +56,7 @@ El registro único es `CATALOGO_BANNERS` en `catalogo.ts`. De él se derivan:
 
 ---
 
-## 3. Contrato de dos capas (el estándar)
+## 3. Contrato de dos capas (Arquitectura A · canvas escalado)
 
 > **El estándar NO se adapta ni se modifica según los banners existentes.
 > Los banners —nuevos o recreados— se ajustan al estándar.**
@@ -64,109 +64,107 @@ El registro único es `CATALOGO_BANNERS` en `catalogo.ts`. De él se derivan:
 > Consecuencia directa: no se añaden excepciones, overrides ni parches para
 > acomodar plantillas viejas. Las que no cumplan se recrean.
 
-Toda plantilla se compone de **dos capas**, y la base (`_banner.css`) ya las
-define. La plantilla no reimplementa el marco: solo declara su composición.
+Toda plantilla se compone de **dos capas** y un **canvas**:
 
 | Capa | Selector | Responsabilidad | Quién la define |
 |---|---|---|---|
-| Externa | `.banner` | **Marco rígido**: alto fijo, centrado, recorte de desbordes, fondo base | La base. La plantilla **no la toca** |
-| Interna | `.banner__container` | **Contención**: ancho máximo, techo de alto, proporción | La base define las restricciones; la plantilla define el **layout** |
+| Externa | `.banner` | **Marco**: full-bleed, centrado, recorte, fondo | La base. La plantilla **no la toca** |
+| Interna | `.banner__container` | **Canvas**: ancho máximo + proporción + `container-type` | La base (ratio vía variables) |
+| — | interior | **Composición**: coordenadas en `cqw` | La plantilla |
 
-**Por qué:** el marco rígido garantiza que cambiar de slide en el carrusel
-**no altere la altura** de la página (sin CLS entre slides).
+**Por qué:** el marco toma su alto del canvas (`height: auto`), así el banner es
+siempre proporcional al diseño y cambiar de slide **no altera la altura** (sin
+CLS) porque todas las plantillas comparten el mismo canvas.
 
 ### 3.1 Capa externa — `.banner` (la provee la base)
 
 | Qué aporta | Valor |
 |---|---|
-| Alto fijo | `80vh` desktop · `90dvh` mobile (`max-width: 1023px`) |
+| Alto | **`auto`** → lo dicta el canvas (Frame 2) |
+| Ancho | `100%` (full-bleed) |
 | Centrado | `display: flex` + `justify-content: center` + `align-items: center` |
-| Recorte | `overflow: hidden` (nada desborda ni genera scrollbar) |
-| Padding mobile | `var(--banner-padding-mobile, 1.5rem)` |
-| Contexto de apilamiento | `position: relative` + `isolation: isolate` (los fondos absolutos de la plantilla dependen de esto) |
-| Presupuesto vertical mobile | `--banner-padding-total: calc(var(--banner-padding-mobile, 1.5rem) * 2)` |
+| Recorte | `overflow: hidden` |
+| Contexto de apilamiento | `position: relative` + `isolation: isolate` |
 
-La plantilla **solo** añade fondo en `.banner--<slug>`: color, degradado, shapes
-decorativas. **No** vuelve a declarar el alto del marco.
+La plantilla **solo** añade fondo en `.banner--<slug>`: color, degradado, shapes.
+**No** declara alto ni padding.
 
-### 3.2 Capa interna — `.banner__container` (restricciones de la base)
+### 3.2 Capa interna — `.banner__container` (el canvas)
 
-La base solo impone contención:
+La base impone:
 
 - `width: 100%`
 - `max-width: var(--banner-container-max, 1600px)`
-- `max-height: 100%`
-- `aspect-ratio: var(--banner-aspect-ratio, auto)`
+- `aspect-ratio: var(--banner-canvas-w, 1600) / var(--banner-canvas-h, 720)`
+- `container-type: inline-size` (habilita `cqw`)
+- `overflow: hidden`
 
-En desktop **no** trae `display` / `flex-direction` / `grid-template-columns` /
-`gap` / `justify-*`: el motor de layout lo declara cada plantilla.
+**Sin `max-height`** (recortaría el canvas y rompería el ratio).
 
-### 3.3 Contención de media (universal)
+### 3.3 Sistema de coordenadas (`cqw`)
 
-La base acota cualquier gráfica dentro del contenedor:
+`1cqw = anchoContenedor / 100`. A 1600px → **1cqw = 16px**. Conversión:
 
-```css
-.banner__container :is(img, svg, video) {
-  flex-shrink: 1;
-  min-height: 0;                            /* permite encoger bajo el tamaño nativo */
-  max-height: var(--banner-img-max-height, 30dvh);
-  object-fit: contain;
-}
+```text
+px de Figma → cqw = px / 16
 ```
 
-Ninguna imagen, SVG o video desborda el marco ni fuerza scroll.
+Todas las medidas interiores (posiciones, tamaños, tipografía, `line-height`,
+gaps, radios) se expresan en `cqw`. El canvas escala uniforme.
 
-### 3.4 Mobile — default de apilado, overrideable
+### 3.4 Zonas de imagen
 
-En `max-width: 1023px` la base aplica a `.banner__container`:
+**Sin reglas globales de media.** Cada zona es una caja con coordenadas de Figma
+en `cqw`:
 
-```css
-max-height: calc(90dvh - var(--banner-padding-total, 3rem));
-aspect-ratio: auto;
-min-height: 0;
+- La caja: `position: absolute; top/left/width/height` (+ `rotate` si aplica).
+- La imagen: `position: absolute; inset: 0; width/height: 100%; object-fit`.
+  - `cover` para fotos rectangulares; `contain` para cutouts/PNG con alfa o
+    cuando el asset trae el marco integrado.
+- **Prohibido** `background-color`, `border` o `drop-shadow` en la caja de la
+  foto. Si el diseño pide sombra, va sobre la **imagen** (`filter: drop-shadow`),
+  no sobre la caja.
+- Si hay un **marco** especial (festoneado, irregular), es una **capa overlay**
+  SVG/PNG encima de la foto (z-index mayor), con la misma caja.
 
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-align-items: center;
-gap: var(--banner-gap-mobile, 1rem);
-```
+### 3.5 Mobile — canvas propio
 
-Si tu diseño mobile difiere, overrídalo **en tu plantilla** con mayor
-especificidad (`.banner--<slug> .banner__container`), nunca con `!important`.
+En `max-width: 599px` el canvas cambia a **800×1280** (portrait) vía
+`--banner-canvas-mobile-w/h`, con `min-height: var(--banner-min-height-mobile, 0)`.
+De 600px en adelante se usa el canvas desktop escalado.
 
-> ⚠️ **Especificidad — leer antes de escribir el CSS de la plantilla.**
-> `.banner--<slug> .banner__container` (0,2,0) gana sobre `.banner__container`
-> (0,1,0) **también en mobile**. Por eso el layout desktop de la plantilla debe
-> declararse dentro de `@media (min-width: 1024px)`: si lo declaras sin media
-> query, se filtra al móvil y el default de apilado nunca se aplica. Es
-> exactamente el caso de `display` / `flex-direction` (propiedades directas);
-> `aspect-ratio` no sufre esto porque la plantilla la declara vía variable y la
-> propiedad solo existe en la base.
+La composición móvil (apilada) la declara la plantilla en su propio
+`@media (max-width: 599px)`.
 
-### 3.5 API de variables del contrato
+### 3.6 API de variables del contrato
 
 | Variable | Default | Uso |
 |---|---|---|
-| `--banner-container-max` | `1600px` | Ancho máximo de la capa interna |
-| `--banner-aspect-ratio` | `auto` | Proporción Figma (solo desktop) |
-| `--banner-img-max-height` | `30dvh` | Techo de la gráfica en mobile |
-| `--banner-gap-mobile` | `1rem` | Separación entre zonas apiladas |
-| `--banner-padding-mobile` | `1.5rem` | Padding del marco en mobile |
-| `--banner-padding-total` | `calc(padding-mobile * 2)` | Presupuesto vertical restado en mobile |
+| `--banner-canvas-w` | `1600` | Ancho del canvas desktop (numérico, sin unidad) |
+| `--banner-canvas-h` | `720` | Alto del canvas desktop (numérico, sin unidad) |
+| `--banner-canvas-mobile-w` | `800` | Ancho del canvas móvil |
+| `--banner-canvas-mobile-h` | `1280` | Alto del canvas móvil |
+| `--banner-min-height-mobile` | `0` | Piso de alto del canvas en móvil |
+| `--banner-container-max` | `1600px` | Ancho máximo del canvas |
+| `--banner-content-max-h` | `none` | Techo del bloque de contenido (en `cqw`) |
+| `--banner-title-lineas` | `2` | `line-clamp` del título |
+| `--banner-subtitle-lineas` | `3` | `line-clamp` del subtítulo |
 
-Se declaran en el bloque de la plantilla (`.banner--<slug>`) y las consume la
+Se declaran en `.banner--<slug>` (o en la base como default) y las consume la
 base.
 
-### 3.6 Reglas que no se negocian
+### 3.7 Reglas que no se negocian
 
 1. El markup **siempre** envuelve el contenido en `<div class="banner__container">`.
-2. La proporción se declara con `--banner-aspect-ratio: W / H`, **nunca** con la
-   propiedad `aspect-ratio` directa (rompería el reset mobile de la base).
-3. El layout desktop va dentro de `@media (min-width: 1024px)`.
-4. `!important` está **prohibido** (convención del proyecto).
-5. La plantilla no re-declara el alto del marco ni el padding mobile.
-6. La clase raíz es siempre `banner banner--<slug>`.
+2. El ratio se declara con `--banner-canvas-w/h` numéricos; **nunca** con la
+   propiedad `aspect-ratio` directa en la plantilla.
+3. **Prohibido `max-height` en el canvas.**
+4. El interior se expresa en `cqw`; prohibidos `%` vertical, `vh` y
+   `line-height: normal`.
+5. `!important` está **prohibido** (convención del proyecto).
+6. La plantilla no declara el alto del marco ni reglas globales de imagen.
+7. La clase raíz es siempre `banner banner--<slug>`.
+8. La tipografía vive en la plantilla; la contención, en el motor.
 
 ---
 
@@ -197,27 +195,32 @@ uses.
 @layer components {
   /* Capa externa: SOLO fondo + variables del contrato */
   .banner--<slug> {
-    background-color: var(--banner-bg, #ffffff);
-    --banner-aspect-ratio: <W> / <H>;   /* proporción Figma (solo desktop) */
-    --banner-img-max-height: 30dvh;     /* opcional */
+    --banner-bg: #ffffff;
+    --banner-canvas-w: 1600;
+    --banner-canvas-h: 720;
+    background-color: var(--banner-bg);
   }
 
-  /* Desktop: la plantilla declara su motor de layout.
-     Siempre dentro de min-width: 1024px (ver 3.4). */
-  @media (min-width: 1024px) {
-    .banner--<slug> .banner__container {
-      display: flex;              /* o grid */
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      padding-inline: 2rem;
+  .banner--<slug> .banner__container {
+    position: relative; /* contexto de posicionamiento del canvas */
+  }
+
+  /* Desktop (≥600px): composición en cqw = pxFigma / 16 */
+  @media (min-width: 600px) {
+    .banner--<slug> .banner__content--<slug> {
+      position: absolute;
+      /* left/top/width/height en cqw, según la FICHA */
+    }
+    .banner--<slug> .banner__title {
+      font-size: <n>cqw;
+      line-height: <n>cqw; /* SIEMPRE explícito */
     }
   }
 
-  /* Mobile: solo si difiere del default de apilado de la base */
-  @media (max-width: 1023px) {
-    .banner--<slug> .banner__container {
-      /* override opcional */
+  /* Móvil (<600px): composición apilada · canvas 800×1280 · cqw = pxFigma / 8 */
+  @media (max-width: 599px) {
+    .banner--<slug> .banner__content--<slug> {
+      /* apilado centrado */
     }
   }
 }
@@ -315,63 +318,90 @@ entrada en el `exports` de `packages/shared/package.json`:
   /* Capa externa: SOLO fondo + variables del contrato */
   .banner--tarjeta-foto {
     --banner-bg: var(--tf-color, #0d3b2e);
-    --banner-aspect-ratio: 16 / 9;   /* proporción Figma (solo desktop) */
-    --banner-img-max-height: 45dvh;
+    --banner-canvas-w: 1600;
+    --banner-canvas-h: 720;
     background-color: var(--banner-bg);
   }
 
-  /* Desktop: motor de layout de la plantilla (siempre en min-width: 1024px) */
-  @media (min-width: 1024px) {
-    .banner--tarjeta-foto .banner__container {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      align-items: stretch;
+  .banner--tarjeta-foto .banner__container {
+    position: relative;
+  }
+
+  /* Desktop (≥600px): composición en cqw = pxFigma / 16 */
+  @media (min-width: 600px) {
+    /* Panel de texto (mitad izquierda) */
+    .banner__tf-panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 50cqw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 2cqw;
+      padding-inline: 4cqw;
+      background-color: var(--tf-color, #0d3b2e);
+      color: var(--tf-texto, #ffffff);
+    }
+
+    .banner__tf-panel .banner__title {
+      font-size: 6cqw;
+      line-height: 7cqw;
+      color: var(--tf-texto, #ffffff);
+    }
+
+    .banner__tf-panel .banner__subtitle {
+      font-size: 2.5cqw;
+      line-height: 3.5cqw;
+      color: var(--tf-texto, #ffffff);
+    }
+
+    /* Foto (mitad derecha) */
+    .banner__tf-foto {
+      position: absolute;
+      left: 50cqw;
+      top: 0;
+      width: 50cqw;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .banner__tf-foto img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
     }
   }
 
-  .banner__tf-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: var(--space-md, 1rem);
-    padding-inline: var(--space-2xl, 3rem);
-    background-color: var(--tf-color, #0d3b2e);
-    color: var(--tf-texto, #ffffff);
-  }
-
-  .banner__tf-panel .banner__title,
-  .banner__tf-panel .banner__subtitle {
-    color: var(--tf-texto, #ffffff);
-  }
-
-  .banner__tf-foto {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: var(--tf-color, #0d3b2e);
-  }
-
-  .banner__tf-foto img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
-
-  /* Mobile: solo lo que difiere del default de apilado de la base */
-  @media (max-width: 1023px) {
-    .banner--tarjeta-foto .banner__container {
-      justify-content: flex-start;
+  /* Móvil (<600px): apilado · canvas 800×1280 · cqw = pxFigma / 8 */
+  @media (max-width: 599px) {
+    .banner__tf-panel {
+      position: absolute;
+      left: 8cqw;
+      top: 8cqw;
+      width: 84cqw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 3cqw;
+      color: var(--tf-texto, #ffffff);
     }
 
     .banner__tf-foto {
-      flex: 0 1 auto;
+      position: absolute;
+      left: 10cqw;
+      top: 60cqw;
+      width: 80cqw;
       height: auto;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
     }
   }
 }
@@ -459,12 +489,12 @@ plantilla.
 - **CSS dentro de `@layer components`**.
 - **Contrato de dos capas**: la capa externa (`.banner`) la provee la base; la
   plantilla solo declara fondo + variables + su motor de layout. Ver §3.
-- **Layout desktop dentro de `@media (min-width: 1024px)`**: fuera de la media
-  query se filtra al móvil por especificidad y rompe el apilado.
-- **Proporción vía `--banner-aspect-ratio`**, nunca con la propiedad
-  `aspect-ratio` directa.
-- **Altura del hero: fija en la base** (`80vh` desktop / `90dvh` mobile). La
-  plantilla no la declara.
+- **Layout desktop dentro de `@media (min-width: 600px)`**; la composición móvil
+  va en `@media (max-width: 599px)`. Así no se filtran una a la otra.
+- **Canvas vía `--banner-canvas-w/h` numéricos**, nunca con la propiedad
+  `aspect-ratio` directa en la plantilla.
+- **Alto del hero: lo dicta el canvas** (el marco `.banner` es `height: auto`).
+  La plantilla no declara alto.
 - **Tokens con fallback** (`var(--espacio, 1rem)`) para que el preview funcione
   en el admin, que no importa los tokens globales de la web.
 - **Colores controlados vía opciones del contrato**: el director elige entre
@@ -475,8 +505,9 @@ plantilla.
   director vea el diseño real antes de escribir. Si la plantilla usa imagen, el
   ejemplo incluye un **placeholder local** (`/branding/placeholders/…`).
   `catalogo.test.ts` valida que exista y que su `tono` sea una opción válida.
-- **Zona de imagen**: el contenedor de la foto debe tener `background-color`
-  (obligatorio: si el director sube un PNG transparente, se ve el color detrás).
+- **Zona de imagen**: caja con coordenadas en `cqw` + `object-fit`
+  (`cover`/`contain`). **Sin `background-color`/`shadow` en la caja**; la sombra
+  va sobre la `<img>`. El marco especial, como overlay encima. Ver §3.4.
 
 ---
 
@@ -485,12 +516,13 @@ plantilla.
 **Contrato (obligatorio):**
 
 - [ ] El markup envuelve el contenido en `<div class="banner__container">`.
-- [ ] `.banner--<slug>` declara **solo** fondo + variables (no alto, no padding mobile).
-- [ ] El layout desktop está dentro de `@media (min-width: 1024px)`.
-- [ ] La proporción se declara con `--banner-aspect-ratio` (no `aspect-ratio` directo).
-- [ ] No hay `!important` en el CSS de la plantilla.
-- [ ] En mobile el contenido apila o tiene su override explícito.
-- [ ] Las gráficas caben en el marco (sin scroll ni desborde).
+- [ ] `.banner--<slug>` declara **solo** fondo + variables (no alto, no padding).
+- [ ] El layout desktop está dentro de `@media (min-width: 600px)`.
+- [ ] La composición móvil está dentro de `@media (max-width: 599px)`.
+- [ ] El ratio se declara con `--banner-canvas-w/h` (no `aspect-ratio` directo).
+- [ ] No hay `max-height` en el canvas ni `!important` en la plantilla.
+- [ ] Todo el interior usa `cqw` (sin `%` vertical, `vh` ni `line-height: normal`).
+- [ ] Las gráficas caben en el canvas (sin scroll ni desborde).
 
 **Registro:**
 
@@ -527,8 +559,9 @@ plantilla.
   editar la lista a mano en esos archivos rompe la fuente de verdad única.
 - **No se usa `data-banner-field`**: el preview es un iframe que renderiza las
   plantillas `.astro` reales; no hay marcado de zonas ni render compartido.
-- **Si el layout desktop no se envuelve en `min-width: 1024px`**, gana también
-  en mobile por especificidad y el default de apilado no se aplica (ver 3.4).
+- **Si el layout desktop no se envuelve en `min-width: 600px`**, sus reglas
+  (posiciones absolutas, tamaños) también aplican en móvil y rompen la
+  composición apilada. Ver §3.5.
 
 ---
 
@@ -537,20 +570,20 @@ plantilla.
 Para generar el CSS + HTML de una plantilla a partir de un diseño de Figma, usa
 el prompt de `figma-prompt.md`. Claves para que el resultado sea fiel:
 
-- **Llena la ficha de especificación** (colores, tipografías px→rem, espaciados,
-  comportamiento móvil). El AI NO debe adivinar medidas.
-- **La proporción del canvas alimenta `--banner-aspect-ratio`**: mide el frame de
-  Figma y declara esa proporción (`W / H`) en la plantilla. Ver los dos modos de
-  canvas (full-bleed / contained) en `figma-prompt.md`.
+- **Llena la ficha de especificación** (colores, tipografías en px, `line-height`,
+  espaciados, cajas, comportamiento móvil). El AI NO debe adivinar medidas.
+- **El canvas alimenta `--banner-canvas-w/h`**: mide el frame de Figma y declara
+  esa proporción (numérica) en la plantilla. Ver los dos modos de canvas
+  (full-bleed / contained) en `figma-prompt.md`.
 - **Estructura del layout**: la dicta el diseño, no el prompt. El AI reporta las
   zonas que ve en la FICHA LEÍDA (antes del código) para validar la distribución
   (texto/foto en cualquier posición: columnas, fondo full-bleed, superpuesta…).
   Esa distribución es el **motor de layout del `.banner__container`**.
 - **Zona de imagen**: el sistema renderiza un `<img>` real. En el CSS de la
-  plantilla, estila el contenedor con `position: relative` y el `<img>` con
-  `position: absolute; inset: 0; width/height: 100%; object-fit`. Así el tamaño
-  de la imagen subida nunca rompe el layout. Puede haber **N zonas** (N campos
-  `imagen` del contrato; el panel las sube al instante sin tocar el servidor).
+  plantilla, la caja va con coordenadas de Figma en `cqw` y el `<img>` con
+  `position: absolute; inset: 0; width/height: 100%; object-fit`. Sin
+  `background-color`/`shadow` en la caja (la sombra, sobre la `<img>`). Puede
+  haber **N zonas** (N campos `imagen` del contrato; el panel las sube al instante).
 - **NO uses `ResponsiveImage` para la foto del banner**: envuelve en `<picture>`
   (astro:assets) y fuerza `height: auto`, lo que rompe la cadena `height: 100%`
   y la imagen no llena el hero. Usa `<img src={resolveAssetUrl(...)}>` directo.
@@ -581,7 +614,7 @@ Resumen de lo que hace el panel hoy:
 4. **Publicar.** La web resuelve la ruta con `resolveAssetUrl` al construir. El
    preview corre en la web, por eso un placeholder local (`/branding/…`) funciona
    sin Supabase.
-5. **Imágenes.** Se aceptan JPG, PNG, WebP y AVIF. Para **PNG transparente**, el
-   contenedor de la foto debe tener `background-color` (obligatorio) y el `<img>`
-   `object-fit`/`object-position` según el diseño. Recorta a la silueta y exporta
-   a ×2 para que se vea nítida.
+5. **Imágenes.** Se aceptan JPG, PNG, WebP y AVIF. Para **PNG/AVIF con alfa**
+   (cutout o marco festoneado), la caja es transparente, el `<img>` usa
+   `object-fit` según el diseño y la sombra (`drop-shadow`) va sobre la `<img>`.
+   Sube a ×2 para que se vea nítida.

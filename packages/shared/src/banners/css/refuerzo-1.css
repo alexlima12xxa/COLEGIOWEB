@@ -1,0 +1,295 @@
+@layer components {
+  /* Plantilla "refuerzo-1" — Arquitectura A.
+
+     Desktop (≥600px): canvas 1600×720 · cqw = px/16 (FICHA del Frame 2).
+     Móvil  (<600px):  canvas 800×1280 · cqw = px/8 · composición apilada
+                       (derivada del desktop: Kicker → Título → Subtítulo →
+                       CTA → Foto). El ratio y el min-height los aporta la base. */
+
+  .banner--refuerzo-1 {
+    --banner-bg: #ededed;
+    --banner-canvas-w: 1600;
+    --banner-canvas-h: 720;
+    --banner-blue: #00209e;
+    --banner-foto-rotacion: 6.47deg;
+    background-color: var(--banner-bg);
+  }
+
+  .banner--refuerzo-1 .banner__container {
+    position: relative;
+  }
+
+  /* ── Común a ambos breakpoints ───────────────────────────────────────── */
+  .banner--refuerzo-1 .banner__refuerzo-1-shape svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .banner--refuerzo-1 .banner__refuerzo-1-shape path {
+    fill: currentColor;
+  }
+
+  /* La sombra va sobre la IMG (sigue el contorno del festoneado), no sobre la caja */
+  .banner--refuerzo-1 .banner__refuerzo-1-foto img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: contain;
+    object-position: center;
+    filter: drop-shadow(0.2906cqw 0.1661cqw 0.1661cqw rgba(0, 0, 0, 0.25));
+  }
+
+  /* ══ Desktop (≥600px) · canvas 1600×720 · cqw = px/16 ══ */
+  @media (min-width: 600px) {
+    /* Forma azul (Rectangle 3) ── FICHA: x33 y94 · 1057×508 */
+    .banner__refuerzo-1-shape {
+      position: absolute;
+      left: 2.0625cqw;
+      top: 5.875cqw;
+      width: 66.0625cqw;
+      height: 31.75cqw;
+      z-index: 1;
+      color: var(--banner-blue, #00209e);
+    }
+
+    /* Bloque de contenido ── FICHA: x94 y114 · 893×452.66 */
+    .banner--refuerzo-1 .banner__content--refuerzo-1 {
+      position: absolute;
+      left: 5.875cqw;
+      top: 7.125cqw;
+      width: 55.8125cqw;
+      height: 28.29125cqw;
+      --banner-content-max-h: 28.29125cqw;
+      z-index: 3;
+      color: #ffffff;
+    }
+
+    /* Kicker ── 78.305px / lh 117px */
+    .banner--refuerzo-1 .banner__kicker {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 55.8125cqw;
+      height: 7.3125cqw;
+      font-family: "Poppins", var(--font-sans, "Inter", sans-serif);
+      font-size: 4.8941cqw;
+      font-weight: 600;
+      line-height: 7.3125cqw;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-align: center;
+      color: #ffffff;
+      backdrop-filter: blur(0.2141cqw);
+    }
+
+    /* Título ── 176.187px / lh 240px */
+    .banner--refuerzo-1 .banner__title {
+      position: absolute;
+      left: 12.8125cqw;
+      top: 4.625cqw;
+      width: 30.8125cqw;
+      height: 15cqw;
+      font-family: "Nunito", var(--font-display, "Outfit", sans-serif);
+      font-size: 11.0117cqw;
+      font-weight: 800;
+      line-height: 15cqw;
+      letter-spacing: normal;
+      text-transform: none;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    /* Subtítulo ── 46.983px / lh 70px */
+    .banner--refuerzo-1 .banner__subtitle {
+      position: absolute;
+      left: 7.25cqw;
+      top: 17.4375cqw;
+      width: 41.3125cqw;
+      height: 4.375cqw;
+      font-family: "Poppins", var(--font-sans, "Inter", sans-serif);
+      font-size: 2.9364cqw;
+      font-weight: 500;
+      line-height: 4.375cqw;
+      letter-spacing: normal;
+      text-transform: uppercase;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    /* CTA ── FICHA: x310 y480 · 462.8×86.66 */
+    .banner--refuerzo-1 .bannerActions {
+      position: absolute;
+      left: 13.5cqw;
+      top: 22.875cqw;
+      width: 28.925cqw;
+      height: 5.41625cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    .banner--refuerzo-1 .bannerActions a,
+    .banner--refuerzo-1 .bannerActions button,
+    .banner--refuerzo-1 .bannerActions > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      background-color: #ffffff;
+      color: var(--banner-blue, #00209e);
+      font-family: "Nunito", var(--font-sans, "Inter", sans-serif);
+      font-size: 3.4484cqw;
+      font-weight: 700;
+      line-height: 4.6875cqw;
+      padding: 0.3536cqw 2.546cqw;
+      border: none;
+      border-radius: 1.6534cqw;
+      box-shadow: 0.3307cqw 0.3307cqw 0.3307cqw rgba(0, 0, 0, 0.25);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Foto (estampilla) ── llena el alto del canvas (720px).
+       Caja: alto 100% (720px) · ancho = 720 × 531/641 ≈ 596px · anclada a la derecha.
+       El overflow:hidden del canvas recorta las esquinas rotadas (deseado). */
+    .banner__refuerzo-1-foto {
+      position: absolute;
+      top: 0;
+      right: 5.375cqw;
+      height: 100%;
+      width: 37.275cqw; /* 720 × 531/641 / 16 */
+      z-index: 2;
+      transform: rotate(var(--banner-foto-rotacion, 6.47deg));
+    }
+  }
+
+  /* ══ Móvil (<600px) · canvas 800×1280 · cqw = px/8 · apilado ══ */
+  @media (max-width: 599px) {
+    /* Forma: panel azul superior */
+    .banner__refuerzo-1-shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 40%;
+      z-index: 1;
+      color: var(--banner-blue, #00209e);
+    }
+
+    /* Contenido apilado y centrado sobre la forma */
+    .banner--refuerzo-1 .banner__content--refuerzo-1 {
+      position: absolute;
+      left: 8cqw;
+      top: 8cqw;
+      width: 84cqw;
+      height: auto;
+      --banner-content-max-h: none;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 3cqw;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .banner--refuerzo-1 .banner__kicker {
+      position: static;
+      width: auto;
+      height: auto;
+      font-family: "Poppins", var(--font-sans, "Inter", sans-serif);
+      font-size: 5cqw;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-align: center;
+      color: #ffffff;
+      backdrop-filter: none;
+    }
+
+    .banner--refuerzo-1 .banner__title {
+      position: static;
+      width: auto;
+      height: auto;
+      font-family: "Nunito", var(--font-display, "Outfit", sans-serif);
+      font-size: 15cqw;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .banner--refuerzo-1 .banner__subtitle {
+      position: static;
+      width: auto;
+      height: auto;
+      font-family: "Poppins", var(--font-sans, "Inter", sans-serif);
+      font-size: 5.5cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: normal;
+      text-transform: uppercase;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .banner--refuerzo-1 .bannerActions {
+      position: static;
+      width: auto;
+      height: auto;
+      margin-top: 2cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    .banner--refuerzo-1 .bannerActions a,
+    .banner--refuerzo-1 .bannerActions button,
+    .banner--refuerzo-1 .bannerActions > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: auto;
+      min-width: 0;
+      min-height: 0;
+      background-color: #ffffff;
+      color: var(--banner-blue, #00209e);
+      font-family: "Nunito", var(--font-sans, "Inter", sans-serif);
+      font-size: 5cqw;
+      font-weight: 700;
+      line-height: 1.2;
+      padding: 2cqw 6cqw;
+      border: none;
+      border-radius: 3cqw;
+      box-shadow: 1cqw 1cqw 1cqw rgba(0, 0, 0, 0.25);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Foto: debajo de la forma, centrada */
+    .banner__refuerzo-1-foto {
+      position: absolute;
+      left: 14cqw;
+      top: 68cqw;
+      width: 72cqw;
+      height: auto;
+      aspect-ratio: 531 / 641;
+      z-index: 2;
+      transform: rotate(var(--banner-foto-rotacion, 6.47deg));
+    }
+  }
+}

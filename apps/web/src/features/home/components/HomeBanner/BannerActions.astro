@@ -1,6 +1,8 @@
 ---
 import Button from "../../../../shared/ui/Button/Button.astro";
 import type { BannerAccion } from "../../../../shared/db/schema";
+import { getWhatsapp } from "../../../../shared/db/contenido";
+import { siteConfig } from "../../../../site.config";
 
 /**
  * Acciones (CTA) dentro de un banner. Consolidan el `datos.cta` único y
@@ -16,11 +18,29 @@ const { cta, actions = [] } = Astro.props;
 
 const items: BannerAccion[] = [...(cta ? [cta] : []), ...actions];
 if (items.length === 0) return null;
+
+// El href "whatsapp" se resuelve al número del colegio (mismo mecanismo que el
+// botón flotante), para no hardcodear el número en el catálogo multi-colegio.
+const usaWhatsapp = items.some(
+  (a) => a.href.trim().toLowerCase() === "whatsapp",
+);
+let waNumero = "";
+if (usaWhatsapp) {
+  const whatsapp = await getWhatsapp();
+  waNumero = (whatsapp.numero || siteConfig.contact.whatsapp).replace(
+    /\D/g,
+    "",
+  );
+}
+const resolverHref = (href: string) =>
+  href.trim().toLowerCase() === "whatsapp" ? `https://wa.me/${waNumero}` : href;
+
+const itemsResueltos = items.map((a) => ({ ...a, href: resolverHref(a.href) }));
 ---
 
 <div class="bannerActions">
   {
-    items.map((action) => (
+    itemsResueltos.map((action) => (
       <Button
         href={action.href}
         variant={

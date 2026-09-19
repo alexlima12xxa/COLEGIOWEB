@@ -1,4 +1,5 @@
 ﻿import type { EditableSchema } from "./contratos";
+import { REFUERZO_1_TONOS } from "./refuerzo-1-tonos";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -19,14 +20,23 @@ export interface EntradaCatalogo {
   nombre: string;
   contrato: EditableSchema;
   /**
-   * Contenido de ejemplo de la plantilla. El panel lo precarga al crear un
-   * banner para que el director vea el diseño real completo (con textos) ANTES
-   * de escribir. Debe ser un `datos` válido para la plantilla.
+   * Contenido de referencia del diseño (Figma). El panel lo precarga al crear
+   * un banner para que el docente vea el banner **exacto** tal cual se verá en
+   * web. Debe contener los textos finales del diseño, NO placeholders genéricos.
+   * Regla: siempre usar los textos reales del diseño/Figma.
    */
   ejemplo: Record<string, unknown>;
+  /**
+   * Ancho del frame de Figma (px) del canvas de la plantilla. Alimenta el
+   * preview proporcional del admin (grid y modal). Opcional: si falta, se usa
+   * el fallback que reproduce el recorte histórico del hero.
+   */
+  anchoFigma?: number;
+  /** Alto del frame de Figma (px). Ver `anchoFigma`. */
+  altoFigma?: number;
 }
 
-export const BANNERS_SLUGS = ["matricula-banner"] as const;
+export const BANNERS_SLUGS = ["matricula-banner", "refuerzo-1"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -57,15 +67,91 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       cta: { label: "Inscríbete aquí", href: "/admisiones", variant: "primary" },
     },
   },
+  {
+    slug: "refuerzo-1",
+    nombre: "Refuerzo-1",
+    anchoFigma: 1600,
+    altoFigma: 720,
+    contrato: {
+      slug: "refuerzo-1",
+      nombre: "Refuerzo 1",
+      campos: [
+        { key: "kicker", label: "Etiqueta superior", tipo: "texto", opcional: true, maxLength: 25 },
+        { key: "title", label: "Título", tipo: "texto", maxLength: 8 },
+        { key: "subtitle", label: "Subtítulo", tipo: "texto-largo", opcional: true, maxLength: 35 },
+        {
+          key: "tono",
+          label: "Color de la forma y del botón",
+          tipo: "opciones",
+          default: REFUERZO_1_TONOS[0].key,
+          opciones: REFUERZO_1_TONOS.map((t) => ({ label: t.label, value: t.key })),
+        },
+        {
+          key: "image",
+          label: "Foto (marco festoneado)",
+          tipo: "imagen",
+          ayuda:
+            "PNG/AVIF con transparencia; el festoneado va integrado en el archivo (al menos 1062×1282).",
+        },
+        { key: "actions", label: "Botones", tipo: "booleano" },
+      ],
+    },
+    ejemplo: {
+      kicker: "REFUERZO ESCOLAR",
+      title: "2027",
+      subtitle: "FECHA: 15 DE MAYO",
+      tono: REFUERZO_1_TONOS[0].key,
+      image: "/branding/placeholders/foto-nina.avif",
+      imageAlt: "Estudiante enmarcada con marco festoneado",
+      cta: { label: "Informes aquí", href: "whatsapp", variant: "primary" },
+    },
+  },
 ];
 
 export function catalogoPorSlug(slug: string): EntradaCatalogo | undefined {
   return CATALOGO_BANNERS.find((b) => b.slug === slug);
 }
 
+/** Proporción de respaldo del preview (entradas sin frame Figma declarado). */
+const ASPECTO_FALLBACK = { ancho: 1280, alto: 648 } as const;
+
+/**
+ * Proporción del canvas Figma de una plantilla, para el preview proporcional
+ * del admin. Si la plantilla no declara `anchoFigma`/`altoFigma`, devuelve el
+ * fallback (1280×648), que reproduce el recorte histórico del hero.
+ */
+export function aspectoDePlantilla(slug: string): {
+  ancho: number;
+  alto: number;
+} {
+  const entrada = catalogoPorSlug(slug);
+  return {
+    ancho: entrada?.anchoFigma ?? ASPECTO_FALLBACK.ancho,
+    alto: entrada?.altoFigma ?? ASPECTO_FALLBACK.alto,
+  };
+}
+
 /** Datos de ejemplo de una plantilla (o `{}` si no existe). */
 export function ejemploDePlantilla(slug: string): Record<string, unknown> {
   return catalogoPorSlug(slug)?.ejemplo ?? {};
+}
+
+/**
+ * Datos vacíos para un banner nuevo: solo el valor por defecto del campo
+ * `tono` (si existe). El formulario empieza en blanco para que el director
+ * escriba sus propios textos desde cero.
+ */
+export function datosVacios(slug: string): Record<string, unknown> {
+  const entrada = catalogoPorSlug(slug);
+  if (!entrada) return {};
+
+  const datos: Record<string, unknown> = {};
+  const tonoDefault = entrada.contrato.campos.find(
+    (c) => c.key === "tono" && c.tipo === "opciones",
+  )?.default;
+
+  if (typeof tonoDefault === "string") datos.tono = tonoDefault;
+  return datos;
 }
 
 // Campos de contenido que, si el director no los toca, delatan que el banner

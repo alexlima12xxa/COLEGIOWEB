@@ -1,167 +1,128 @@
 @layer components {
-  /* Base compartida de todas las plantillas de banner. El fondo es full-bleed
-     (cubre el ancho del viewport), el texto va como capa superior. Cada
-     plantilla define su propia retícula en su .css.
+  /* Base compartida de todas las plantillas de banner — MOTOR (Arquitectura A).
+
+     Este archivo es SOLO física: marco, canvas, escala y contención. No
+     contiene estética de plantilla ni zonas de imagen concretas.
+
+     Contrato de dos capas:
+       - Frame 1 (.banner): full-bleed en ancho. El alto lo dicta el canvas
+         (height: auto); centra el canvas y recorta los desbordes.
+       - Frame 2 (.banner__container): el canvas 1600×720; SSOT del ratio.
+         container-type: inline-size → 1cqw = 1% del ancho del canvas
+         (16px a 1600px). Conversión: pxFigma / 16 = cqw.
 
      Este CSS se comparte entre la web (Astro) y el panel admin (Next.js).
      Todos los tokens llevan fallback para que en el admin (que no importa los
      tokens globales de la web) el preview se vea consistente. */
 
+  /* ── §1 Variables del contrato (SSOT de geometría) ───────────────────── */
+  .banner {
+    --banner-canvas-w: 1600; /* numérico, sin unidad */
+    --banner-canvas-h: 720; /* numérico, sin unidad */
+    --banner-canvas-mobile-w: 800; /* canvas móvil (portrait) */
+    --banner-canvas-mobile-h: 1280;
+    --banner-min-height-mobile: 0;
+    --banner-container-max: 1600px;
+    --banner-content-max-h: none; /* techo del bloque de contenido (cqw) */
+    --banner-title-lineas: 2;
+    --banner-subtitle-lineas: 3;
+    --banner-padding-total: calc(var(--banner-padding-mobile, 1.5rem) * 2);
+  }
+
+  /* ── §2 Capa externa .banner (marco) ─────────────────────────────────── */
   .banner {
     position: relative; /* requerido por fondos absolutos de plantillas */
     isolation: isolate; /* contexto de apilamiento propio */
     width: 100%;
-    height: 80vh;
-    min-height: 80vh;
-    display: flex; /* estandarizado: centra el contenedor único */
+    height: auto; /* el alto lo dicta el canvas (Frame 2) */
+    display: flex; /* centra el canvas */
     justify-content: center;
     align-items: center;
     overflow: hidden; /* bloquea desbordes y scrollbars */
-    background-color: var(--color-surface-inverse, #1e1e2e);
-
-    /* Total vertical de padding mobile, derivado (evita desincronización) */
-    --banner-padding-total: calc(var(--banner-padding-mobile, 1.5rem) * 2);
+    background-color: var(--banner-bg, var(--color-surface-inverse, #1e1e2e));
   }
 
-  /* Capa interna: SOLO restricciones de contención.
-     La plantilla define su motor de layout (display/flex/grid/gap/justify) en su .css.
-     Declarar la proporción con --banner-aspect-ratio, nunca con la propiedad directa
-     (rompería el reset mobile sin !important). */
+  /* ── §3 Capa interna .banner__container (canvas 1600×720) ────────────── */
   .banner__container {
     width: 100%;
     max-width: var(--banner-container-max, 1600px);
-    max-height: 100%;
-    aspect-ratio: var(--banner-aspect-ratio, auto);
+    aspect-ratio: var(--banner-canvas-w, 1600) / var(--banner-canvas-h, 720);
+    container-type: inline-size; /* base del cqw */
+    overflow: hidden; /* respeta el "Recortar contenido" de Figma */
   }
 
-  /* Contención de media (universal): ninguna gráfica desborda el marco ni
-     fuerza scroll. min-height: 0 permite encoger bajo el tamaño nativo. */
-  .banner__container :is(img, svg, video) {
-    flex-shrink: 1;
-    min-height: 0;
-    max-height: var(--banner-img-max-height, 30dvh);
-    object-fit: contain;
-  }
+  /* ── §4 Escala ─────────────────────────────────────────────────────────
+     1cqw = anchoContenedor / 100. A 1600px → 1cqw = 16px. No depende del
+     alto del canvas. Todo el interior de una plantilla se expresa en cqw. */
 
-  .banner__background {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .banner__background img,
-  .banner__background .contentImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  .banner__background img.banner__backgroundImage {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-
+  /* ── §5 Contención de texto (motor) ────────────────────────────────────
+     El motor aporta la CAJA: techo de alto, recorte por líneas y resets
+     neutros. La tipografía (font-size, line-height, color, peso) vive en la
+     plantilla. */
   .banner__content {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-md, 1rem);
     color: var(--color-text-inverse, #ffffff);
-  }
-
-  @media (max-width: 48rem) {
-    .banner__content {
-      gap: var(--space-sm, 0.5rem);
-    }
-  }
-
-  .banner__kicker {
-    align-self: flex-start;
-    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", monospace);
-    font-size: var(--text-sm, 0.875rem);
-    font-weight: var(--font-weight-semibold, 600);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-text-inverse, #ffffff);
-    opacity: 0.85;
-    white-space: nowrap;
+    max-height: var(--banner-content-max-h, none);
     overflow: hidden;
-    text-overflow: ellipsis;
+  }
+
+  .banner__kicker,
+  .banner__title,
+  .banner__subtitle {
+    margin: 0;
     max-width: 100%;
+    overflow-wrap: anywhere;
+    overflow: hidden;
+  }
+
+  .banner__title,
+  .banner__subtitle {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
   }
 
   .banner__title {
-    font-family: var(--font-display, "Outfit", system-ui, sans-serif);
-    font-size: var(--text-4xl, 2.25rem);
-    font-weight: var(--font-weight-bold, 700);
-    line-height: var(--leading-tight, 1.2);
-    letter-spacing: -0.02em;
-    color: var(--color-text-inverse, #ffffff);
-    max-width: 20ch;
-    margin: 0;
-    overflow-wrap: anywhere;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
     -webkit-line-clamp: var(--banner-title-lineas, 2);
   }
 
-  @media (min-width: 48rem) {
-    .banner__title {
-      font-size: var(--text-5xl, 3rem);
-    }
-  }
-
   .banner__subtitle {
-    color: var(--color-text-inverse, #ffffff);
-    opacity: 0.9;
-    max-width: 55ch;
-    margin: 0;
-    overflow-wrap: anywhere;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
     -webkit-line-clamp: var(--banner-subtitle-lineas, 3);
   }
 
   .bannerActions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-md, 1rem);
-    margin-top: var(--space-xs, 0.25rem);
+    z-index: 1;
   }
 
-  /* ── Mobile / Tablet ──────────────────────────────────────────────────────
-     Marco congelado: no crece con el contenido. El contenedor queda acotado al
-     alto disponible (90dvh menos el padding vertical del marco) y la base
-     aporta un default de apilado que cada plantilla puede overridear con mayor
-     especificidad (.banner--<slug> .banner__container). Sin !important. */
-  @media (max-width: 1023px) {
-    .banner {
-      height: 90dvh;
-      min-height: 90dvh;
-      padding: var(--banner-padding-mobile, 1.5rem);
-    }
+  /* ── §6 Zonas de imagen ────────────────────────────────────────────────
+     Sin reglas globales de media. Cada plantilla define su caja con
+     coordenadas de Figma en cqw; el marco (si existe) es una capa overlay
+     z-10 con la misma caja que la foto. */
 
+  /* ── §7 Mobile (<600px): canvas móvil ──────────────────────────────────
+     El canvas pasa a 800×1280 (portrait, ~74dvh en un celular típico).
+     min-height configurable (por defecto 0). La composición apilada la
+     declara la plantilla en su propio @media (max-width: 599px). */
+  @media (max-width: 599px) {
     .banner__container {
-      max-height: calc(90dvh - var(--banner-padding-total, 3rem));
-      aspect-ratio: auto; /* gana por orden de origen, sin !important */
-      min-height: 0;
-
-      /* Default de apilado — overrideable por plantilla */
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      gap: var(--banner-gap-mobile, 1rem);
+      aspect-ratio: var(--banner-canvas-mobile-w, 800) /
+        var(--banner-canvas-mobile-h, 1280);
+      min-height: var(--banner-min-height-mobile, 0);
     }
   }
+
+  /* ── §8 Reglas no negociables ──────────────────────────────────────────
+     1. El markup siempre envuelve el contenido en .banner__container.
+     2. El ratio se declara con --banner-canvas-w/h; nunca con aspect-ratio.
+     3. Prohibido max-height en el canvas.
+     4. El interior se expresa en cqw; prohibidos % vertical, vh y
+        line-height: normal.
+     5. !important prohibido.
+     6. La plantilla no declara el alto del marco ni reglas globales de imagen.
+     7. La clase raíz es siempre banner banner--<slug>.
+     8. La tipografía vive en la plantilla; la contención, en el motor. */
 }
