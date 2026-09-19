@@ -76,9 +76,10 @@
     height: 2.75rem;
     border: 0;
     border-radius: var(--radius-full);
-    background-color: rgba(0, 0, 0, 0.4);
-    background-color: color-mix(in oklch, oklch(0% 0 0) 35%, transparent);
+    background-color: rgba(0, 0, 0, 0.2);
+    background-color: color-mix(in oklch, oklch(0% 0 0) 20%, transparent);
     color: rgba(255, 255, 255, 0.92);
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     cursor: pointer;
@@ -94,17 +95,17 @@
   }
 
   .bannerSlider__arrow--prev {
-    left: var(--space-xl);
+    left: var(--space-xs);
   }
 
   .bannerSlider__arrow--next {
-    right: var(--space-xl);
+    right: var(--space-xs);
   }
 
   @media (hover: hover) {
     .bannerSlider__arrow:hover {
-      background-color: rgba(0, 0, 0, 0.6);
-      background-color: color-mix(in oklch, oklch(0% 0 0) 55%, transparent);
+      background-color: rgba(0, 0, 0, 0.35);
+      background-color: color-mix(in oklch, oklch(0% 0 0) 35%, transparent);
     }
   }
 
