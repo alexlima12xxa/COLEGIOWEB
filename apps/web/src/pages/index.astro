@@ -352,9 +352,15 @@ const videoJsonLd = {
 <style>
   :global(.trustStrip) {
     position: relative;
+    overflow: clip;
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
+    --stat-value-color: var(--color-text);
+    --stat-glow-1: #ff0055;
+    --stat-glow-2: #00f0ff;
+    --stat-glow-3: #00ff66;
+    --stat-glow-4: #ffd600;
   }
 
   :global(.trustStrip)::before {
@@ -426,38 +432,44 @@ const videoJsonLd = {
     z-index: 1;
     font-size: var(--text-4xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
+    color: var(--stat-value-color, var(--color-text));
     letter-spacing: -0.02em;
   }
 
   /* Resplandor difuminado detrás del número. Se centra con translate para no
      depender del tamaño de un contenedor inline. Sin z-index negativo: queda
-     por encima del fondo de la sección y por debajo del texto (z-index: 1). */
+     por encima del fondo de la sección y por debajo del texto (z-index: 1).
+     Se usa un gradiente radial (no filter: blur) para que el halo se desvanezca
+     dentro de su propia caja y no invada el slider; overflow: clip en la sección
+     queda como red de seguridad. */
   .trustStrip__glow {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 100%;
-    height: 95%;
+    width: 150%;
+    height: 140%;
     transform: translate(-50%, -50%);
     z-index: 0;
-    border-radius: 1.1em / 1.7em;
-    background-color: #f97316;
-    opacity: 0.22;
-    filter: blur(28px);
+    --stat-glow: var(--stat-glow-1, #ff0055);
+    background-image: radial-gradient(
+      closest-side,
+      var(--stat-glow),
+      transparent 72%
+    );
+    opacity: 0.35;
     pointer-events: none;
   }
 
   .trustStrip__item:nth-child(2) .trustStrip__glow {
-    background-color: #3b82f6;
+    --stat-glow: var(--stat-glow-2, #00f0ff);
   }
 
   .trustStrip__item:nth-child(3) .trustStrip__glow {
-    background-color: #22c55e;
+    --stat-glow: var(--stat-glow-3, #00ff66);
   }
 
   .trustStrip__item:nth-child(4) .trustStrip__glow {
-    background-color: #14b8a6;
+    --stat-glow: var(--stat-glow-4, #ffd600);
   }
 
   @media (max-width: 48rem) {
