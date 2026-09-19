@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BannerForm, buildPreviewUrlById } from "./banners-form";
+import { BannerPreviewFrame } from "./banner-preview-frame";
 import { DeleteBannerButton } from "./delete-button";
 import { alternarBannerActivo, duplicarBanner, obtenerTokenPreview } from "./actions";
-import { BANNERS_SLUGS, ejemploDePlantilla } from "@web-modelo/shared";
+import {
+  aspectoDePlantilla,
+  BANNERS_SLUGS,
+  datosVacios,
+} from "@web-modelo/shared";
 
 export interface BannerCardData {
   id: string;
@@ -18,27 +23,16 @@ export interface BannerCardData {
 
 function Thumb({
   id,
+  plantillaId,
   token,
   previewWebUrl,
 }: {
   id: string;
+  plantillaId: string;
   token: string | null;
   previewWebUrl: string | null;
 }) {
   const url = buildPreviewUrlById(id, token, previewWebUrl);
-  const ref = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState<number | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      const w = entries[0]?.contentRect.width;
-      if (w) setWidth(w);
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   if (!url) {
     return (
@@ -48,37 +42,18 @@ function Thumb({
     );
   }
 
-  // Renderiza el banner a tamaño de escritorio (1280×720 → el hero ocupa
-  // 90dvh ≈ 648px) y lo escala con CSS para llenar exactamente el ancho de la
-  // tarjeta. Se recorta el margen vertical sobrante (los 72px bajo el hero)
-  // para que no queden franjas grises ni en ancho ni en alto.
-  const SOURCE_W = 1280;
-  const SOURCE_H = 720;
-  const HERO_H = 648;
-  const targetW = width ?? SOURCE_W / 2.5;
-  const scale = targetW / SOURCE_W;
-  const height = Math.max(1, Math.ceil(HERO_H * scale));
+  // Renderiza el banner a tamaño de escritorio y lo escala con CSS para llenar
+  // el ancho de la tarjeta, recortando a la proporción del canvas Figma de la
+  // plantilla (el fallback reproduce el recorte histórico del hero).
+  const { ancho, alto } = aspectoDePlantilla(plantillaId);
 
   return (
-    <div
-      ref={ref}
-      className="relative w-full overflow-hidden rounded-t-xl bg-zinc-900"
-      style={{ height }}
-    >
-      <iframe
-        src={url}
-        title="Miniatura del banner"
-        className="pointer-events-none border-0"
-        style={{
-          width: SOURCE_W,
-          height: SOURCE_H,
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-        }}
-        loading="lazy"
-        scrolling="no"
-      />
-    </div>
+    <BannerPreviewFrame
+      url={url}
+      ancho={ancho}
+      alto={alto}
+      className="w-full rounded-t-xl bg-zinc-900"
+    />
   );
 }
 
@@ -95,7 +70,12 @@ function BannerCard({
 
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
-      <Thumb id={banner.id} token={token} previewWebUrl={previewWebUrl} />
+      <Thumb
+        id={banner.id}
+        plantillaId={banner.plantilla_id}
+        token={token}
+        previewWebUrl={previewWebUrl}
+      />
 
       <div className="space-y-3 p-4">
         <div className="flex items-start justify-between gap-2">
@@ -220,7 +200,7 @@ export function BannersGrid({
                 plantilla_id: BANNERS_SLUGS[0],
                 orden: banners.length,
                 activo: true,
-                datos: ejemploDePlantilla(BANNERS_SLUGS[0]),
+                datos: datosVacios(BANNERS_SLUGS[0]),
               }}
               previewToken={liveToken}
               previewWebUrl={previewWebUrl}

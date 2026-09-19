@@ -7,7 +7,9 @@ import {
 } from "react";
 import type { BannersState } from "./actions";
 import { guardarBanner, subirImagenBanner } from "./actions";
+import { BannerPreviewFrame } from "./banner-preview-frame";
 import {
+  aspectoDePlantilla,
   CATALOGO_BANNERS,
   catalogoPorSlug,
   ejemploDePlantilla,
@@ -150,6 +152,9 @@ function BannerPreviewIframe({
     );
   }
 
+  // Proporción del canvas Figma de la plantilla seleccionada (preview fiel).
+  const { ancho, alto } = aspectoDePlantilla(plantillaId);
+
   return (
     <div className="space-y-2">
       <div className="banner-preview group">
@@ -195,13 +200,8 @@ function BannerPreviewIframe({
                 ✕
               </button>
             </div>
-            <div className="aspect-[1280/648] w-full overflow-hidden">
-              <iframe
-                src={url}
-                title="Vista previa ampliada del banner"
-                className="h-full w-full border-0"
-                loading="eager"
-              />
+            <div className="w-full overflow-hidden">
+              <BannerPreviewFrame url={url} ancho={ancho} alto={alto} />
             </div>
           </div>
         </div>
