@@ -51,7 +51,7 @@
 
   .navbar__name {
     font-family: var(--font-display);
-    font-size: var(--text-lg);
+    font-size: clamp(1.375rem, 1.1rem + 0.6vw, 1.75rem);
     font-weight: var(--font-weight-bold);
     letter-spacing: -0.025em;
     color: var(--color-text);
@@ -60,23 +60,10 @@
     text-overflow: ellipsis;
   }
 
-  @media (min-width: 48rem) {
-    .navbar__name {
-      font-size: var(--text-xl);
-    }
-  }
-
-  /* Isotipo nítido: h-9 en móvil, h-10 en ≥48rem */
+  /* Isotipo nítido: crece con el nombre (40 → 48px) sin alterar el alto del navbar */
   .navbar__logo.logo .logo__icon {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
-
-  @media (min-width: 48rem) {
-    .navbar__logo.logo .logo__icon {
-      width: 2.5rem;
-      height: 2.5rem;
-    }
+    width: clamp(2.5rem, 2.25rem + 0.55vw, 3rem);
+    height: clamp(2.5rem, 2.25rem + 0.55vw, 3rem);
   }
 
   .navbar__nav {
