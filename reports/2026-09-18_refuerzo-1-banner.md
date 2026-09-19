@@ -6,6 +6,11 @@
 > **Riesgo:** MEDIO
 > **Modo de ejecución:** MANUAL
 > **Estado:** ✅ COMPLETADO (12/12 pasos · 4 comandos de verificación OK)
+>
+> **Actualizado 2026-09-19:** el canvas se estandarizó a **1600×720** (ver
+> `2026-09-18_arquitectura-a-banners-1600x720.md`) y los tonos finales son
+> **azul / rojo / petróleo**. La foto se ajustó para llenar el alto del canvas
+> (desktop: `height:100%` × `37.275cqw`); en móvil conserva `aspect-ratio`.
 
 ---
 
@@ -31,10 +36,10 @@ la proporción del canvas Figma de cada plantilla (`anchoFigma`/`altoFigma`).
 
 | # | Archivo | Acción |
 |---|---------|--------|
-| 2.1 | `packages/shared/src/banners/refuerzo-1-tonos.ts` | **Nuevo**: tonos azul/rojo/verde + helper |
+| 2.1 | `packages/shared/src/banners/refuerzo-1-tonos.ts` | **Nuevo**: tonos azul/rojo/petróleo + helper |
 | 2.2 | `packages/shared/src/banners/index.ts` | Export del archivo de tonos |
 | 2.3 | `packages/shared/src/banners/catalogo.ts` | Slug + entrada completa (contrato + ejemplo) |
-| 2.4 | `packages/shared/src/banners/css/refuerzo-1.css` | **Nuevo**: contrato dos capas (1600/645) |
+| 2.4 | `packages/shared/src/banners/css/refuerzo-1.css` | **Nuevo**: contrato dos capas (1600/720) |
 | 2.5 | `packages/shared/package.json` | Export `./banners/css/refuerzo-1.css` |
 | 2.6 | `apps/web/.../templates/BannerRefuerzo1.astro` | **Nuevo**: markup canónico |
 | 2.7 | `apps/web/.../HomeBanner/HomeBanner.astro` | Registrar en `COMPONENTES` |
@@ -46,12 +51,12 @@ la proporción del canvas Figma de cada plantilla (`anchoFigma`/`altoFigma`).
 
 ### Especificación del diseño (FICHA LEÍDA)
 
-- Canvas **1600 × 645** · fondo `#EDEDED` · recorte de contenido activo.
-- Forma azul SVG (`Rectangle 3.svg`): x 34, y 69, 1057×508, fill `#00209E`, radio 47.84.
-- Foto (marco festoneado `marco-foto-nina.avif`): x 1078, y 50, 612.14×585.65, `object-fit: cover`; rotación Figma 169.79° → tratada como 0° (variable ajustable).
+- Canvas **1600 × 720** (estandarizado por el trabajo de Arquitectura A; el plan inicial partía de 1600×645) · fondo `#EDEDED` · recorte de contenido activo.
+- Forma azul SVG (`Rectangle 3.svg`): x 33, y 94, 1057×508, fill `#00209E`, radio 47.84.
+- Foto (marco festoneado `foto-nina.avif`): x 983, y 0, 531×641; implementada como `height: 100%` (720) × `37.275cqw` (~596), `object-fit: contain`, `rotate 6.47°` (el canvas recorta las esquinas). El asset real mide 1077×1293 (ratio 0.833).
 - Textos: kicker Poppins 600 78.31px; título Nunito 800 176.19px; subtítulo Poppins 500 46.98px (uppercase); todos `#FFFFFF`; gap 11px; padding T/B 107, L/R 218.
 - CTA: Nunito 700 55.17px, fondo `#FFFFFF`, color `#00209E`, radio 26.45px, padding 40.74/5.66, sombra 4.65 2.66 2.66 rgba(0,0,0,.25).
-- Tonos: `azul #00209E` (default) · `rojo #9E0000` · `verde #126D00` → cambian **a la vez** forma y texto del CTA.
+- Tonos: `azul #00209E` (default) · `rojo #B10F01` · `petroleo #056778` → cambian **a la vez** forma y texto del CTA.
 - Capas: Frame 1 (`.banner--refuerzo-1`) fondo `#EDEDED`; Frame 2 (`.banner__container`) transparente + `overflow:hidden`.
 
 ---
@@ -64,9 +69,9 @@ la proporción del canvas Figma de cada plantilla (`anchoFigma`/`altoFigma`).
 | 1.2 | `banner-preview-frame.tsx` (nuevo) | ✅ Completado | — | 🟠 | Iframe fijo 1280 escalado; `cropH = 1280·(alto/ancho)`, `offsetY` centrado, altura = `cropH·scale` |
 | 1.3 | `banners-grid.tsx`: Thumb dinámico | ✅ Completado | — | 🟡 | `Thumb` usa `BannerPreviewFrame` + `aspectoDePlantilla(banner.plantilla_id)` |
 | 1.4 | `banners-form.tsx`: modal dinámico | ✅ Completado | — | 🟡 | Modal "Ver en grande" usa el mismo frame fiel; adiós al `aspect-[1280/648]` |
-| 2.1 | `refuerzo-1-tonos.ts` | ✅ Completado | — | 🟢 | azul `#00209e` · rojo `#9e0000` · verde `#126d00` + `tonoRefuerzo1PorKey` |
+| 2.1 | `refuerzo-1-tonos.ts` | ✅ Completado | — | 🟢 | azul `#00209e` · rojo `#b10f01` · petroleo `#056778` + `tonoRefuerzo1PorKey` |
 | 2.2 | `index.ts` export | ✅ Completado | — | 🟢 | — |
-| 2.3 | `catalogo.ts` entrada completa | ✅ Completado | — | 🟡 | `BANNERS_SLUGS` + entrada con 1600×645, contrato y ejemplo |
+| 2.3 | `catalogo.ts` entrada completa | ✅ Completado | — | 🟡 | `BANNERS_SLUGS` + entrada con 1600×720, contrato y ejemplo |
 | 2.4 | `css/refuerzo-1.css` | ✅ Completado | — | 🟠 | Dos capas; desktop con `cqw`; mobile apilado; `rotate(var(--banner-foto-rotacion,0deg))` |
 | 2.5 | `package.json` export | ✅ Completado | — | 🟢 | — |
 | 2.6 | `BannerRefuerzo1.astro` | ✅ Completado | — | 🟡 | Markup canónico + shape SVG inline + `resolveAssetUrl` + tono inline |
@@ -78,12 +83,14 @@ la proporción del canvas Figma de cada plantilla (`anchoFigma`/`altoFigma`).
 
 ## Registro de commits
 
-Pendientes de autorización explícita (AGENTS.md: no commitear sin pedido).
+Ejecutados el 2026-09-19.
 
-| # | Hash | Mensaje sugerido | Archivos |
-|---|------|------------------|----------|
-| 1 | — | `feat(admin): preview de banners proporcional al canvas Figma` | `catalogo.ts` (dimensiones + helper) · `banner-preview-frame.tsx` · `banners-grid.tsx` · `banners-form.tsx` |
-| 2 | — | `feat(banners): plantilla refuerzo-1 con contrato de dos capas` | `refuerzo-1-tonos.ts` · `index.ts` · `catalogo.ts` · `refuerzo-1.css` · `package.json` · `BannerRefuerzo1.astro` · `HomeBanner.astro` · `banners.json` |
+| # | Hash | Mensaje | Archivos |
+|---|------|---------|----------|
+| 1 | `735ddad` | `feat(banners): canvas escalado (Arquitectura A) y plantilla refuerzo-1` | `_banner.css` · `matricula-banner.css` · `refuerzo-1.css` · `refuerzo-1-tonos.ts` · `index.ts` · `catalogo.ts` · `package.json` · `README.md` · `figma-prompt.md` · `BannerRefuerzo1.astro` · `BannerMatriculaBanner.astro` · `HomeBanner.astro` · `BannerActions.astro` · `banners.json` · `foto-nina.avif` |
+| 2 | `80e5146` | `feat(admin): preview de banners proporcional al canvas Figma` | `banner-preview-frame.tsx` · `banners-grid.tsx` · `banners-form.tsx` |
+| 3 | `875f8b2` | `style(home): ajustar padding del trustStrip y controles del slider` | `index.astro` · `BannerSlider.css` |
+| 4 | `eaee32b` | `docs(banners): reportes de arquitectura A y refuerzo-1` | `reports/*.md` |
 
 ---
 
