@@ -12,11 +12,19 @@
     --banner-canvas-h: 720;
     --banner-blue: #00209e;
     --banner-foto-rotacion: 6.47deg;
+    /* Escala del bloque de zonas en desktop: <1 = más pequeño y con más aire. */
+    --banner-escala: 0.85;
     background-color: var(--banner-bg);
   }
 
   .banner--refuerzo-1 .banner__container {
     position: relative;
+  }
+
+  /* Stage: envuelve las zonas (forma, contenido, foto) para escalarlas en bloque. */
+  .banner--refuerzo-1 .banner__refuerzo-1-stage {
+    position: absolute;
+    inset: 0;
   }
 
   /* ── Común a ambos breakpoints ───────────────────────────────────────── */
@@ -45,6 +53,12 @@
 
   /* ══ Desktop (≥600px) · canvas 1600×720 · cqw = px/16 ══ */
   @media (min-width: 600px) {
+    /* Escala en bloque de las zonas (más pequeño y con más aire). */
+    .banner--refuerzo-1 .banner__refuerzo-1-stage {
+      transform: scale(var(--banner-escala, 0.85));
+      transform-origin: center;
+    }
+
     /* Forma azul (Rectangle 3) ── FICHA: x33 y94 · 1057×508 */
     .banner__refuerzo-1-shape {
       position: absolute;
