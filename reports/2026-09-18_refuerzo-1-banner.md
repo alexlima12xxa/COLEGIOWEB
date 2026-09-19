@@ -53,7 +53,7 @@ la proporción del canvas Figma de cada plantilla (`anchoFigma`/`altoFigma`).
 
 - Canvas **1600 × 720** (estandarizado por el trabajo de Arquitectura A; el plan inicial partía de 1600×645) · fondo `#EDEDED` · recorte de contenido activo.
 - Forma azul SVG (`Rectangle 3.svg`): x 33, y 94, 1057×508, fill `#00209E`, radio 47.84.
-- Foto (marco festoneado `foto-nina.avif`): x 983, y 0, 531×641; implementada como `height: 100%` (720) × `37.275cqw` (~596), `object-fit: contain`, `rotate 6.47°` (el canvas recorta las esquinas). El asset real mide 1077×1293 (ratio 0.833).
+- Foto (marco festoneado `foto-nina.avif`): x 983, y 0, 531×641; implementada como `height: 100%` (720) × `37.275cqw` (~596), `object-fit: contain`, `rotate 6.47°` (el canvas recorta las esquinas). El asset se recortó a su contenido: **1000×1247** (ratio 0.802), 103KB. `marco-foto-nina.avif` se descartó (estampa pre-rotada con padding).
 - Textos: kicker Poppins 600 78.31px; título Nunito 800 176.19px; subtítulo Poppins 500 46.98px (uppercase); todos `#FFFFFF`; gap 11px; padding T/B 107, L/R 218.
 - CTA: Nunito 700 55.17px, fondo `#FFFFFF`, color `#00209E`, radio 26.45px, padding 40.74/5.66, sombra 4.65 2.66 2.66 rgba(0,0,0,.25).
 - Tonos: `azul #00209E` (default) · `rojo #B10F01` · `petroleo #056778` → cambian **a la vez** forma y texto del CTA.
