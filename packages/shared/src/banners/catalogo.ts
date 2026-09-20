@@ -1,5 +1,6 @@
 ﻿import type { EditableSchema } from "./contratos";
 import { REFUERZO_1_TONOS } from "./refuerzo-1-tonos";
+import { MATRICULA_2_TONOS } from "./matricula-2-tonos";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -36,7 +37,7 @@ export interface EntradaCatalogo {
   altoFigma?: number;
 }
 
-export const BANNERS_SLUGS = ["matricula-banner", "refuerzo-1"] as const;
+export const BANNERS_SLUGS = ["matricula-banner", "refuerzo-1", "matricula-2"] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -104,6 +105,49 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       image: "/branding/placeholders/foto-nina.avif",
       imageAlt: "Estudiante enmarcada con marco festoneado",
       cta: { label: "Informes aquí", href: "whatsapp", variant: "primary" },
+    },
+  },
+  {
+    slug: "matricula-2",
+    nombre: "Matrícula 2",
+    anchoFigma: 1600,
+    altoFigma: 720,
+    contrato: {
+      slug: "matricula-2",
+      nombre: "Matrícula 2",
+      campos: [
+        { key: "title", label: "Título principal", tipo: "texto", maxLength: 12 },
+        { key: "subtitle", label: "Año / Destacado", tipo: "texto", maxLength: 6 },
+        {
+          key: "tono",
+          label: "Color de fondo (Rojo o Azul)",
+          tipo: "opciones",
+          default: MATRICULA_2_TONOS[0].key,
+          opciones: MATRICULA_2_TONOS.map((t) => ({ label: t.label, value: t.key })),
+        },
+        {
+          key: "image",
+          label: "Foto grupal con marco",
+          tipo: "imagen",
+          ayuda: "PNG/AVIF con transparencia; marco polaroid integrado (al menos 1966×1024).",
+        },
+        {
+          key: "background",
+          label: "Fondo personalizado",
+          tipo: "imagen",
+          opcional: true,
+          ayuda: "Reemplaza el degradado de la plantilla. JPG/PNG/WebP/AVIF.",
+        },
+        { key: "actions", label: "Botón CTA", tipo: "booleano" },
+      ],
+    },
+    ejemplo: {
+      title: "Matrícula",
+      subtitle: "2027",
+      tono: MATRICULA_2_TONOS[0].key,
+      image: "/branding/placeholders/ninos-grupo.avif",
+      imageAlt: "Grupo de estudiantes con marco polaroid",
+      cta: { label: "Más información", href: "whatsapp", variant: "primary" },
     },
   },
 ];
