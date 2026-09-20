@@ -2,8 +2,25 @@
   "version": 1,
   "items": [
     {
-      "plantillaId": "refuerzo-1",
+      "plantillaId": "matricula-2",
       "orden": 0,
+      "activo": true,
+      "datos": {
+        "title": "Matrícula",
+        "subtitle": "2027",
+        "tono": "rojo",
+        "image": "/branding/placeholders/ninos-grupo.avif",
+        "imageAlt": "Grupo de estudiantes con marco polaroid",
+        "cta": {
+          "label": "Más información",
+          "href": "whatsapp",
+          "variant": "primary"
+        }
+      }
+    },
+    {
+      "plantillaId": "refuerzo-1",
+      "orden": 1,
       "activo": true,
       "datos": {
         "kicker": "REFUERZO ESCOLAR",
@@ -21,7 +38,7 @@
     },
     {
       "plantillaId": "matricula-banner",
-      "orden": 1,
+      "orden": 2,
       "activo": true,
       "datos": {
         "title": "MATRÍCULA",
