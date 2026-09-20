@@ -1,0 +1,239 @@
+@layer components {
+  /* Plantilla "matricula-2" — Arquitectura A.
+     Desktop (≥600px): canvas 1600×720 · cqw = px/16 (FICHA Frame 6).
+     Móvil  (<600px):  canvas 800×1280 · cqw = px/8 · composición apilada derivada.
+     Fondo Frame 1: degradado según tono (rojo default / azul C1).
+     Fondo Frame 2: transparente.
+     Tipografía: Nerko One (peso 400 único).
+     Foto: ninos-grupo (PNG/AVIF con alfa, marco polaroid integrado) · object-fit: contain.
+     CTA: keyword "whatsapp" resuelto por BannerActions.astro. */
+
+  .banner--matricula-2 {
+    --banner-canvas-w: 1600;
+    --banner-canvas-h: 720;
+    --banner-title-lineas: 1;
+    --banner-subtitle-lineas: 1;
+    --banner-content-max-h: 35.955cqw; /* alto del bloque envolvente (575.285px / 16) */
+    /* Fondo Frame 1: degradado del tono (inline style override via --banner-m2-bg) */
+    background-image: var(--banner-m2-bg, linear-gradient(180deg, #B20003 67.79%, #4C0001 100%));
+    background-size: cover;
+    background-position: center;
+  }
+
+  .banner--matricula-2 .banner__container {
+    position: relative;
+  }
+
+  /* ══ Desktop (≥600px) · canvas 1600×720 · cqw = px/16 ══ */
+  @media (min-width: 600px) {
+    /* Foto grupal con marco polaroid — z-index 1 */
+    .banner__m2-foto {
+      position: absolute;
+      left: 19.313cqw;   /* 309px / 16 */
+      top: 12.813cqw;    /* 205px / 16 */
+      width: 61.438cqw;  /* 983px / 16 */
+      height: 32cqw;     /* 512px / 16 */
+      z-index: 1;
+    }
+
+    .banner__m2-foto img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    /* Bloque envolvente de contenido (título + subtítulo + CTA) — z-index 2 */
+    .banner__content--matricula-2 {
+      position: absolute;
+      left: 11.375cqw;   /* 182px / 16 */
+      top: 1.8125cqw;    /* 29.005px / 16 */
+      width: 76.176cqw;  /* 1218.82px / 16 */
+      height: 35.955cqw; /* 575.285px / 16 */
+      z-index: 2;
+      color: #ffffff;
+    }
+
+    /* Título "Matrícula" — posición relativa al envelope */
+    .banner--matricula-2 .banner__title {
+      position: absolute;
+      left: 0;               /* 182 - 182 = 0 */
+      top: 0.8125cqw;        /* (42 - 29.005) / 16 = 12.995/16 */
+      width: 47.855cqw;      /* 765.68px / 16 */
+      height: 12.556cqw;     /* 200.9px / 16 */
+      font-family: "Nerko One", var(--font-display, "Outfit", sans-serif);
+      font-size: 9.947cqw;   /* 159.152px / 16 */
+      font-weight: 400;
+      line-height: 12.0625cqw; /* 193px / 16 */
+      letter-spacing: normal;
+      transform: rotate(-0.81deg);
+      transform-origin: center;
+      backdrop-filter: blur(0.435cqw); /* 6.963px / 16 */
+      color: #ffffff;
+      text-align: center;
+      margin: 0;
+    }
+
+    /* Subtítulo "2027" — posición relativa al envelope */
+    .banner--matricula-2 .banner__subtitle {
+      position: absolute;
+      left: 45.6875cqw;      /* (913 - 182) / 16 = 731/16 */
+      top: 0;                /* 29.005 - 29.005 = 0 */
+      width: 30.489cqw;      /* 487.82px / 16 */
+      height: 12.102cqw;     /* 193.63px / 16 */
+      font-family: "Nerko One", var(--font-display, "Outfit", sans-serif);
+      font-size: 14.269cqw;  /* 228.307px / 16 */
+      font-weight: 400;
+      line-height: 17.25cqw; /* 276px / 16 */
+      letter-spacing: normal;
+      transform: rotate(5.37deg);
+      transform-origin: center;
+      color: #ffffff;
+      text-align: center;
+      margin: 0;
+    }
+
+    /* CTA — posición relativa al envelope, z-index 3 */
+    .banner--matricula-2 .bannerActions {
+      position: absolute;
+      left: 26.375cqw;       /* (604 - 182) / 16 = 422/16 */
+      top: 31.0625cqw;       /* (526 - 29.005) / 16 = 496.995/16 */
+      width: 24.309cqw;      /* 388.95px / 16 */
+      height: 4.893cqw;      /* 78.29px / 16 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .banner--matricula-2 .bannerActions a,
+    .banner--matricula-2 .bannerActions button,
+    .banner--matricula-2 .bannerActions > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      background-color: #ffffff;
+      color: var(--banner-m2-cta-texto, #CD2727);
+      font-family: "Nerko One", var(--font-display, "Outfit", sans-serif);
+      font-size: 3.168cqw;   /* 50.696px / 16 */
+      font-weight: 400;
+      line-height: 3.8125cqw; /* 61px / 16 */
+      padding: 0.247cqw 0.960cqw; /* 3.945px / 16, 15.365px / 16 */
+      border: none;
+      border-radius: 1.548cqw; /* 24.765px / 16 */
+      box-shadow: 0.378cqw 0.378cqw 0.151cqw rgba(81, 79, 79, 0.25); /* 6.04, 6.04, 2.416 / 16 */
+      text-decoration: none;
+      white-space: nowrap;
+      transform: matrix(1, -0.05, 0.04, 1, 0, 0); /* inclinación ~ -2.86° */
+    }
+  }
+
+  /* ══ Móvil (<600px) · canvas 800×1280 · cqw = px/8 · apilado ══ */
+  @media (max-width: 599px) {
+    /* En móvil el canvas es 800×1280 (1cqw = 8px).
+       Composición apilada centrada: Título → Subtítulo → CTA → Foto. */
+
+    .banner__content--matricula-2 {
+      position: static;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4cqw;
+      width: 100%;
+      height: auto;
+      padding: 8cqw 6cqw;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .banner--matricula-2 .banner__title {
+      position: static;
+      width: auto;
+      height: auto;
+      font-family: "Nerko One", var(--font-display, "Outfit", sans-serif);
+      font-size: 18cqw;      /* ~144px a 800px */
+      font-weight: 400;
+      line-height: 1.1;
+      transform: rotate(-0.81deg);
+      transform-origin: center;
+      backdrop-filter: blur(1cqw);
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .banner--matricula-2 .banner__subtitle {
+      position: static;
+      width: auto;
+      height: auto;
+      font-family: "Nerko One", var(--font-display, "Outfit", sans-serif);
+      font-size: 22cqw;      /* ~176px a 800px */
+      font-weight: 400;
+      line-height: 1.1;
+      transform: rotate(5.37deg);
+      transform-origin: center;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .banner--matricula-2 .bannerActions {
+      position: static;
+      width: auto;
+      height: auto;
+      margin-top: 2cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .banner--matricula-2 .bannerActions a,
+    .banner--matricula-2 .bannerActions button,
+    .banner--matricula-2 .bannerActions > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: auto;
+      min-width: 0;
+      min-height: 0;
+      background-color: #ffffff;
+      color: var(--banner-m2-cta-texto, #CD2727);
+      font-family: "Nerko One", var(--font-display, "Outfit", sans-serif);
+      font-size: 7cqw;       /* ~56px a 800px */
+      font-weight: 400;
+      line-height: 1.2;
+      padding: 1.5cqw 5cqw;
+      border: none;
+      border-radius: 3cqw;
+      box-shadow: 2cqw 2cqw 1cqw rgba(81, 79, 79, 0.25);
+      text-decoration: none;
+      white-space: nowrap;
+      transform: matrix(1, -0.05, 0.04, 1, 0, 0);
+    }
+
+    /* Foto: debajo de los textos, centrada */
+    .banner__m2-foto {
+      position: static;
+      width: 80cqw;          /* 640px a 800px */
+      height: auto;
+      aspect-ratio: 983 / 512; /* ratio original de la foto */
+      margin-top: 4cqw;
+      overflow: hidden;
+    }
+
+    .banner__m2-foto img {
+      position: static;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  }
+}
