@@ -154,3 +154,15 @@
   font-style: normal;
   font-display: swap;
 }
+
+/*
+ * Nerko One — self-hosted, latin subset. Plantilla matricula-2 (título,
+ * subtítulo y CTA). Solo peso 400 (única variante disponible).
+ */
+@font-face {
+  font-family: "Nerko One";
+  src: url("/fonts/nerko-one/NerkoOne-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
