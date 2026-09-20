@@ -2,6 +2,7 @@
 import type { Banner } from "../../../../shared/db/schema";
 import BannerMatriculaBanner from "./templates/BannerMatriculaBanner.astro";
 import BannerRefuerzo1 from "./templates/BannerRefuerzo1.astro";
+import BannerMatricula2 from "./templates/BannerMatricula2.astro";
 
 /**
  * Despachador de plantillas de banner. Recibe un `Banner` ya resuelto por el
@@ -23,6 +24,7 @@ const plantilla = banner.plantillaId;
 const COMPONENTES = {
   "matricula-banner": BannerMatriculaBanner,
   "refuerzo-1": BannerRefuerzo1,
+  "matricula-2": BannerMatricula2,
 } as const;
 
 const Plantilla = COMPONENTES[plantilla as keyof typeof COMPONENTES] ?? null;
