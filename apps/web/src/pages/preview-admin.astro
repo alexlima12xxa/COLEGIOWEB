@@ -1,4 +1,13 @@
 ---
+// Cimiento de estilos que `BaseLayout` → `global.css` aporta a las páginas
+// reales y que esta ruta standalone (sin layout) debe replicar para ser fiel:
+// orden de capas (@layer), reset (box-sizing: border-box) y @font-face (Nerko
+// One y demás fuentes de banner). Sin esto, el preview cae a sans-serif del
+// sistema y el CTA desborda su caja. NO incluye Tailwind (el preview no usa
+// utilidades). Las fuentes futuras se registran en _fonts.css → entran solas.
+import "../styles/_layers.css";
+import "../styles/_reset.css";
+import "../styles/_fonts.css";
 import HomeBanner from "../features/home/components/HomeBanner/HomeBanner.astro";
 import { bannerSchema, type Banner } from "../shared/db/schema";
 import { getDbContext } from "../shared/db/client";
