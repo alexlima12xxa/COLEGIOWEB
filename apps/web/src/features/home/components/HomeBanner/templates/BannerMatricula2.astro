@@ -1,0 +1,59 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import { resolveAssetUrl } from "../../../../../shared/db/storage";
+import BannerActions from "../BannerActions.astro";
+import { tonoMatricula2PorKey } from "@web-modelo/shared";
+import "@web-modelo/shared/banners/css/base.css";
+import "@web-modelo/shared/banners/css/matricula-2.css";
+
+/**
+ * Plantilla "matricula-2": fondo degradado (rojo/azul), título "Matrícula"
+ * y subtítulo "2027" con rotaciones cruzadas, foto grupal con marco polaroid
+ * integrado, CTA "Más información" con keyword whatsapp.
+ * El tono cambia a la vez el degradado de fondo y el color del texto del botón.
+ * La imagen se sube desde el panel admin (campo `image`).
+ * Opcional: fondo personalizado (campo `background`) que reemplaza el degradado.
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const tono = tonoMatricula2PorKey(String(datos.tono ?? ""));
+const fotoUrl = datos.image
+  ? (resolveAssetUrl(datos.image) ?? datos.image)
+  : "";
+const bgUrl = datos.background
+  ? (resolveAssetUrl(datos.background) ?? datos.background)
+  : "";
+---
+
+<article
+  class="banner banner--matricula-2"
+  style={{
+    "--banner-m2-bg": bgUrl ? `url("${bgUrl}")` : tono.degradado,
+    "--banner-m2-cta-texto": tono.ctaTexto,
+  }}
+>
+  <div class="banner__container">
+    <div class="banner__m2-foto">
+      {
+        fotoUrl && (
+          <img
+            src={fotoUrl}
+            alt={datos.imageAlt || ""}
+            loading="eager"
+            decoding="async"
+          />
+        )
+      }
+    </div>
+
+    <div class="banner__content banner__content--matricula-2">
+      <h1 class="banner__title">{datos.title}</h1>
+      <p class="banner__subtitle">{datos.subtitle}</p>
+      <BannerActions cta={datos.cta} actions={datos.actions} />
+    </div>
+  </div>
+</article>
