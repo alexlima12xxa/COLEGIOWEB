@@ -102,7 +102,7 @@
     font-size: var(--text-lg);
     font-weight: var(--font-weight-bold);
     letter-spacing: -0.025em;
-    color: var(--color-text);
+    color: var(--color-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
