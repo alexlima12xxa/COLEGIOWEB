@@ -1,48 +1,66 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import {
+  getPostLoginPath,
+  isAdminWithTenant,
+  isSuperadmin,
+} from "@/lib/roles";
 
 // Proxy de protección de rutas (Next 16 — reemplaza a middleware).
 // - Refresca la sesión Supabase en cada request y valida el JWT (getUser).
-// - /admin y /admin/* requieren sesión → redirigen a /login si no hay.
-// - /admin y /admin/* requieren rol admin (app_metadata.role === 'admin') y
-//   tenant asignado → sin eso, el usuario no tiene acceso al panel.
-// - /login con sesión de admin → redirige a /admin.
-// - / (raíz) sin sesión → redirige a /login; con sesión admin → redirige a /admin.
+// - /admin y /admin/* requieren rol admin + tenant (plano del director).
+// - /operador y /operador/* requieren rol superadmin (plano del operador).
+// - /login con sesión y / (raíz) redirigen según el rol del usuario.
 export async function proxy(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
 
   const { pathname } = request.nextUrl;
   const isLoggedIn = !!user;
-  const isAdmin = isLoggedIn && user.app_metadata?.role === "admin";
-  const hasTenant = isAdmin && !!user.app_metadata?.tenant_id;
 
   const isRootRoute = pathname === "/";
-  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const isLoginRoute = pathname === "/login";
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  const isOperatorRoute =
+    pathname === "/operador" || pathname.startsWith("/operador/");
 
+  // Raíz sin sesión → /login (comportamiento original).
   if (isRootRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isRootRoute && hasTenant) {
-    return NextResponse.redirect(new URL("/admin", request.url));
-  }
-
-  if (isAdminRoute && !isLoggedIn) {
+  // Rutas protegidas sin sesión → /login, preservando el destino en `next`.
+  if ((isAdminRoute || isOperatorRoute) && !isLoggedIn) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 
-  // Sesión iniciada pero sin rol admin (o sin tenant): sin acceso al panel.
-  if (isAdminRoute && !hasTenant) {
+  // /operador sin rol superadmin → a su propio plano (admin → /admin).
+  if (isOperatorRoute && !isSuperadmin(user)) {
+    return NextResponse.redirect(
+      new URL(isAdminWithTenant(user) ? "/admin" : "/", request.url),
+    );
+  }
+
+  // /admin sin rol admin + tenant → "/" (sin cambios; un superadmin que entra
+  // aquí converge a /operador vía la regla de raíz).
+  if (isAdminRoute && !isAdminWithTenant(user)) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
+  // Raíz con sesión → al plano del rol (evita loop si no hay rol válido).
+  if (isRootRoute && isLoggedIn) {
+    const dest = getPostLoginPath(user);
+    if (dest !== "/") {
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
+  }
+
+  // /login con sesión → al plano del rol.
   if (isLoginRoute && isLoggedIn) {
     const url = request.nextUrl.clone();
-    url.pathname = hasTenant ? "/admin" : "/";
+    url.pathname = getPostLoginPath(user);
     url.search = "";
     return NextResponse.redirect(url);
   }
