@@ -39,7 +39,7 @@ function errMsg(error: unknown): string {
 
 // Busca un usuario de Auth por email (listUsers paginado). Devuelve null si no
 // existe. Lanza si la API de Auth falla (lo captura preflight).
-async function findUserByEmail(
+export async function findUserByEmail(
   admin: SupabaseClient,
   email: string,
 ): Promise<User | null> {
