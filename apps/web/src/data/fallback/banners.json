@@ -2,8 +2,25 @@
   "version": 1,
   "items": [
     {
-      "plantillaId": "matricula-2",
+      "plantillaId": "aviso-1",
       "orden": 0,
+      "activo": true,
+      "datos": {
+        "title": "¡CONTAMOS CON PROFESORES ESPECIALISTAS EN CADA ÁREA!",
+        "tono": "azul",
+        "image": "/branding/placeholders/profe-ensenando.avif",
+        "imageAlt": "Docente sonriendo frente a la pizarra",
+        "background": "/branding/placeholders/fondocuadriculado.avif",
+        "cta": {
+          "label": "Más información",
+          "href": "/formulario",
+          "variant": "primary"
+        }
+      }
+    },
+    {
+      "plantillaId": "matricula-2",
+      "orden": 1,
       "activo": true,
       "datos": {
         "title": "Matrícula",
@@ -20,7 +37,7 @@
     },
     {
       "plantillaId": "refuerzo-1",
-      "orden": 1,
+      "orden": 2,
       "activo": true,
       "datos": {
         "kicker": "REFUERZO ESCOLAR",
@@ -38,7 +55,7 @@
     },
     {
       "plantillaId": "matricula-banner",
-      "orden": 2,
+      "orden": 3,
       "activo": true,
       "datos": {
         "title": "MATRÍCULA",
