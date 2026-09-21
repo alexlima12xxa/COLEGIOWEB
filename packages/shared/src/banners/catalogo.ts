@@ -1,6 +1,7 @@
 ﻿import type { EditableSchema } from "./contratos";
 import { REFUERZO_1_TONOS } from "./refuerzo-1-tonos";
 import { MATRICULA_2_TONOS } from "./matricula-2-tonos";
+import { AVISO_1_TONOS } from "./aviso-1-tonos";
 
 // Catálogo de banners del hero: registro único que comparten la web (Astro,
 // para renderizar) y el panel admin (Next.js, para generar el formulario).
@@ -37,7 +38,12 @@ export interface EntradaCatalogo {
   altoFigma?: number;
 }
 
-export const BANNERS_SLUGS = ["matricula-banner", "refuerzo-1", "matricula-2"] as const;
+export const BANNERS_SLUGS = [
+  "matricula-banner",
+  "refuerzo-1",
+  "matricula-2",
+  "aviso-1",
+] as const;
 export type BannerSlug = (typeof BANNERS_SLUGS)[number];
 
 export const CATALOGO_BANNERS: EntradaCatalogo[] = [
@@ -148,6 +154,48 @@ export const CATALOGO_BANNERS: EntradaCatalogo[] = [
       image: "/branding/placeholders/ninos-grupo.avif",
       imageAlt: "Grupo de estudiantes con marco polaroid",
       cta: { label: "Más información", href: "whatsapp", variant: "primary" },
+    },
+  },
+  {
+    slug: "aviso-1",
+    nombre: "Aviso 1",
+    anchoFigma: 1600,
+    altoFigma: 720,
+    contrato: {
+      slug: "aviso-1",
+      nombre: "Aviso 1",
+      campos: [
+        { key: "title", label: "Título principal", tipo: "texto", maxLength: 60 },
+        {
+          key: "tono",
+          label: "Color del texto y del botón",
+          tipo: "opciones",
+          default: AVISO_1_TONOS[0].key,
+          opciones: AVISO_1_TONOS.map((t) => ({ label: t.label, value: t.key })),
+        },
+        {
+          key: "image",
+          label: "Foto del profesor",
+          tipo: "imagen",
+          ayuda: "JPG/PNG/WebP/AVIF; al menos 988×988 (retina ×2).",
+        },
+        {
+          key: "background",
+          label: "Fondo cuadriculado",
+          tipo: "imagen",
+          opcional: true,
+          ayuda: "Reemplaza el fondo de la plantilla. JPG/PNG/WebP/AVIF.",
+        },
+        { key: "actions", label: "Botón CTA", tipo: "booleano" },
+      ],
+    },
+    ejemplo: {
+      title: "¡CONTAMOS CON PROFESORES ESPECIALISTAS EN CADA ÁREA!",
+      tono: AVISO_1_TONOS[0].key,
+      image: "/branding/placeholders/profe-ensenando.avif",
+      imageAlt: "Docente sonriendo frente a la pizarra",
+      background: "/branding/placeholders/fondocuadriculado.avif",
+      cta: { label: "Más información", href: "/formulario", variant: "primary" },
     },
   },
 ];
