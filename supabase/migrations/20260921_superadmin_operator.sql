@@ -37,6 +37,9 @@ create unique index if not exists colegios_domain_unique_idx
 create table public.provisioning_jobs (
   id           uuid primary key default gen_random_uuid(),
   slug         text not null,
+  domain       text not null default '',
+  admin_email  text not null default '',
+  nombre       text not null default '',
   tenant_id    uuid references public.colegios (id) on delete set null,
   status       text not null default 'pending'
                check (status in ('pending', 'running', 'failed', 'done')),
