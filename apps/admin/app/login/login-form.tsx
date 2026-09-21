@@ -5,12 +5,12 @@ import { login, type LoginState } from "./actions";
 
 const initialState: LoginState = {};
 
-export default function LoginForm({ next = "/admin" }: { next?: string }) {
+export default function LoginForm({ next }: { next?: string }) {
   const [state, formAction, pending] = useActionState(login, initialState);
 
   return (
     <form action={formAction} className="mt-8 space-y-5">
-      <input type="hidden" name="next" value={next} />
+      <input type="hidden" name="next" value={next ?? ""} />
       <div>
         <label
           htmlFor="email"

@@ -3,13 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { resolvePostLoginPath } from "@/lib/roles";
 
 export type LoginState = {
   error?: string;
 };
 
 // Server Action de login: valida credenciales contra Supabase Auth.
-// En éxito redirige a /admin (o al path indicado en `next`).
+// En éxito redirige según el rol del usuario (superadmin → /operador,
+// admin+tenant → /admin), respetando un `next` interno del mismo plano.
 export async function login(
   _prevState: LoginState,
   formData: FormData,
@@ -18,7 +20,7 @@ export async function login(
 
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const next = String(formData.get("next") ?? "/admin");
+  const next = String(formData.get("next") ?? "");
 
   if (!email || !password) {
     return { error: "Ingresa tu correo y contraseña." };
@@ -35,14 +37,11 @@ export async function login(
 
   revalidatePath("/", "layout");
 
-  // Solo rutas internas: `//evil.com` y `/\evil.com` se tratan como externas
-  // para evitar un open redirect tras autenticarse.
-  const safeNext =
-    next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")
-      ? next
-      : "/admin";
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  redirect(safeNext);
+  redirect(resolvePostLoginPath(user, next));
 }
 
 // Server Action de logout: cierra la sesión y vuelve a /login.
