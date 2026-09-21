@@ -1,0 +1,253 @@
+@layer components {
+  /* Plantilla "aviso-1" — Arquitectura A.
+     Desktop (≥600px): canvas 1600×720 · cqw = px/16 (FICHA del Frame 2).
+     Móvil  (<600px):  canvas 800×1280 · cqw = px/8 · composición apilada
+                       derivada del desktop (similar a refuerzo-1).
+     Fondo Frame 1: foto full-bleed (campo `background`, cover).
+     Fondo Frame 2: transparente.
+     Tipografía: título Gluten 500 · CTA Nerko One 400.
+     Foto: profe-ensenando (campo `image`, cover, rot -6.2°).
+     Forma blanca: rectangulo-2.svg inline (fill #FFFFFF), fija.
+     CTA: keyword de ruta `/formulario`. */
+
+  .banner--aviso-1 {
+    --banner-bg: #000000;
+    --banner-canvas-w: 1600;
+    --banner-canvas-h: 720;
+    --banner-title-lineas: 4;
+    --banner-content-max-h: none;
+    /* Fondo Frame 1: foto full-bleed (override inline vía --banner-a1-bg). */
+    background-image: var(
+      --banner-a1-bg,
+      url("/branding/placeholders/fondocuadriculado.avif")
+    );
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .banner--aviso-1 .banner__container {
+    position: relative;
+  }
+
+  /* ── Común a ambos breakpoints ───────────────────────────────────────── */
+  .banner--aviso-1 .banner__aviso-1-shape {
+    color: #ffffff;
+  }
+
+  .banner--aviso-1 .banner__aviso-1-shape svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .banner--aviso-1 .banner__aviso-1-shape path {
+    fill: currentColor;
+  }
+
+  /* La sombra va sobre la IMG, no sobre la caja (sigue el contorno del marco). */
+  .banner--aviso-1 .banner__aviso-1-foto img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+    filter: drop-shadow(-0.5cqw -0.5cqw 0.125cqw rgba(0, 0, 0, 0.25));
+  }
+
+  /* ══ Desktop (≥600px) · canvas 1600×720 · cqw = px/16 ══ */
+  @media (min-width: 600px) {
+    /* Forma blanca (rectangulo-2) — FICHA: x79 y82 · 1331×556 */
+    .banner__aviso-1-shape {
+      position: absolute;
+      left: 4.938cqw;
+      top: 5.125cqw;
+      width: 83.188cqw;
+      height: 34.75cqw;
+      z-index: 1;
+    }
+
+    /* Foto del profesor — FICHA: x977 y82 · 493.93×493.93 · rot -6.2° */
+    .banner__aviso-1-foto {
+      position: absolute;
+      left: 61.063cqw;
+      top: 5.125cqw;
+      width: 30.871cqw;
+      height: 30.871cqw;
+      z-index: 2;
+      transform: rotate(-6.2deg);
+    }
+
+    /* Bloque de contenido — FICHA: x244 y125 · 689×444.29 */
+    .banner--aviso-1 .banner__content--aviso-1 {
+      position: absolute;
+      left: 15.25cqw;
+      top: 7.813cqw;
+      width: 43.063cqw;
+      height: 27.768cqw;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 2.798cqw;
+      text-align: left;
+      color: var(--banner-a1-tone, #00379d);
+    }
+
+    /* Título — Gluten 500 · 75.564px / lh 80px · uppercase */
+    .banner--aviso-1 .banner__title {
+      position: relative;
+      width: 100%;
+      height: auto;
+      font-family: "Gluten", var(--font-display, "Outfit", sans-serif);
+      font-size: 4.723cqw;
+      font-weight: 500;
+      line-height: 5cqw;
+      letter-spacing: normal;
+      text-transform: uppercase;
+      text-align: left;
+      color: var(--banner-a1-tone, #00379d);
+      margin: 0;
+    }
+
+    /* CTA — posición relativa al bloque de contenido, z-index 4 */
+    .banner--aviso-1 .bannerActions {
+      position: absolute;
+      left: 10.375cqw; /* (410 - 244) / 16 */
+      top: 22.875cqw; /* (491 - 125) / 16 */
+      width: 24.309cqw;
+      height: 4.893cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    .banner--aviso-1 .bannerActions a,
+    .banner--aviso-1 .bannerActions button,
+    .banner--aviso-1 .bannerActions > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      background-color: var(--banner-a1-tone, #00379d);
+      color: #ffffff;
+      font-family: "Nerko One", var(--font-sans, "Inter", sans-serif);
+      font-size: 3.168cqw;
+      font-weight: 400;
+      line-height: 3.8125cqw;
+      padding: 0.54cqw 0.96cqw;
+      border: none;
+      border-radius: 1.548cqw;
+      box-shadow: 0.0625cqw 0.3125cqw 0.151cqw rgba(81, 79, 79, 0.25);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+
+  /* ══ Móvil (<600px) · canvas 800×1280 · cqw = px/8 · apilado ══ */
+  @media (max-width: 599px) {
+    /* Panel blanco superior (la forma SVG estirada deforma el festoneado). */
+    .banner__aviso-1-shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 48%;
+      z-index: 1;
+      background-color: #ffffff;
+      border-radius: 0 0 8cqw 8cqw;
+    }
+
+    .banner--aviso-1 .banner__aviso-1-shape svg {
+      display: none;
+    }
+
+    /* Contenido apilado y centrado sobre el panel */
+    .banner--aviso-1 .banner__content--aviso-1 {
+      position: absolute;
+      left: 8cqw;
+      top: 0;
+      width: 84cqw;
+      height: 48%;
+      --banner-content-max-h: none;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3cqw;
+      text-align: center;
+      color: var(--banner-a1-tone, #00379d);
+    }
+
+    .banner--aviso-1 .banner__title {
+      position: static;
+      width: auto;
+      height: auto;
+      font-family: "Gluten", var(--font-display, "Outfit", sans-serif);
+      font-size: 8cqw; /* ~64px a 800px */
+      font-weight: 500;
+      line-height: 1.15;
+      letter-spacing: normal;
+      text-transform: uppercase;
+      text-align: center;
+      color: var(--banner-a1-tone, #00379d);
+      margin: 0;
+    }
+
+    .banner--aviso-1 .bannerActions {
+      position: static;
+      width: auto;
+      height: auto;
+      margin-top: 2cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    .banner--aviso-1 .bannerActions a,
+    .banner--aviso-1 .bannerActions button,
+    .banner--aviso-1 .bannerActions > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: auto;
+      min-width: 0;
+      min-height: 0;
+      background-color: var(--banner-a1-tone, #00379d);
+      color: #ffffff;
+      font-family: "Nerko One", var(--font-sans, "Inter", sans-serif);
+      font-size: 5cqw; /* ~40px a 800px */
+      font-weight: 400;
+      line-height: 1.2;
+      padding: 2cqw 6cqw;
+      border: none;
+      border-radius: 3cqw;
+      box-shadow: 1cqw 1cqw 1cqw rgba(0, 0, 0, 0.25);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Foto: debajo del panel, centrada */
+    .banner__aviso-1-foto {
+      position: absolute;
+      left: 12cqw;
+      top: 82cqw;
+      width: 76cqw;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      z-index: 2;
+      transform: rotate(-6.2deg);
+    }
+  }
+}
