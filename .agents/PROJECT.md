@@ -41,7 +41,10 @@
 - `supabase/functions/rebuild-webhook/` → Edge Function Supabase → Vercel deploy hook
 - `apps/admin/lib/rebuild.ts` → `triggerRebuild(supabase, tenantId)`: lee `tenant_settings.rebuild_hook_url` (fallback `REBUILD_HOOK_URL`)
 - `clients.json` → catálogo de colegios (slug, domain, tenantId, adminEmail, rebuildHookUrl)
-- `scripts/colegio-alta.mjs` → onboarding automatizado (Supabase service role + Vercel REST API)
+- `apps/admin/app/operador/` → alta de colegios desde el panel (rol superadmin, saga idempotente + polling)
+- `apps/admin/lib/operator/` → núcleo de provisión (supabase-admin, vercel, preflight, provision, seed)
+- `scripts/grant-superadmin.mjs` → bootstrap del rol superadmin (uso único)
+- `scripts/colegio-alta.mjs` → onboarding legacy (respaldo manual; deprecado por /operador)
 - `docs/multi-colegio.md` → guía operativa por colegio
 - `packages/shared/` → tipos y tokens compartidos entre apps
 
@@ -70,6 +73,7 @@
 - Decap CMS eliminado; Netlify cancelado; no se necesita script sharp (astro:assets + remotePatterns cubren imágenes).
 - **Modelo multi-colegio (2026-09-02): COMPLETADO** — config por slug con fallback al piloto, `tenant_settings` con RLS admin-only, `triggerRebuild` por tenant en 9 actions, catálogo `clients.json`, script `colegio:alta`, guía `docs/multi-colegio.md`.
 - `.agents/skills/resumen.md` documenta skills por fase.
+- **Alta de colegios desde el panel (2026-09-21): EN PROGRESO** — plano `/operador` (rol superadmin), saga idempotente de provisión (`provisioning_jobs`, `operator_actions`), bootstrap `grant-superadmin.mjs`. El script `colegio-alta.mjs` queda legacy.
 
 ## Decisiones clave
 - SSG + fetch en build-time (no SSR, no fetch en cliente) para noticias/circulares

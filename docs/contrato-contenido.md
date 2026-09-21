@@ -209,6 +209,9 @@ Reglas:
 - Los assets de imagen se resuelven con `resolveAssetUrl`/`ensureAccessibleImage`
   (Supabase Storage); si el asset no es accesible, se usa un placeholder local y
   el build no se rompe.
+- Las 12 claves base de un colegio nuevo las siembra ahora la saga de provisión
+  del operador (`apps/admin/lib/operator/seed.ts`, portada de
+  `scripts/colegio-alta.mjs`). El contrato (shapes) NO cambia.
 
 ---
 

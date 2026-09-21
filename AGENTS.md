@@ -33,7 +33,8 @@ pnpm --filter @web-modelo/web check:budget      # presupuesto above-fold (post-b
 Modelo multi-colegio (onboarding de un colegio nuevo):
 
 ```
-pnpm colegio:alta <slug>   # alta automatizada (Supabase + Vercel), ver docs/multi-colegio.md
+# Alta de colegios: vía panel admin /operador (rol superadmin), ver docs/multi-colegio.md.
+pnpm colegio:alta <slug>   # legacy (respaldo manual, token omnipotente en laptop)
 ```
 
 Supabase CLI (esquema y edge functions):

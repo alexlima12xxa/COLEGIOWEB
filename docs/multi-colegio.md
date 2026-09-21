@@ -18,7 +18,7 @@
 - **Marca** (colores, logo, identidad, SEO) → código: `apps/web/src/configs/<slug>.ts` + `public/branding/<slug>/`. La agencia controla la marca; el director edita solo contenido vía panel.
 - **Contenido** → Supabase por `tenant_id` (tablas `noticias`, `circulares`, `contenido`, `leads` + RLS).
 - **Rebuild** → deploy hook de Vercel por tenant (`tenant_settings.rebuild_hook_url`), disparado por el panel admin tras cada guardado.
-- **Alta de colegio** → `scripts/colegio-alta.mjs` (automatizado).
+- **Alta de colegio** → panel `/operador` (rol superadmin, saga idempotente). El script `colegio-alta.mjs` queda como respaldo legacy.
 
 ## Checklist por colegio nuevo
 
@@ -55,7 +55,11 @@ Agregar la entrada en `clients.json` (raíz):
 > (sin `https://`, ignorando `www.`); `validateConfig.ts` valida la consistencia
 > en build-time.
 
-### 3. Alta automatizada
+### 3. Alta por script (legacy, respaldo)
+
+> **Deprecado (2026-09-21).** La vía principal es el panel `/operador` (ver
+> "## Alta desde el panel (/operador)"). Este script se mantiene solo como
+> respaldo manual con token omnipotente en laptop.
 
 Instalar dependencias raíz (primera vez) y ejecutar:
 
@@ -118,6 +122,71 @@ git diff --quiet HEAD^ HEAD -- apps/web/src/configs/<slug>.ts apps/web/public/br
 - El panel admin llama `triggerRebuild(supabase, tenantId)` tras cada guardado → lee `tenant_settings.rebuild_hook_url` → POST al deploy hook de Vercel del colegio.
 - Fallback: si no hay registro en `tenant_settings`, usa la env var `REBUILD_HOOK_URL` del proyecto admin (compatibilidad con el flujo original de un solo colegio).
 - La tabla `tenant_settings` tiene RLS admin-only: el hook URL **no es legible por anon** (ni siquiera vía `X-Tenant-Id`).
+
+## Alta desde el panel (/operador) — vía principal
+
+> Reemplaza al script `colegio:alta` (que queda como respaldo legacy). El alta la
+> inicia el **superadmin** (el dueño) desde el panel admin en `/operador`.
+
+### Contrato de dos fases
+
+1. **FASE CÓDIGO** (agencia, PR): `apps/web/src/configs/<slug>.ts`,
+   `apps/web/public/branding/<slug>/` y la entrada en `clients.json`. Se mergea y
+   despliega **antes** de provisionar.
+2. **FASE PROVISIÓN** (superadmin, UI `/operador`): BD + Vercel.
+
+La UI valida (preflight) formato y unicidad de slug/dominio/email, y exige un
+checkbox de confirmación de que la fase código está lista. La coherencia
+`seo.siteUrl` ↔ dominio la sigue validando `validateConfig.ts` en el build de la
+web (si hay mismatch, el primer deploy del proyecto Vercel falla y se ve en la UI).
+
+### Bootstrap del superadmin (uso único)
+
+El rol `superadmin` NO tiene UI de auto-promoción. Se asigna una sola vez con el
+script `scripts/grant-superadmin.mjs`:
+
+```bash
+node scripts/grant-superadmin.mjs --email <email-del-dueno>
+```
+
+Requiere `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. Tras ejecutarlo, el dueño
+debe **cerrar sesión y volver a entrar** para que el JWT refleje el rol. Es la
+ÚNICA vía de crear superadmins.
+
+### Flujo de provisión (saga idempotente)
+
+`/operador/colegios` → formulario → `POST /operador/colegios/crear` (preflight →
+inserta job → dispara la saga en background con `waitUntil`). La UI hace polling
+del job y reanuda pasos pendientes de forma idempotente; cada paso es
+create-or-retrieve:
+
+1. `colegios` upsert (`activo: false`) → `tenant_id`
+2. admin user (`inviteUserByEmail` + `app_metadata { role: admin, tenant_id }`)
+3. seed de contenido (12 claves, `onConflict tenant_id,clave`)
+4. proyecto Vercel `web-<slug>`
+5. env vars (`PUBLIC_TENANT_ID`, `PUBLIC_SITE_SLUG`, Supabase URL/keys)
+6. dominio
+7. deploy hook `rebuild-webhook`
+8. `tenant_settings` + `colegios.activo = true`
+
+Env vars server-only del admin (Vercel, sin prefijo `NEXT_PUBLIC_`):
+`SUPABASE_SERVICE_ROLE_KEY`, `VERCEL_TOKEN`, `VERCEL_TEAM_ID` (opcional).
+
+### Guía DNS
+
+Igual que la sección "Dominio" de este documento: en el registrar apunta el
+dominio a Vercel (`A` → `76.76.21.21` o `CNAME` → `cname.vercel-dns.com`). La UI
+muestra estas instrucciones al terminar el alta.
+
+### Seguridad
+
+- El superadmin **no tiene `tenant_id`** y vive en un plano separado (`/operador`)
+  con guard propio (`requireSuperadmin`). NO se relaja `requireAdmin` ni el RLS.
+- La escritura cross-tenant de provisión es **siempre** `service_role` server-side;
+  el superadmin no recibe RLS global sobre contenido.
+- El rol `superadmin` NO existe en la BD (solo en `app_metadata`); las tablas de
+  provisión (`provisioning_jobs`, `operator_actions`) tienen RLS fail-closed
+  (solo `service_role`).
 
 ## Seguridad RLS — contrato de funciones de tenancy
 

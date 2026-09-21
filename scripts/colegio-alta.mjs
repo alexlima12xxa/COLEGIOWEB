@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 /**
  * scripts/colegio-alta.mjs — Onboarding automatizado de un colegio.
+ *
+ * LEGACY (deprecado 2026-09-21): el alta de colegios se hace ahora desde el
+ * panel de operación /operador (rol superadmin) con una saga idempotente.
+ * Este script se mantiene solo como respaldo manual con token omnipotente en
+ * laptop; NO es la vía principal. Ver docs/multi-colegio.md y
+ * reports/2026-09-21_alta-colegios-operador.md.
  * ---------------------------------------------------------------------------
  * Alta end-to-end de un tenant en el modelo multi-colegio:
  *
