@@ -1,0 +1,69 @@
+---
+import type { Banner } from "../../../../../shared/db/schema";
+import { resolveAssetUrl } from "../../../../../shared/db/storage";
+import BannerActions from "../BannerActions.astro";
+import { tonoAviso1PorKey } from "@web-modelo/shared";
+import "@web-modelo/shared/banners/css/base.css";
+import "@web-modelo/shared/banners/css/aviso-1.css";
+
+/**
+ * Plantilla "aviso-1": fondo full-bleed con foto (campo `background`), forma
+ * blanca orgánica (rectangulo-2.svg inline) que contiene el título en Gluten y
+ * el CTA, y foto del profesor con marco/rotación (campo `image`). El tono cambia
+ * a la vez el color del título y el fondo del CTA. El Frame 2 (canvas 1600×720)
+ * es transparente; el fondo vive en el Frame 1.
+ */
+export interface Props {
+  banner: Banner;
+}
+
+const { banner } = Astro.props;
+const { datos } = banner;
+const tono = tonoAviso1PorKey(String(datos.tono ?? ""));
+const fotoUrl = datos.image
+  ? (resolveAssetUrl(datos.image) ?? datos.image)
+  : "";
+const bgUrl = datos.background
+  ? (resolveAssetUrl(datos.background) ?? datos.background)
+  : "";
+---
+
+<article
+  class="banner banner--aviso-1"
+  style={{
+    "--banner-a1-tone": tono.color,
+    ...(bgUrl ? { "--banner-a1-bg": `url("${bgUrl}")` } : {}),
+  }}
+>
+  <div class="banner__container">
+    <div class="banner__aviso-1-shape" aria-hidden="true">
+      <svg
+        viewBox="0 0 1331 556"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1331 501.431C1331 531.568 1306.57 556 1276.43 556H213.765C183.627 556 162.725 528.066 143.388 504.949C125.32 483.349 92.4371 474.208 48.2492 467.641C20.8422 463.568 1.05325e-05 440.612 2.44933e-05 412.904L2.67919e-05 408.343V54.5693C2.67919e-05 24.4315 24.4315 0 54.5693 0H1276.43C1306.57 0 1331 24.4315 1331 54.5693V501.431Z"
+        ></path>
+      </svg>
+    </div>
+
+    <div class="banner__aviso-1-foto">
+      {
+        fotoUrl && (
+          <img
+            src={fotoUrl}
+            alt={datos.imageAlt || ""}
+            loading="eager"
+            decoding="async"
+          />
+        )
+      }
+    </div>
+
+    <div class="banner__content banner__content--aviso-1">
+      <h1 class="banner__title">{datos.title}</h1>
+      <BannerActions cta={datos.cta} actions={datos.actions} />
+    </div>
+  </div>
+</article>
