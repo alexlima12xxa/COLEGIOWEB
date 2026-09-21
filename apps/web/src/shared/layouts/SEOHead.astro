@@ -17,17 +17,20 @@ const footerContact = footer.contact ?? {};
 const footerSocial = footer.social ?? {};
 
 const {
-  title = siteConfig.seo.defaultTitle,
+  title,
   description = siteConfig.seo.defaultDescription,
   image = siteConfig.seo.ogImage,
   path = Astro.url.pathname,
   noindex = false,
 } = Astro.props;
 
-const pageTitle =
-  title === siteConfig.seo.defaultTitle
-    ? title
-    : siteConfig.seo.titleTemplate.replace("%s", title);
+const isHome = path === "/" || path === "";
+const pageTitle = isHome
+  ? siteConfig.seo.homeTitle
+  : siteConfig.seo.titleTemplate.replace(
+      "%s",
+      title ?? siteConfig.seo.homeTitle,
+    );
 
 const canonicalUrl = new URL(
   path === "/" || path === "" ? "/" : path.endsWith("/") ? path : `${path}/`,

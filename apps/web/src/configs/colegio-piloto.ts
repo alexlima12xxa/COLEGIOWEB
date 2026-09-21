@@ -149,8 +149,8 @@ export default {
     },
   },
   seo: {
-    titleTemplate: "%s | Colegio Piloto",
-    defaultTitle: "Inicio",
+    titleTemplate: "Colegio Piloto | %s",
+    homeTitle: "Colegio Piloto | Educación de calidad",
     defaultDescription:
       "Colegio Piloto: educación integral de calidad para preescolar, primaria y secundaria.",
     keywords: ["colegio", "educación", "primaria", "secundaria", "Bogotá"],

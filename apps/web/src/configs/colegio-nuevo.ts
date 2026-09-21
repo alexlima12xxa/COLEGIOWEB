@@ -139,8 +139,8 @@ export default {
     },
   },
   seo: {
-    titleTemplate: "%s | Colegio Nuevo",
-    defaultTitle: "Inicio",
+    titleTemplate: "Colegio Nuevo | %s",
+    homeTitle: "Colegio Nuevo | Educación de calidad",
     defaultDescription:
       "Colegio Nuevo: educación integral de calidad para preescolar, primaria y secundaria.",
     keywords: ["colegio", "educación", "primaria", "secundaria", "Bogotá"],

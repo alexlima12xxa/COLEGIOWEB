@@ -147,10 +147,10 @@ const brandingSchema = z.object({
 
 const seoSchema = z.object({
   titleTemplate: z.string().min(1),
-  defaultTitle: z
+  homeTitle: z
     .string()
     .min(1)
-    .max(60, "El título por defecto no puede superar 60 caracteres"),
+    .max(60, "El título de la home no puede superar 60 caracteres"),
   defaultDescription: z
     .string()
     .min(1)

@@ -309,6 +309,29 @@ function validateSiteUrl(errors: string[]): void {
   }
 }
 
+/**
+ * Garantiza que el nombre del colegio (identity.name) esté presente tanto en
+ * el título de la home como en el patrón de páginas internas. Evita que al
+ * renombrar un colegio queden títulos desincronizados en la pestaña.
+ */
+function validateSeoBrand(errors: string[]): void {
+  const brand = siteConfig.identity.name;
+
+  if (!siteConfig.seo.homeTitle.includes(brand)) {
+    errors.push(
+      `seo.homeTitle debe incluir identity.name ("${brand}"): ` +
+        `"${siteConfig.seo.homeTitle}".`,
+    );
+  }
+
+  if (!siteConfig.seo.titleTemplate.includes(brand)) {
+    errors.push(
+      `seo.titleTemplate debe incluir identity.name ("${brand}"): ` +
+        `"${siteConfig.seo.titleTemplate}".`,
+    );
+  }
+}
+
 function validateContrast(errors: string[]): void {
   for (const pair of REQUIRED_CONTRAST_PAIRS) {
     const foreground = siteConfig.branding.colors[pair.foreground] as HexColor;
@@ -334,6 +357,7 @@ export function validateConfig(): void {
   validateContrast(errors);
   validateInternalLinks(errors);
   validateSiteUrl(errors);
+  validateSeoBrand(errors);
 
   if (errors.length > 0) {
     console.error("\n❌ Validación de site.config.ts falló:\n");
@@ -347,6 +371,6 @@ export function validateConfig(): void {
   }
 
   console.log(
-    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos, enlaces, siteUrl).",
+    "✅ site.config.ts validado correctamente (contraste, WhatsApp, assets, textos, enlaces, siteUrl, títulos SEO).",
   );
 }
