@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSuperadmin } from "@/lib/roles";
 
 // Requiere una sesión de administrador y devuelve el cliente Supabase
 // autenticado junto con el tenant (colegio) del usuario.
@@ -31,4 +32,28 @@ export async function requireAdmin() {
   }
 
   return { supabase, user, tenantId };
+}
+
+// Requiere una sesión con rol `superadmin` (plano del operador /operador).
+//
+// A diferencia de requireAdmin, NO exige tenant_id: el superadmin (el dueño)
+// opera cross-tenant y vive en un plano separado. Devuelve el cliente Supabase
+// autenticado (identidad vía JWT) SIN tenant. Las operaciones del operador
+// usan service_role server-side (createAdminClient), nunca este cliente.
+export async function requireSuperadmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (!isSuperadmin(user)) {
+    redirect("/admin");
+  }
+
+  return { supabase, user };
 }
