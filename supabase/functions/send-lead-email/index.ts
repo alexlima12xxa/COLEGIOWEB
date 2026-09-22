@@ -22,9 +22,10 @@ const WEBHOOK_TOKEN = Deno.env.get("WEBHOOK_TOKEN");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-// Remitente de prueba de Resend. Cuando un colegio verifique su propio dominio
-// en Resend, puede sustituirse por un remitente por tenant (`informes@colegio.edu`).
-const FROM_ADDRESS = "onboarding@resend.dev";
+// Remitente del dominio verificado en Resend (YACHAY IA). Cuando un colegio
+// verifique su propio dominio, puede sustituirse por un remitente por tenant
+// (`informes@colegio.edu`).
+const FROM_ADDRESS = "YACHAY IA <soporte@yachay-ia.com>";
 
 interface LeadRecord {
   id?: string;

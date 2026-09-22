@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; reset?: string; error?: string }>;
 }) {
-  const { next } = await searchParams;
+  const { next, reset, error } = await searchParams;
 
   return (
     <main className="flex flex-1 items-center justify-center p-6">
@@ -26,6 +26,24 @@ export default async function LoginPage({
             Ingresa con tu cuenta de administrador del colegio.
           </p>
         </div>
+
+        {reset ? (
+          <p
+            role="status"
+            className="mt-6 rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 text-sm text-green-700"
+          >
+            Tu contraseña se actualizó. Inicia sesión con la nueva.
+          </p>
+        ) : null}
+
+        {error === "enlace" ? (
+          <p
+            role="alert"
+            className="mt-6 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700"
+          >
+            El enlace no es válido o caducó. Solicita uno nuevo.
+          </p>
+        ) : null}
 
         <LoginForm next={next} />
       </div>

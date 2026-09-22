@@ -115,6 +115,9 @@ Inbox del colegio (Gmail / correo institucional)
 3. En modo prueba NO hace falta verificar dominio: el remitente es
    `onboarding@resend.dev` y solo puede enviar a la dirección con la que te
    registraste. Para probar, el correo destino debe ser tu propio email.
+4. En producción, verifica el dominio (`yachay-ia.com`) en Resend y usa el
+   remitente `YACHAY IA <soporte@yachay-ia.com>`. El mismo dominio se configura
+   como SMTP de Supabase Auth (ver [`docs/auth-recuperacion.md`](../../docs/auth-recuperacion.md)).
 
 ## 2. Desplegar la Edge Function y configurar secretos
 
@@ -152,6 +155,6 @@ El correo destino se resuelve en este orden:
    panel admin, sección Contacto → «Correo de notificaciones de leads»).
 2. Secret `LEAD_EMAIL_TO` (respaldo global).
 
-El remitente es `onboarding@resend.dev` (prueba). Cuando un colegio verifique su
-propio dominio en la cuenta Resend, se puede mapear un remitente por tenant
-(ej. `informes@colegio.edu`).
+El remitente es `YACHAY IA <soporte@yachay-ia.com>` (dominio verificado en
+Resend). Cuando un colegio verifique su propio dominio, se puede mapear un
+remitente por tenant (ej. `informes@colegio.edu`).

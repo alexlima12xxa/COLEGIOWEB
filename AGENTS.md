@@ -47,6 +47,10 @@ npx supabase secrets set KEY=value     # secrets de edge functions
 npx supabase functions deploy rebuild-webhook   # desplegar edge function
 ```
 
+Correos de auth (invitación / recuperación de contraseña) con Resend + SMTP:
+ver `docs/auth-recuperacion.md`. En Vercel, definir `NEXT_PUBLIC_APP_URL` con el
+origen del panel (sin barra final, ej. `https://admin.yachay-ia.com`).
+
 ## Skills de agentes (panel admin)
 
 - `nextjs-app-router-patterns` → arquitectura App Router (server components, routing, layout)

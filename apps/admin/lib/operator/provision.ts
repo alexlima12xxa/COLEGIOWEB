@@ -176,10 +176,12 @@ async function stepAdminUser(ctx: ProvisionContext): Promise<unknown> {
   const existing = await findUserByEmail(ctx.admin, ctx.adminEmail);
 
   if (!existing) {
-    const redirectTo = process.env.NEXT_PUBLIC_APP_URL || "https://admin.example.com/login";
+    const appUrl = (
+      process.env.NEXT_PUBLIC_APP_URL ?? "https://admin.yachay-ia.com"
+    ).replace(/\/$/, "");
     const { data, error } = await ctx.admin.auth.admin.inviteUserByEmail(
       ctx.adminEmail,
-      { redirectTo },
+      { redirectTo: `${appUrl}/auth/confirm` },
     );
     if (error) throw error;
 
