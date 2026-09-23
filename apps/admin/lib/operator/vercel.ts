@@ -73,7 +73,9 @@ export interface VercelEnv {
 export interface VercelHook {
   id: string;
   name: string;
+  ref?: string;
   url: string;
+  createdAt?: number;
 }
 
 export interface VercelDomainConfig {
@@ -98,14 +100,26 @@ export async function getProject(name: string): Promise<VercelProject | null> {
 }
 
 export async function createProject(name: string): Promise<VercelProject> {
-  return vercelFetch<VercelProject>("/v10/projects", {
+  const repo = process.env.VERCEL_GIT_REPO;
+  const provider = process.env.VERCEL_GIT_PROVIDER || "github";
+
+  const body: Record<string, unknown> = {
+    name,
+    rootDirectory: "apps/web",
+    framework: "astro",
+  };
+
+  // Conectar el repo EN LA CREACIÓN: sin Git el proyecto no despliega y los
+  // deploy hooks devuelven 404 (Vercel exige un repositorio conectado). Ver
+  // https://vercel.com/docs/deploy-hooks. Requiere VERCEL_GIT_REPO ("owner/repo").
+  if (repo) {
+    body.gitRepository = { type: provider, repo };
+  }
+
+  return vercelFetch<VercelProject>("/v11/projects", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name,
-      rootDirectory: "apps/web",
-      framework: "astro",
-    }),
+    body: JSON.stringify(body),
   });
 }
 
@@ -178,27 +192,60 @@ export async function addDomain(
 }
 
 /* ── Deploy hooks ────────────────────────────────────────────────────────── */
+// Los deploy hooks viven en `link.deployHooks` del proyecto (no hay un GET de
+// hooks); así los lista `vercel deploy-hooks ls`. La creación es
+// POST /v2/projects/{id}/deploy-hooks con { name, ref }.
+// Requiere que el proyecto esté conectado a Git (si no, 404 / link ausente).
+
+type ProjectWithHooks = { link?: { deployHooks?: VercelHook[] } };
 
 export async function listHooks(projectId: string): Promise<VercelHook[]> {
-  const data = await vercelFetch<{ hooks: VercelHook[] }>(
-    `/v10/projects/${projectId}/hooks`,
+  const project = await vercelFetch<ProjectWithHooks>(
+    `/v9/projects/${projectId}`,
   );
-  return data.hooks ?? [];
+  return project.link?.deployHooks ?? [];
 }
 
 export async function getOrCreateDeployHook(
   projectId: string,
   hookName: string,
 ): Promise<VercelHook> {
-  const hooks = await listHooks(projectId);
-  const existing = hooks.find((h) => h.name === hookName);
+  const project = await vercelFetch<ProjectWithHooks>(
+    `/v9/projects/${projectId}`,
+  );
+
+  if (!project.link) {
+    throw new Error(
+      "El proyecto Vercel no está conectado a un repositorio Git; no se puede " +
+        'crear el deploy hook. Define VERCEL_GIT_REPO (ej. "owner/repo") para ' +
+        "que el proyecto se cree con Git, o conéctalo en Vercel → Settings → Git.",
+    );
+  }
+
+  const existing = (project.link.deployHooks ?? []).find(
+    (h) => h.name === hookName,
+  );
   if (existing) return existing;
 
-  return vercelFetch<VercelHook>(`/v10/projects/${projectId}/hooks`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: hookName }),
-  });
+  const ref = process.env.VERCEL_GIT_BRANCH || "main";
+  const previousIds = new Set((project.link.deployHooks ?? []).map((h) => h.id));
+
+  const updated = await vercelFetch<ProjectWithHooks>(
+    `/v2/projects/${projectId}/deploy-hooks`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: hookName, ref }),
+    },
+  );
+
+  const created = (updated.link?.deployHooks ?? []).find(
+    (h) => !previousIds.has(h.id),
+  );
+  if (!created) {
+    throw new Error("Vercel no devolvió el deploy hook creado.");
+  }
+  return created;
 }
 
 /* ── Estado de dominio (para guía DNS en la UI) ──────────────────────────── */
