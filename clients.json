@@ -12,5 +12,12 @@
     "tenantId": "",
     "adminEmail": "correopruebaprueba998@gmail.com",
     "rebuildHookUrl": ""
+  },
+  {
+    "slug": "colegio-yachay",
+    "domain": "colegiodemo.yachay-ia.com",
+    "tenantId": "",
+    "adminEmail": "colegiodemo@yachay-ia.com",
+    "rebuildHookUrl": ""
   }
 ]
