@@ -19,7 +19,7 @@ export class VercelApiError extends Error {
   readonly body: unknown;
 
   constructor(status: number, path: string, body: unknown) {
-    super(`Vercel API ${status} en ${path}`);
+    super(`Vercel API ${status} en ${path}: ${JSON.stringify(body)}`);
     this.name = "VercelApiError";
     this.status = status;
     this.body = body;
@@ -141,7 +141,7 @@ export async function upsertEnv(
     await vercelFetch(`/v10/projects/${projectId}/env/${existing.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ value, targets: ENV_TARGETS }),
+      body: JSON.stringify({ value, target: ENV_TARGETS }),
     });
     return;
   }
@@ -149,7 +149,7 @@ export async function upsertEnv(
   await vercelFetch(`/v10/projects/${projectId}/env`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ key, value, type: "encrypted", targets: ENV_TARGETS }),
+    body: JSON.stringify({ key, value, type: "encrypted", target: ENV_TARGETS }),
   });
 }
 

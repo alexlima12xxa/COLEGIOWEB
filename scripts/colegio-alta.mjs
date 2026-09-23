@@ -512,13 +512,13 @@ async function createVercelProject(projectName) {
 }
 
 async function addVercelEnv(projectId, key, value) {
-  const targets = ["production", "preview", "development"];
+  const target = ["production", "preview", "development"];
   await vercelFetch(`/v10/projects/${projectId}/env`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ key, value, type: "encrypted", targets }),
+    body: JSON.stringify({ key, value, type: "encrypted", target }),
   });
-  console.log(`  ✓ Env var ${key} (${targets.join(", ")})`);
+  console.log(`  ✓ Env var ${key} (${target.join(", ")})`);
 }
 
 async function addVercelDomain(projectId, domain) {
