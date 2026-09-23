@@ -164,7 +164,10 @@ create-or-retrieve:
 2. admin user (`inviteUserByEmail` + `app_metadata { role: admin, tenant_id }`)
 3. seed de contenido (12 claves, `onConflict tenant_id,clave`)
 4. proyecto Vercel `web-<slug>`
-5. env vars (`PUBLIC_TENANT_ID`, `PUBLIC_SITE_SLUG`, Supabase URL/keys)
+5. env vars del proyecto web: `PUBLIC_TENANT_ID`, `PUBLIC_SITE_SLUG`,
+   `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY` (Config) +
+   `SUPABASE_SERVICE_ROLE_KEY` y `PREVIEW_SIGNING_KEY` (Secret, idéntica a la del
+   admin para el preview) + `ADMIN_ORIGIN` (CSP del preview)
 6. dominio
 7. deploy hook `rebuild-webhook`
 8. `tenant_settings` + `colegios.activo = true`

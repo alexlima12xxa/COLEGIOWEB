@@ -115,6 +115,8 @@ admin+tenant `/admin`, sin rol `/`. `proxy.ts` protege `/operador*`; `login()` u
 - `d6c9d6a` — feat(web): config + branding de colegio-yachay (fase codigo)
 - `9580425` — fix(operator): usar campo target (singular) en la API de env de Vercel
 - `90e84c3` — fix(operator): conectar repo Git al crear proyecto Vercel y endpoint correcto de deploy hooks
+- `d936a2b` — docs(operator): documentar incidentes de API Vercel y requisito de Git
+- `bfb47c5` — feat(operator): provisionar PREVIEW_SIGNING_KEY/ADMIN_ORIGIN y crear Secrets con tipo correcto
 
 ## Incidentes y desvíos
 
@@ -153,3 +155,28 @@ env/dominio cuando recrea el proyecto.
 Formación Integral`, `PUBLIC_SITE_SLUG=colegio-yachay` aplicado); proyecto con Git,
 dominio y deploy hook; *Deployment Protection* desactivado para que sea pública.
 Pendiente: DNS del subdominio (Cloudflare).
+
+### Seguimiento (2026-09-23) — preview de banners y tipo de Secret
+
+Detectado tras el alta: el editor de banners (`/admin/banners`) no previsualizaba.
+Causa: el proyecto web **no** tenía `PREVIEW_SIGNING_KEY` (la saga solo creaba 5
+env vars), y la web exige esa clave para validar el token HMAC de `/preview-admin`
+(sin ella → 404). Además, la service key se creaba como `encrypted` (Config), lo que
+dispara el badge "needs attention" de Vercel.
+
+**Fixes (`bfb47c5`):**
+- `upsertEnv(..., type)`: POST/PATCH con `type` (`encrypted` = Config,
+  `sensitive` = **Secret**). La service key se crea como Secret desde el origen.
+- `stepVercelEnv` ahora provisiona **7** env vars: las 5 previas + `PREVIEW_SIGNING_KEY`
+  (Secret, desde el admin) + `ADMIN_ORIGIN` (CSP `frame-ancestors` del preview).
+- Guard: si falta `PREVIEW_SIGNING_KEY`/`ADMIN_ORIGIN` en el admin → warning, no fatal.
+
+**Nota de tipos (Vercel Config/Secret, 24-ago-2026):** "Secret" = valor disponible
+en build y runtime pero no releíble (`type=sensitive` por API). La política
+"Separate Production Secret Values" es de **team**, no aplica en cuenta personal;
+queda anotada para cuando se migre a un plan con team.
+
+**Remediación de `colegio-yachay`:** PATCH del service key a Secret + POST de
+`PREVIEW_SIGNING_KEY`/`ADMIN_ORIGIN` + redeploy. Verificado: `/preview-admin` con
+token válido → 200; sin token → 404. La previsualización en el panel requiere además
+que resuelva el DNS (el iframe usa `preview_web_url`).
