@@ -170,7 +170,10 @@ create-or-retrieve:
 8. `tenant_settings` + `colegios.activo = true`
 
 Env vars server-only del admin (Vercel, sin prefijo `NEXT_PUBLIC_`):
-`SUPABASE_SERVICE_ROLE_KEY`, `VERCEL_TOKEN`, `VERCEL_TEAM_ID` (opcional).
+`SUPABASE_SERVICE_ROLE_KEY`, `VERCEL_TOKEN`, `VERCEL_TEAM_ID` (opcional) y
+`VERCEL_GIT_REPO` (`owner/repo`) — **obligatorio**: sin Git el proyecto no
+despliega y el deploy hook falla (404). Opcionales: `VERCEL_GIT_PROVIDER`
+(default `github`) y `VERCEL_GIT_BRANCH` (default `main`).
 
 ### Guía DNS
 

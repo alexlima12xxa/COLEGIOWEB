@@ -112,6 +112,9 @@ admin+tenant `/admin`, sin rol `/`. `proxy.ts` protege `/operador*`; `login()` u
 - `a5ec21d` — feat(admin): route handlers crear/run/status con waitUntil + maxDuration
 - `2dd695e` — feat(admin): plano /operador (layout, listado, formulario, detalle con polling)
 - `221df51` — docs: alta de colegios desde el panel (operador) + deprecar script legacy
+- `d6c9d6a` — feat(web): config + branding de colegio-yachay (fase codigo)
+- `9580425` — fix(operator): usar campo target (singular) en la API de env de Vercel
+- `90e84c3` — fix(operator): conectar repo Git al crear proyecto Vercel y endpoint correcto de deploy hooks
 
 ## Incidentes y desvíos
 
@@ -119,3 +122,34 @@ admin+tenant `/admin`, sin rol `/`. `proxy.ts` protege `/operador*`; `login()` u
 - **`apps/admin/.gitignore` ignoraba `.env*`**: se añadió excepción `!.env.example` y se eliminaron líneas duplicadas (`.vercel`, `.env*`) al final, para poder versionar el template sin secretos.
 - **Archivo adicional**: `apps/admin/lib/operator/seed.ts` (plantilla de contenido) separado de `provision.ts` por modularidad.
 - **Columna extra en la migración**: `provisioning_jobs.domain/admin_email/nombre` para persistir el input completo y reanudar la saga.
+
+## Primera provisión real (2026-09-23) — incidentes y fixes
+
+Alta de `colegio-yachay` (demo trabajado como real) desde `/operador`. La saga
+superó BD/invitación/seed/proyecto, pero falló en dos puntos de la **API de Vercel**
+(que cambió respecto a lo que asumía el script legacy). Ambos corregidos y
+verificados con el token real:
+
+1. **`targets` → `target`** (`9580425`): `POST /v10/projects/{id}/env` exige el
+   campo `target` (singular). Con `targets` devolvía
+   `400 missing required property 'target'`. Verificado: `target` → 201.
+2. **Deploy hooks** (`90e84c3`):
+   - Endpoint incorrecto (`POST /v10/projects/{id}/hooks` → 404). El correcto es
+     `POST /v2/projects/{id}/deploy-hooks` con `{ name, ref }`; los hooks se leen
+     de `link.deployHooks` del proyecto (como `vercel deploy-hooks ls`).
+   - Los deploy hooks **requieren** que el proyecto esté conectado a Git. Ahora
+     `createProject` usa `POST /v11/projects` con `gitRepository`
+     (`VERCEL_GIT_REPO` = `owner/repo`; `VERCEL_GIT_PROVIDER` default `github`;
+     `VERCEL_GIT_BRANCH` default `main`).
+   - `VercelApiError` ahora incluye el cuerpo de la respuesta de Vercel.
+
+**Recuperación de `colegio-yachay`:** el proyecto existía sin Git; se eliminó y la
+saga lo recreó con Git. Los pasos `vercel_env` y `vercel_domain` quedaron `done`
+del run previo y **se saltaron**, por lo que hubo que re-aplicar las 5 env vars y
+el dominio a mano (API). Mejora pendiente: que `ensureProjectId` re-ejecute
+env/dominio cuando recrea el proyecto.
+
+**Resultado:** web en vivo y correcta (`title: Colegio Yachay - Excelencia y
+Formación Integral`, `PUBLIC_SITE_SLUG=colegio-yachay` aplicado); proyecto con Git,
+dominio y deploy hook; *Deployment Protection* desactivado para que sea pública.
+Pendiente: DNS del subdominio (Cloudflare).
