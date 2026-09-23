@@ -140,22 +140,24 @@ export async function listEnv(projectId: string): Promise<VercelEnv[]> {
   return data.envs ?? [];
 }
 
-// Create-or-retrieve por key: si ya existe, re-asegura valor y targets con
-// PATCH; si no, la crea. El valor de una env `encrypted` no se puede releer,
-// así que la idempotencia se basa en la key (no en comparar el valor).
+// Create-or-retrieve por key: si ya existe, re-asegura valor, targets y tipo con
+// PATCH; si no, la crea. El valor de un Secret no se puede releer, así que la
+// idempotencia se basa en la key (no en comparar el valor).
+// `type`: "encrypted" = Config (legible); "sensitive" = Secret (API keys/tokens).
 export async function upsertEnv(
   projectId: string,
   key: string,
   value: string,
+  type: "encrypted" | "sensitive" = "encrypted",
 ): Promise<void> {
   const envs = await listEnv(projectId);
   const existing = envs.find((e) => e.key === key);
 
   if (existing) {
-    await vercelFetch(`/v10/projects/${projectId}/env/${existing.id}`, {
+    await vercelFetch(`/v9/projects/${projectId}/env/${existing.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ value, target: ENV_TARGETS }),
+      body: JSON.stringify({ value, target: ENV_TARGETS, type }),
     });
     return;
   }
@@ -163,7 +165,7 @@ export async function upsertEnv(
   await vercelFetch(`/v10/projects/${projectId}/env`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ key, value, type: "encrypted", target: ENV_TARGETS }),
+    body: JSON.stringify({ key, value, type, target: ENV_TARGETS }),
   });
 }
 

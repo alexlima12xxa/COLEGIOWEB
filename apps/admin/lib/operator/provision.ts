@@ -237,6 +237,17 @@ async function stepVercelProject(ctx: ProvisionContext): Promise<unknown> {
   return { projectId: project.id, name: project.name };
 }
 
+// Origen del panel admin (para el CSP frame-ancestors del preview en la web).
+function adminOrigin(): string | null {
+  const raw = process.env.NEXT_PUBLIC_APP_URL;
+  if (!raw) return null;
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return null;
+  }
+}
+
 async function stepVercelEnv(ctx: ProvisionContext): Promise<unknown> {
   const projectId = await ensureProjectId(ctx);
   if (!ctx.tenantId) throw new ProvisionError("FATAL", "Falta tenant_id del colegio.");
@@ -252,13 +263,43 @@ async function stepVercelEnv(ctx: ProvisionContext): Promise<unknown> {
     );
   }
 
-  await upsertEnv(projectId, "PUBLIC_TENANT_ID", ctx.tenantId);
-  await upsertEnv(projectId, "PUBLIC_SITE_SLUG", ctx.slug);
-  await upsertEnv(projectId, "PUBLIC_SUPABASE_URL", supabaseUrl);
-  await upsertEnv(projectId, "PUBLIC_SUPABASE_ANON_KEY", anonKey);
-  await upsertEnv(projectId, "SUPABASE_SERVICE_ROLE_KEY", serviceKey);
+  // Config (legible) para lo público; Secret para la service key y la firma del
+  // preview de banners. Ver reports/2026-09-21_alta-colegios-operador.md.
+  const vars: { key: string; value: string; type: "encrypted" | "sensitive" }[] = [
+    { key: "PUBLIC_TENANT_ID", value: ctx.tenantId, type: "encrypted" },
+    { key: "PUBLIC_SITE_SLUG", value: ctx.slug, type: "encrypted" },
+    { key: "PUBLIC_SUPABASE_URL", value: supabaseUrl, type: "encrypted" },
+    { key: "PUBLIC_SUPABASE_ANON_KEY", value: anonKey, type: "encrypted" },
+    { key: "SUPABASE_SERVICE_ROLE_KEY", value: serviceKey, type: "sensitive" },
+  ];
 
-  return { count: 5 };
+  const warnings: string[] = [];
+
+  // Debe ser idéntica a la del admin para que la web valide el token de preview.
+  const previewKey = process.env.PREVIEW_SIGNING_KEY;
+  if (previewKey) {
+    vars.push({ key: "PREVIEW_SIGNING_KEY", value: previewKey, type: "sensitive" });
+  } else {
+    warnings.push(
+      "PREVIEW_SIGNING_KEY no está en el admin: el preview de banners queda deshabilitado en este colegio.",
+    );
+  }
+
+  // CSP frame-ancestors de /preview-admin en la web.
+  const origin = adminOrigin();
+  if (origin) {
+    vars.push({ key: "ADMIN_ORIGIN", value: origin, type: "encrypted" });
+  } else {
+    warnings.push(
+      "No se pudo derivar el origen del admin (NEXT_PUBLIC_APP_URL): el preview no fija frame-ancestors.",
+    );
+  }
+
+  for (const v of vars) {
+    await upsertEnv(projectId, v.key, v.value, v.type);
+  }
+
+  return { count: vars.length, warnings };
 }
 
 async function stepVercelDomain(ctx: ProvisionContext): Promise<unknown> {
