@@ -1,25 +1,25 @@
 import { requireAdmin } from "@/lib/auth";
 import { ModuleCard } from "@/app/admin/components/module-card";
-import { NoticiaForm } from "../noticia-form";
+import { CircularForm } from "../circular-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function NuevaNoticiaPage() {
+export default async function NuevaCircularPage() {
   await requireAdmin();
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-          Nueva noticia
+          Nuevo comunicado
         </h1>
         <p className="mt-1 text-sm text-zinc-600">
-          Completa el formulario para publicar una noticia en la web.
+          Completa el formulario para publicar un comunicado en la web.
         </p>
       </div>
 
-      <ModuleCard id="noticia-nueva-form" title="Detalles de la noticia">
-        <NoticiaForm />
+      <ModuleCard id="circular-nueva-form" title="Detalles del comunicado">
+        <CircularForm />
       </ModuleCard>
     </div>
   );

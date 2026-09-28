@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { triggerRebuild } from "@/lib/rebuild";
 import { signPreviewToken } from "@/lib/preview-token";
+import { PAGINAS_ROUTES } from "@/lib/paginas";
 import { BANNERS_SLUGS, catalogoPorSlug } from "@web-modelo/shared";
 
 export type BannersState = {
@@ -171,6 +172,11 @@ export async function guardarBanner(
   if (eCtaLabel) fieldErrors.ctaLabel = eCtaLabel;
   const eCtaHref = clampLen(ctaHref, LIMITS.ctaHref);
   if (eCtaHref) fieldErrors.ctaHref = eCtaHref;
+  // El CTA solo puede apuntar a una página existente o al keyword "whatsapp"
+  // (que la web resuelve al número del colegio, ver BannerActions.astro).
+  if (ctaHref && ctaHref !== "whatsapp" && !PAGINAS_ROUTES.includes(ctaHref)) {
+    fieldErrors.ctaHref = "Elige una página existente.";
+  }
 
   let orden = 0;
   const parsedOrden = Number(ordenRaw);

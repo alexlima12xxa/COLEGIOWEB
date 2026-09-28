@@ -12,7 +12,7 @@ export interface Props {
 }
 
 const { noticia, eager = false } = Astro.props;
-const href = `/noticias/${noticia.slug}`;
+const href = `/blog/${noticia.slug}`;
 ---
 
 <a href={href} class="newsCard">
@@ -55,7 +55,7 @@ const href = `/noticias/${noticia.slug}`;
     }
 
     <span class="newsCard__cta">
-      Leer noticia
+      Leer entrada
       <ArrowRight aria-hidden="true" size={16} />
     </span>
   </div>

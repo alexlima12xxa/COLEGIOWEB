@@ -3,7 +3,8 @@
 import { useActionState, useState } from "react";
 import type { NivelesState } from "./actions";
 import { guardarNiveles } from "./actions";
-import { NIVELES, PAGINAS_CTA, CTA_HREF_DEFAULT } from "./niveles-constants";
+import { NIVELES, CTA_HREF_DEFAULT } from "./niveles-constants";
+import { PAGINAS } from "@/lib/paginas";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/admin/components/tabs";
 import { mediaUrl } from "@/lib/storage";
 
@@ -451,9 +452,9 @@ function NivelEditor({
                   defaultValue={data.ctaHref ?? CTA_HREF_DEFAULT}
                   className={inputClass}
                 >
-                  {PAGINAS_CTA.map((route) => (
-                    <option key={route} value={route}>
-                      {route}
+                  {PAGINAS.map((pagina) => (
+                    <option key={pagina.route} value={pagina.route}>
+                      {pagina.label}
                     </option>
                   ))}
                 </select>

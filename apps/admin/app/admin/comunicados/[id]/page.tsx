@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { ModuleCard } from "@/app/admin/components/module-card";
-import { NoticiaForm } from "../noticia-form";
+import { CircularForm } from "../circular-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditarNoticiaPage({
+export default async function EditarCircularPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -13,15 +13,15 @@ export default async function EditarNoticiaPage({
   const { supabase } = await requireAdmin();
   const { id } = await params;
 
-  const { data: noticia, error } = await supabase
-    .from("noticias")
+  const { data: circular, error } = await supabase
+    .from("circulares")
     .select(
-      "id, slug, titulo, resumen, contenido, imagen_path, imagen_alt, autor, publicado, publicado_en, updated_at",
+      "id, titulo, descripcion, categoria, fecha, archivo_path, archivo_nombre, publicado, publicado_en, updated_at",
     )
     .eq("id", id)
     .maybeSingle();
 
-  if (error || !noticia) {
+  if (error || !circular) {
     notFound();
   }
 
@@ -29,16 +29,16 @@ export default async function EditarNoticiaPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-          Editar noticia
+          Editar comunicado
         </h1>
         <p className="mt-1 text-sm text-zinc-600">
-          Actualiza los detalles de la noticia. Los cambios se verán en la web
+          Actualiza los detalles del comunicado. Los cambios se verán en la web
           tras el rebuild automático.
         </p>
       </div>
 
-      <ModuleCard id="noticia-editar-form" title="Detalles de la noticia">
-        <NoticiaForm noticia={noticia} />
+      <ModuleCard id="circular-editar-form" title="Detalles del comunicado">
+        <CircularForm circular={circular} />
       </ModuleCard>
     </div>
   );

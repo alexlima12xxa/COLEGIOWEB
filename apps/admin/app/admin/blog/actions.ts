@@ -70,12 +70,12 @@ export async function crearNoticia(
   });
 
   if (error) {
-    return { error: `No se pudo crear la noticia: ${error.message}` };
+    return { error: `No se pudo crear la entrada: ${error.message}` };
   }
 
   await triggerRebuild(supabase, tenantId);
-  revalidatePath("/admin/noticias");
-  redirect("/admin/noticias");
+  revalidatePath("/admin/blog");
+  redirect("/admin/blog");
 }
 
 export async function actualizarNoticia(
@@ -124,12 +124,12 @@ export async function actualizarNoticia(
     .eq("id", id);
 
   if (error) {
-    return { error: `No se pudo actualizar la noticia: ${error.message}` };
+    return { error: `No se pudo actualizar la entrada: ${error.message}` };
   }
 
   await triggerRebuild(supabase, tenantId);
-  revalidatePath("/admin/noticias");
-  redirect("/admin/noticias");
+  revalidatePath("/admin/blog");
+  redirect("/admin/blog");
 }
 
 export async function eliminarNoticia(formData: FormData) {
@@ -140,10 +140,10 @@ export async function eliminarNoticia(formData: FormData) {
 
   const { error } = await supabase.from("noticias").delete().eq("id", id);
   if (error) {
-    throw new Error(`No se pudo eliminar la noticia: ${error.message}`);
+    throw new Error(`No se pudo eliminar la entrada: ${error.message}`);
   }
 
   await triggerRebuild(supabase, tenantId);
-  revalidatePath("/admin/noticias");
-  redirect("/admin/noticias");
+  revalidatePath("/admin/blog");
+  redirect("/admin/blog");
 }

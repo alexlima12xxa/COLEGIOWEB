@@ -12,19 +12,3 @@ export const REDES_SOCIALES = [
 ] as const;
 
 export type RedSocialClave = (typeof REDES_SOCIALES)[number]["clave"];
-
-// Páginas existentes de la web a las que puede enlazar cada elemento del footer.
-// del footer. Misma lista que la navegación (portada) y niveles.
-export const PAGINAS_FOOTER = [
-  "/",
-  "/nosotros",
-  "/niveles",
-  "/niveles/preescolar",
-  "/niveles/primaria",
-  "/niveles/secundaria",
-  "/admisiones",
-  "/noticias",
-  "/circulares",
-  "/contacto",
-  "/formulario",
-] as const;

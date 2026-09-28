@@ -40,7 +40,7 @@ export function NoticiaForm({ noticia }: { noticia?: NoticiaRow }) {
   };
 
   const handleCancel = () => {
-    router.push("/admin/noticias");
+    router.push("/admin/blog");
   };
 
   return (
@@ -103,7 +103,7 @@ export function NoticiaForm({ noticia }: { noticia?: NoticiaRow }) {
           rows={14}
           required
           defaultValue={noticia?.contenido}
-          placeholder={"## Subtítulo\n\nTexto de la noticia. Soporta **negritas**, _cursivas_, listas y enlaces."}
+          placeholder={"## Subtítulo\n\nTexto de la entrada. Soporta **negritas**, _cursivas_, listas y enlaces."}
           className={`${inputClass} font-mono`}
         />
         <FieldError message={state.fieldErrors?.contenido} />
@@ -174,7 +174,7 @@ export function NoticiaForm({ noticia }: { noticia?: NoticiaRow }) {
           disabled={pending}
           className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600/40 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {pending ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear noticia"}
+          {pending ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear entrada"}
         </button>
         <button
           type="button"

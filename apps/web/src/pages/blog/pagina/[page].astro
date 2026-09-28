@@ -19,17 +19,17 @@ const { items, page, totalPages } = await getNewsPage(
   NEWS_PER_PAGE,
 );
 
-const title = page > 1 ? `Noticias – Página ${page}` : "Noticias";
-const description = `Últimas noticias de ${siteConfig.identity.name} (página ${page} de ${totalPages}).`;
+const title = page > 1 ? `Blog – Página ${page}` : "Blog";
+const description = `Últimas entradas del blog de ${siteConfig.identity.name} (página ${page} de ${totalPages}).`;
 ---
 
 <BaseLayout
   title={title}
   description={description}
-  path={page > 1 ? `/noticias/pagina/${page}` : "/noticias"}
+  path={page > 1 ? `/blog/pagina/${page}` : "/blog"}
 >
   <Section padding="md">
-    <h1 class="uVisuallyHidden">Noticias</h1>
+    <h1 class="uVisuallyHidden">Blog</h1>
 
     <NewsList items={items} page={page} totalPages={totalPages} />
   </Section>

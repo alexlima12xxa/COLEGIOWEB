@@ -3,10 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { triggerRebuild } from "@/lib/rebuild";
-import {
-  PAGINAS_FOOTER,
-  REDES_SOCIALES,
-} from "./footer-constants";
+import { PAGINAS_ROUTES } from "@/lib/paginas";
+import { REDES_SOCIALES } from "./footer-constants";
 
 export type FooterState = {
   ok?: boolean;
@@ -103,7 +101,7 @@ export async function guardarFooter(
 
     const eName = clamp(name, LIMITS.nivelNombre);
     if (eName) fieldErrors[`level_${i}_name`] = eName;
-    if (href && !(PAGINAS_FOOTER as readonly string[]).includes(href)) {
+    if (href && !PAGINAS_ROUTES.includes(href)) {
       fieldErrors[`level_${i}_href`] = "Elige una página existente.";
     }
     if (name && href) levels.push({ name, href });

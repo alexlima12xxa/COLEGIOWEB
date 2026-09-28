@@ -10,13 +10,13 @@ export interface Props {
 const { page, totalPages } = Astro.props;
 
 function hrefFor(target: number): string {
-  return target === 1 ? "/noticias" : `/noticias/pagina/${target}`;
+  return target === 1 ? "/blog" : `/blog/pagina/${target}`;
 }
 ---
 
 {
   totalPages > 1 && (
-    <nav class="newsPagination" aria-label="Paginación de noticias">
+    <nav class="newsPagination" aria-label="Paginación del blog">
       {page > 1 ? (
         <a
           href={hrefFor(page - 1)}

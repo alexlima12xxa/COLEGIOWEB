@@ -31,7 +31,8 @@ const { noticia } = Astro.props;
 
 const title = noticia.titulo;
 const description =
-  noticia.resumen ?? `Noticia publicada por ${siteConfig.identity.name}.`;
+  noticia.resumen ??
+  `Entrada del blog publicada por ${siteConfig.identity.name}.`;
 const readingLabel = formatReadingTime(readingTimeMin(noticia.contenido));
 const contentHtml = renderMarkdown(noticia.contenido);
 const imageUrl = resolveAssetUrl(noticia.imagenPath);
@@ -42,7 +43,7 @@ const ogImage = imageUrl
   : new URL(siteConfig.seo.ogImage, siteConfig.seo.siteUrl).toString();
 
 const pageUrl = new URL(
-  `/noticias/${noticia.slug}/`,
+  `/blog/${noticia.slug}/`,
   siteConfig.seo.siteUrl,
 ).toString();
 
@@ -59,8 +60,8 @@ const breadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 2,
-      name: "Noticias",
-      item: new URL("/noticias/", siteConfig.seo.siteUrl).toString(),
+      name: "Blog",
+      item: new URL("/blog/", siteConfig.seo.siteUrl).toString(),
     },
     {
       "@type": "ListItem",
@@ -103,7 +104,7 @@ const jsonLd = {
   title={title}
   description={description}
   image={ogImage}
-  path={`/noticias/${noticia.slug}`}
+  path={`/blog/${noticia.slug}`}
 >
   <Fragment slot="head">
     <meta property="article:published_time" content={noticia.publicadoEn} />
@@ -126,9 +127,9 @@ const jsonLd = {
 
   <Section padding="lg">
     <article class="newsDetail">
-      <a href="/noticias" class="newsDetail__back">
+      <a href="/blog" class="newsDetail__back">
         <ArrowLeft aria-hidden="true" size={18} />
-        Volver a noticias
+        Volver al blog
       </a>
 
       <header class="newsDetail__header">

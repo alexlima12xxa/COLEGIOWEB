@@ -79,12 +79,12 @@ export async function crearCircular(
   });
 
   if (error) {
-    return { error: `No se pudo crear la circular: ${error.message}` };
+    return { error: `No se pudo crear el comunicado: ${error.message}` };
   }
 
   await triggerRebuild(supabase, tenantId);
-  revalidatePath("/admin/circulares");
-  redirect("/admin/circulares");
+  revalidatePath("/admin/comunicados");
+  redirect("/admin/comunicados");
 }
 
 export async function actualizarCircular(
@@ -123,12 +123,12 @@ export async function actualizarCircular(
     .eq("id", id);
 
   if (error) {
-    return { error: `No se pudo actualizar la circular: ${error.message}` };
+    return { error: `No se pudo actualizar el comunicado: ${error.message}` };
   }
 
   await triggerRebuild(supabase, tenantId);
-  revalidatePath("/admin/circulares");
-  redirect("/admin/circulares");
+  revalidatePath("/admin/comunicados");
+  redirect("/admin/comunicados");
 }
 
 export async function eliminarCircular(formData: FormData) {
@@ -139,10 +139,10 @@ export async function eliminarCircular(formData: FormData) {
 
   const { error } = await supabase.from("circulares").delete().eq("id", id);
   if (error) {
-    throw new Error(`No se pudo eliminar la circular: ${error.message}`);
+    throw new Error(`No se pudo eliminar el comunicado: ${error.message}`);
   }
 
   await triggerRebuild(supabase, tenantId);
-  revalidatePath("/admin/circulares");
-  redirect("/admin/circulares");
+  revalidatePath("/admin/comunicados");
+  redirect("/admin/comunicados");
 }

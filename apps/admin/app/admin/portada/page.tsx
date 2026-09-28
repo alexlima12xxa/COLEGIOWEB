@@ -20,8 +20,8 @@ const NAVBAR_FALLBACK = [
   { label: "Nosotros", href: "/nosotros" },
   { label: "Niveles", href: "/niveles" },
   { label: "Admisiones", href: "/admisiones" },
-  { label: "Noticias", href: "/noticias" },
-  { label: "Circulares", href: "/circulares" },
+  { label: "Blog", href: "/blog" },
+  { label: "Comunicados", href: "/comunicados" },
   { label: "Contacto", href: "/contacto" },
 ];
 

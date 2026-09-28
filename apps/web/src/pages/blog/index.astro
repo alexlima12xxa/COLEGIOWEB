@@ -7,13 +7,13 @@ import { siteConfig } from "../../site.config";
 
 const { items, page, totalPages } = await getNewsPage(1, NEWS_PER_PAGE);
 
-const title = "Noticias";
-const description = `Últimas noticias y novedades de ${siteConfig.identity.name}: actividades, logros y comunicados de la comunidad educativa.`;
+const title = "Blog";
+const description = `Últimas entradas y novedades de ${siteConfig.identity.name}: actividades, logros y comunicados de la comunidad educativa.`;
 ---
 
-<BaseLayout title={title} description={description} path="/noticias">
+<BaseLayout title={title} description={description} path="/blog">
   <Section padding="md">
-    <h1 class="uVisuallyHidden">Noticias</h1>
+    <h1 class="uVisuallyHidden">Blog</h1>
 
     <NewsList items={items} page={page} totalPages={totalPages} />
   </Section>

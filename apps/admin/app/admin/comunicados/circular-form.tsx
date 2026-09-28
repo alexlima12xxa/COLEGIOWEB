@@ -32,7 +32,7 @@ export function CircularForm({ circular }: { circular?: CircularRow }) {
   };
 
   const handleCancel = () => {
-    router.push("/admin/circulares");
+    router.push("/admin/comunicados");
   };
 
   return (
@@ -51,7 +51,7 @@ export function CircularForm({ circular }: { circular?: CircularRow }) {
             type="text"
             required
             defaultValue={circular?.titulo}
-            placeholder="Ej. Circular N° 001 - Inicio de clases"
+            placeholder="Ej. Comunicado N° 001 - Inicio de clases"
             className={inputClass}
           />
           <FieldError message={state.fieldErrors?.titulo} />
@@ -152,7 +152,7 @@ export function CircularForm({ circular }: { circular?: CircularRow }) {
           disabled={pending}
           className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600/40 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {pending ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear circular"}
+          {pending ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear comunicado"}
         </button>
         <button
           type="button"

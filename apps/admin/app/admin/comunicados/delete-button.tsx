@@ -41,7 +41,7 @@ export function DeleteCircularButton({
     <button
       type="button"
       onClick={() => setConfirming(true)}
-      aria-label={`Eliminar circular "${titulo}"`}
+      aria-label={`Eliminar comunicado "${titulo}"`}
       className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50"
     >
       Eliminar

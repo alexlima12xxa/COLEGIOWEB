@@ -22,22 +22,36 @@ const logoPath =
     ? (siteConfig.branding.assets.logoInverse ??
       siteConfig.branding.assets.logo)
     : siteConfig.branding.assets.logo;
+const favicon = siteConfig.branding.assets.favicon;
 const logoClass = ["logo", `logo--${variant}`, `logo--${size}`, className];
 ---
 
 {
   iconOnly ? (
-    <span class:list={logoClass}>
-      <svg
-        class="logo__icon"
-        viewBox="0 0 48 48"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <circle class="logo__iconCircle" cx="24" cy="24" r="18" />
-        <path class="logo__iconTriangle" d="M18 30 24 18 30 30H18z" />
-      </svg>
-    </span>
+    favicon ? (
+      <span class:list={logoClass}>
+        <img
+          src={favicon}
+          alt=""
+          class="logo__icon"
+          width="64"
+          height="64"
+          decoding="async"
+        />
+      </span>
+    ) : (
+      <span class:list={logoClass}>
+        <svg
+          class="logo__icon"
+          viewBox="0 0 48 48"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle class="logo__iconCircle" cx="24" cy="24" r="18" />
+          <path class="logo__iconTriangle" d="M18 30 24 18 30 30H18z" />
+        </svg>
+      </span>
+    )
   ) : logoPath ? (
     <img
       src={logoPath}

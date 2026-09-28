@@ -60,8 +60,8 @@ export const GET: APIRoute = async () => {
     { loc: "/nosotros", priority: 0.8 },
     { loc: "/niveles", priority: 0.8 },
     { loc: "/admisiones", priority: 0.8 },
-    { loc: "/noticias", priority: 0.8 },
-    { loc: "/circulares", priority: 0.7 },
+    { loc: "/blog", priority: 0.8 },
+    { loc: "/comunicados", priority: 0.7 },
     { loc: "/contacto", priority: 0.7 },
     { loc: "/aviso-de-privacidad", priority: 0.3 },
   ];
@@ -72,14 +72,14 @@ export const GET: APIRoute = async () => {
 
   for (const noticia of noticias) {
     entries.push({
-      loc: `/noticias/${noticia.slug}`,
+      loc: `/blog/${noticia.slug}`,
       lastmod: toIsoDate(noticia.publicadoEn),
       priority: 0.6,
     });
   }
 
   for (let page = 2; page <= totalPages; page++) {
-    entries.push({ loc: `/noticias/pagina/${page}`, priority: 0.4 });
+    entries.push({ loc: `/blog/pagina/${page}`, priority: 0.4 });
   }
 
   const body = entries.map(renderEntry).join("\n");

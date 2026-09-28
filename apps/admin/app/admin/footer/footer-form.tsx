@@ -3,10 +3,8 @@
 import { useActionState, useState } from "react";
 import type { FooterState } from "./actions";
 import { guardarFooter } from "./actions";
-import {
-  PAGINAS_FOOTER,
-  REDES_SOCIALES,
-} from "./footer-constants";
+import { REDES_SOCIALES } from "./footer-constants";
+import { PAGINAS } from "@/lib/paginas";
 import {
   Tabs,
   TabsList,
@@ -347,9 +345,9 @@ export function FooterForm({ initial }: { initial: FooterData }) {
                       className={inputClass}
                     >
                       <option value="">Elige una página…</option>
-                      {PAGINAS_FOOTER.map((pagina) => (
-                        <option key={pagina} value={pagina}>
-                          {pagina}
+                      {PAGINAS.map((pagina) => (
+                        <option key={pagina.route} value={pagina.route}>
+                          {pagina.label}
                         </option>
                       ))}
                     </select>

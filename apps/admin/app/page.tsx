@@ -9,8 +9,8 @@ export default function Home() {
           Panel Admin — esqueleto
         </h1>
         <p className="mt-3 text-sm leading-6 text-zinc-600">
-          Panel de administración para el director del colegio: noticias,
-          circulares, textos institucionales, autoridades, galería, admisiones,
+          Panel de administración para el director del colegio: blog,
+          comunicados, textos institucionales, autoridades, galería, admisiones,
           contacto y leads. La implementación completa corresponde a la Fase 2
           (bloques A0-A8) sobre Supabase multi-tenant con RLS.
         </p>

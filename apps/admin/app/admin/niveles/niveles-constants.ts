@@ -10,17 +10,4 @@ export const NIVELES = [
 
 export type NivelClave = (typeof NIVELES)[number]["clave"];
 
-// Páginas existentes a las que puede enlazar el botón de CTA del hero de
-// cada nivel. Misma lista que el menú de navegación (portada).
-export const PAGINAS_CTA = [
-  "/",
-  "/nosotros",
-  "/niveles",
-  "/admisiones",
-  "/noticias",
-  "/circulares",
-  "/contacto",
-  "/formulario",
-] as const;
-
 export const CTA_HREF_DEFAULT = "/admisiones";

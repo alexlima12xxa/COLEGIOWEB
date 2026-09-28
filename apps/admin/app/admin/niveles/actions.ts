@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { triggerRebuild } from "@/lib/rebuild";
-import { NIVELES, PAGINAS_CTA } from "./niveles-constants";
+import { PAGINAS_ROUTES } from "@/lib/paginas";
+import { NIVELES } from "./niveles-constants";
 
 export type NivelesState = {
   ok?: boolean;
@@ -114,7 +115,7 @@ export async function guardarNiveles(
     if (eLunVie) fieldErrors[`${clave}_schedule_mondayFriday`] = eLunVie;
     if (eSab) fieldErrors[`${clave}_schedule_saturday`] = eSab;
     if (eCta) fieldErrors[`${clave}_cta`] = eCta;
-    if (ctaHref && !(PAGINAS_CTA as readonly string[]).includes(ctaHref)) {
+    if (ctaHref && !PAGINAS_ROUTES.includes(ctaHref)) {
       fieldErrors[`${clave}_ctaHref`] = "Elige una página existente.";
     }
 

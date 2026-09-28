@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { triggerRebuild } from "@/lib/rebuild";
+import { PAGINAS_ROUTES } from "@/lib/paginas";
 
 export type PortadaState = {
   ok?: boolean;
@@ -147,17 +148,6 @@ export async function guardarHero(
 
 const NAVBAR_COUNT = 8;
 
-const NAVBAR_ROUTES = [
-  "/",
-  "/nosotros",
-  "/niveles",
-  "/admisiones",
-  "/noticias",
-  "/circulares",
-  "/contacto",
-  "/formulario",
-];
-
 export async function guardarNavbar(
   _prev: PortadaState,
   formData: FormData,
@@ -173,7 +163,7 @@ export async function guardarNavbar(
     const eLabel = clamp(label, LIMITS.navbarLabel);
     if (eLabel) fieldErrors[`label_${i}`] = eLabel;
 
-    if (!NAVBAR_ROUTES.includes(href)) {
+    if (!PAGINAS_ROUTES.includes(href)) {
       fieldErrors[`href_${i}`] = "Elige una página existente.";
     }
     links.push({ label, href });

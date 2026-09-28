@@ -7,14 +7,14 @@ import { siteConfig } from "../site.config";
 
 const circulares = await getAllCirculares();
 
-const title = "Circulares";
-const description = `Circulares y comunicados oficiales de ${siteConfig.identity.name}: citaciones, calendario y avisos institucionales.`;
+const title = "Comunicados";
+const description = `Comunicados oficiales de ${siteConfig.identity.name}: citaciones, calendario y avisos institucionales.`;
 ---
 
-<BaseLayout title={title} description={description} path="/circulares">
+<BaseLayout title={title} description={description} path="/comunicados">
   <Section padding="lg">
     <header class="circularesHeader">
-      <h1 class="circularesHeader__title">Circulares</h1>
+      <h1 class="circularesHeader__title">Comunicados</h1>
       <p class="circularesHeader__text">
         Comunicados oficiales de la institución: citaciones, calendario,
         convocatorias y avisos para las familias.

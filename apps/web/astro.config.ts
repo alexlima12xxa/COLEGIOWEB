@@ -15,6 +15,14 @@ export default defineConfig({
   site: siteConfig.seo.siteUrl,
   output: "static",
   adapter: vercel(),
+  // Páginas renombradas: /noticias → /blog y /circulares → /comunicados.
+  // El adapter de Vercel escribe la config de redirects (301) en build.
+  redirects: {
+    "/noticias": "/blog",
+    "/noticias/[slug]": "/blog/[slug]",
+    "/noticias/pagina/[page]": "/blog/pagina/[page]",
+    "/circulares": "/comunicados",
+  },
   build: {
     // CSS total ~10KB: inlinerlo en el HTML elimina 6 peticiones
     // render-blocking (FCP móvil 2.2s -> ~1.4s). El costo de caché es
